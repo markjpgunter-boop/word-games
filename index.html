@@ -93,6 +93,10 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;left:-10px;top:0}
 
 /* ---------- 4. LIBRARY ---------- */
+.lib-crumb{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-top:1rem}
+.lib-crumb:empty{display:none}
+.lib-fold-h{margin:0;font-size:1.5rem;flex:1}
+.card.folder{border-width:3px;border-color:var(--primary);background:var(--panel2)}
 .lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;margin-top:1rem}
 .card{background:var(--panel);border:2px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
 .card-main{border:0;background:transparent;text-align:left;padding:.8rem .9rem .5rem;display:block;width:100%}
@@ -548,6 +552,7 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
     </header>
     <div class="scroll">
       <input id="lib-search" class="inp" type="search" placeholder="Search word sets…" autocomplete="off">
+      <div id="lib-crumb" class="lib-crumb"></div>
       <div id="lib-grid" class="lib-grid"></div>
       <p class="foot" id="lib-foot"></p>
     </div>
@@ -950,23 +955,60 @@ async function importFile(file) {
 }
 
 /* ===================== 6. LIBRARY ===================== */
+/* Folders: a set whose title starts "U3 · " belongs to the folder "Unit 3" (any text before " · "
+   becomes the folder name; U1–U8 are shown as Unit 1–8). No change to how sets are stored. */
+const FOLDER_SEP = ' · ';
+function folderOf(s) {
+  const i = s.title.indexOf(FOLDER_SEP); if (i < 1) return '';
+  const k = s.title.slice(0, i).trim(), m = /^U(\d+)$/i.exec(k);
+  return m ? 'Unit ' + m[1] : k;
+}
+const shortTitle = s => folderOf(s) ? s.title.slice(s.title.indexOf(FOLDER_SEP) + FOLDER_SEP.length) : s.title;
 const Library = {
+  folder: '',
   show() { show('library'); this.render(); },
+  open(f) { this.folder = f; $('#lib-search').value = ''; this.render(); $('#scr-library .scroll').scrollTop = 0; },
   render() {
     const q = $('#lib-search').value.trim().toLowerCase(), grid = $('#lib-grid'); grid.innerHTML = '';
-    const list = APP.sets.filter(s => !q || s.title.toLowerCase().includes(q) || s.items.some(i => i.word.toLowerCase().includes(q)))
-      .sort((a, b) => b.updated - a.updated);
-    if (!list.length) grid.append(h('p', { class: 'empty' }, APP.sets.length ? 'No sets match your search.' : 'No word sets yet. Tap “New set” to make one.'));
-    list.forEach(s => grid.append(this.card(s)));
+    if (this.folder && !APP.sets.some(s => folderOf(s) === this.folder)) this.folder = '';
+    const byNewest = (a, b) => b.updated - a.updated;
+    const crumb = $('#lib-crumb'); crumb.innerHTML = '';
+    if (q) {   // searching: show every matching set, whatever folder it is in
+      const list = APP.sets.filter(s => s.title.toLowerCase().includes(q) || s.items.some(i => i.word.toLowerCase().includes(q))).sort(byNewest);
+      if (!list.length) grid.append(h('p', { class: 'empty' }, 'No sets match your search.'));
+      list.forEach(s => grid.append(this.card(s, true)));
+    } else if (this.folder) {   // inside a folder
+      const list = APP.sets.filter(s => folderOf(s) === this.folder).sort((a, b) => a.created - b.created || byNewest(a, b));
+      crumb.append(h('button', { class: 'btn', onclick: () => this.open('') }, '← All folders'), h('h2', { class: 'lib-fold-h' }, '📁 ' + this.folder),
+        h('button', { class: 'btn sm', onclick: () => exportSets(list, this.folder) }, '⬇ Export this folder'));
+      list.forEach(s => grid.append(this.card(s, false)));
+    } else {   // top level: folders first (in number order), then loose sets
+      const folders = new Map();
+      APP.sets.forEach(s => { const f = folderOf(s); if (f) { if (!folders.has(f)) folders.set(f, []); folders.get(f).push(s); } });
+      [...folders.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).forEach(f => grid.append(this.folderCard(f, folders.get(f))));
+      const loose = APP.sets.filter(s => !folderOf(s)).sort(byNewest);
+      loose.forEach(s => grid.append(this.card(s, true)));
+      if (!APP.sets.length) grid.append(h('p', { class: 'empty' }, 'No word sets yet. Tap “New set” to make one.'));
+    }
     $('#lib-foot').textContent = DB.mem ? '⚠️ Storage is not available in this browser window, so sets will not be saved. Export anything you want to keep.' :
-      'Sets are stored on this device only. Use Export to back them up or move them to another device.';
+      'Sets are stored on this device only. Use Export to back them up or move them to another device. Tip: name a set “U4 · Food” and it goes into a “Unit 4” folder.';
   },
-  card(s) {
+  folderCard(f, sets) {
+    const words = sets.reduce((n, s) => n + validItems(s).length, 0), pics = sets.map(s => s.items.find(hasPic)).filter(Boolean).slice(0, 4);
+    return h('div', { class: 'card folder' },
+      h('button', { class: 'card-main', onclick: () => this.open(f) },
+        h('div', { class: 'thumbs' }, pics.map(i => pic(i))),
+        h('div', { class: 'card-t' }, '📁 ' + f), h('div', { class: 'card-n' }, plural(sets.length, 'set') + ' · ' + plural(words, 'word'))),
+      h('div', { class: 'card-acts' },
+        h('button', { class: 'btn sm primary', onclick: () => this.open(f) }, 'Open'),
+        h('button', { class: 'btn sm', onclick: () => exportSets(sets, f) }, '⬇ Export')));
+  },
+  card(s, full) {
     const n = validItems(s).length;
     return h('div', { class: 'card' },
       h('button', { class: 'card-main', onclick: () => Hub.show(s) },
         h('div', { class: 'thumbs' }, s.items.filter(hasPic).slice(0, 4).map(i => pic(i))),
-        h('div', { class: 'card-t' }, s.title), h('div', { class: 'card-n' }, plural(n, 'word'))),
+        h('div', { class: 'card-t' }, full ? s.title : shortTitle(s)), h('div', { class: 'card-n' }, plural(n, 'word'))),
       h('div', { class: 'card-acts' },
         h('button', { class: 'btn sm primary', onclick: () => Hub.show(s) }, '▶ Play'),
         h('button', { class: 'btn sm', onclick: () => Editor.open(s, 'library') }, '✏️ Edit'),
@@ -1059,7 +1101,7 @@ const Editor = {
   async leave(to) {
     const s = this.set;
     s.title = norm($('#ed-title').value) || 'Untitled set';
-    if (!s.items.length && s.title === 'New set') { clearTimeout(this.saveT); await deleteSet(s); return Library.show(); }
+    if (!s.items.length && /(^| · )New set$/.test(s.title)) { clearTimeout(this.saveT); await deleteSet(s); return Library.show(); }
     await this.flush();
     if (to === 'hub' || this.from === 'hub') Hub.show(s); else Library.show();
   }
@@ -2386,7 +2428,7 @@ Games.register((() => {
 /* ===================== 13. BOOT ===================== */
 (function wire() {
   // library
-  $('#btn-new').onclick = async () => { const s = newSet(); await saveSet(s); Editor.open(s, 'library'); const t = $('#ed-title'); t.focus(); t.select(); };
+  $('#btn-new').onclick = async () => { const f = Library.folder, pre = f ? (/^Unit (\d+)$/.exec(f) ? 'U' + /^Unit (\d+)$/.exec(f)[1] : f) + FOLDER_SEP : ''; const s = newSet(pre + 'New set'); await saveSet(s); Editor.open(s, 'library'); const t = $('#ed-title'); t.focus(); t.select(); };
   $('#btn-import').onclick = async () => { const [f] = await pickFiles($('#file-import'), false); if (f) importFile(f); };
   $('#btn-export-all').onclick = () => exportSets(APP.sets, 'all-word-sets');
   $('#lib-search').oninput = () => Library.render();
