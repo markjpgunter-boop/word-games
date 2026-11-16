@@ -158,7 +158,7 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 .iq-pic,.iq-clue,.iq-cover{position:absolute;top:0;left:0;width:100%;height:100%}
 .iq-clue{display:flex;align-items:center;justify-content:center;padding:7%;font:700 calc(var(--su)*.6)/1.25 var(--font-word);color:#1b2a4e;text-align:center}
 .iq-cover{display:grid}
-.iq-tile{background:var(--cover);box-shadow:inset 0 0 0 1px var(--cover-edge);transition:transform .35s,opacity .35s}
+.iq-tile{background:var(--cover);box-shadow:inset 0 0 0 .5px var(--cover-edge);transition:transform .35s,opacity .35s}
 .iq-tile.gone{transform:scale(.2) rotate(25deg);opacity:0}
 .iq-cap{position:absolute;left:0;right:0;bottom:0;padding:.12em .3em;text-align:center;font:700 calc(var(--su)*.75)/1.2 var(--font-word);background:var(--good);color:var(--on-good);transform:translateY(101%);transition:transform .25s}
 .iq-frame.right .iq-cap,.iq-frame.wrong .iq-cap{transform:none}
@@ -1019,7 +1019,9 @@ function pickOptions(item, pool, n, word) {
 /* ---------- 12a. IMAGE QUIZ ---------- */
 Games.register((() => {
   let c = null, st = null;
-  const GRID = { 12: [4, 3], 24: [6, 4], 48: [8, 6] }, DUR = { slow: 24, normal: 14, fast: 8 };   // seconds for a full reveal
+  const GRID = { 12: [4, 3], 24: [6, 4], 48: [8, 6], 108: [12, 9], 192: [16, 12], 300: [20, 15], 432: [24, 18], 768: [32, 24] };
+  // seconds for the whole picture to be revealed (old saved words still work)
+  const secs = v => ({ slow: 30, normal: 18, fast: 10 })[v] || +v || 30;   // seconds for a full reveal
   const worthOf = q => Math.max(10, Math.round(100 * q.left.length / q.total / 5) * 5);
   function layout() {
     const q = st && st.cur; if (!q) return;
@@ -1031,7 +1033,7 @@ Games.register((() => {
   function round() {
     if (st.i >= c.items.length) return c.finish();
     const item = c.items[st.i]; c.progress(st.i + 1, c.items.length); c.stage.innerHTML = '';
-    const [cols, rows] = GRID[c.g.grid] || GRID[24], total = cols * rows, tiles = [];
+    const [cols, rows] = GRID[c.g.grid] || GRID[300], total = cols * rows, tiles = [];
     const cover = h('div', { class: 'iq-cover', style: 'grid-template-columns:repeat(' + cols + ',1fr);grid-template-rows:repeat(' + rows + ',1fr)' });
     for (let k = 0; k < total; k++) { const t = h('div', { class: 'iq-tile' }); tiles.push(t); cover.append(t); }
     const cap = h('div', { class: 'iq-cap' }, c.word(item));
@@ -1046,12 +1048,16 @@ Games.register((() => {
   }
   function tick() {
     const q = st.cur;
+    const ms = secs(c.g.speed) * 1000, per = Math.max(1, Math.ceil(q.total * 50 / ms));   // tiles per update
+    const step = ms * per / q.total;   // so the whole picture takes exactly the chosen time
     c.later(() => {
       if (!st || q !== st.cur || q.phase !== 'reveal') return;
-      q.left.pop().classList.add('gone'); c.sfx('tile');
+      for (let k = 0; k < per && q.left.length; k++) q.left.pop().classList.add('gone');
+      q.ticks = (q.ticks || 0) + 1;
+      if (q.ticks % Math.max(1, Math.round(250 / step)) === 0) c.sfx('tile');   // a steady click about 4 times a second
       q.worth.textContent = 'Worth ' + worthOf(q) + ' points';
       if (q.left.length) tick(); else doBuzz(true);
-    }, DUR[c.g.speed] * 1000 / q.total);
+    }, step);
   }
   function doBuzz(auto) {
     const q = st.cur; if (!q || q.phase !== 'reveal') return;
@@ -1080,8 +1086,8 @@ Games.register((() => {
     usable: hasVisual,
     options: [
       { key: 'choices', label: 'Answers', choices: [[3, '3'], [4, '4']], def: 4 },
-      { key: 'speed', label: 'Reveal', choices: [['slow', 'Slow'], ['normal', 'Normal'], ['fast', 'Fast']], def: 'normal' },
-      { key: 'grid', label: 'Tiles', choices: [[12, '12 big'], [24, '24'], [48, '48 small']], def: 24 }
+      { key: 'speed', label: 'Reveal time', choices: [[10, '10 s'], [20, '20 s'], [30, '30 s'], [45, '45 s'], [60, '1 min']], def: 30 },
+      { key: 'grid', label: 'Squares', choices: [[48, '48'], [108, '108'], [192, '192'], [300, '300'], [432, '432'], [768, '768']], def: 300 }
     ],
     init(ctx) { c = ctx; st = { i: 0, cur: null }; c.onResize(layout); },
     start() { round(); },
