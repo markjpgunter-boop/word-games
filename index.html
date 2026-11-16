@@ -14,7 +14,8 @@
    WORD GAMES — single-file classroom game maker
    CSS sections:  1 Themes  2 Base  3 Buttons/forms  4 Library  5 Editor
    6 Hub/options  7 Game shell  8 Image quiz  9 Anagram  10 Balloon pop
-   11 End screen  12 Modal/toast  13 Print
+   11 End screen  12 Modal/toast  14 Teams + shared  15 Wheel  16 Game show
+   17 Open the box  18 Tug of war  19 Jeopardy  20 Memorise  13 Print
    ===================================================================== */
 
 /* ---------- 1. THEMES (CSS variables only) ---------- */
@@ -135,7 +136,7 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 
 /* ---------- 7. GAME SHELL ---------- */
 #scr-game{touch-action:none}
-.gbar{display:flex;align-items:center;gap:.5em;padding:.3em .6em;background:var(--panel);border-bottom:3px solid var(--line);flex:none;font-size:clamp(15px,2.7vh,30px)}
+.gbar{display:flex;align-items:center;gap:.5em;padding:.3em .6em;background:var(--panel);border-bottom:3px solid var(--line);flex:none;font-size:clamp(15px,min(2.7vh,2.2vw),30px)}
 .gbtn{width:2.3em;height:2.3em;border-radius:.55em;border:0;background:var(--panel2);font-size:1em;flex:none;padding:0;line-height:1}
 .gbtn.on{background:var(--primary);color:var(--on-primary)}
 .gtitle{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
@@ -143,12 +144,14 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 .gtitle small{font-size:.65em;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gstat{font-size:1.1em;font-weight:800;background:var(--panel2);border-radius:.55em;padding:.3em .6em;white-space:nowrap;font-variant-numeric:tabular-nums}
 .gstat.low{background:var(--bad);color:var(--on-bad)}
+.gstat:empty{display:none}
 .gstat.bump{animation:pulse .35s}
-.gswitch{display:flex;gap:.25em}
+.gswitch{display:flex;gap:.14em}
+.gswitch .gbtn{width:1.95em}
 #stage{flex:1;min-height:0;position:relative;overflow:hidden;touch-action:none;--su:40px}
 .next-btn{position:absolute;right:calc(var(--su)*.3);bottom:calc(var(--su)*.3);z-index:30;border:0;border-radius:calc(var(--su)*.3);
   background:var(--accent);color:#1b1300;font-weight:900;font-size:calc(var(--su)*.6);padding:.3em .8em;box-shadow:0 calc(var(--su)*.1) 0 rgba(0,0,0,.3);animation:popin .3s}
-@media (max-width:820px){.gtitle{visibility:hidden}.gtitle b,.gtitle small{display:none}}
+@media (max-width:1180px){.gtitle{visibility:hidden}.gtitle b,.gtitle small{display:none}}
 @media (max-width:560px){.gswitch{display:none}}
 
 /* ---------- 8. IMAGE QUIZ ---------- */
@@ -269,6 +272,210 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
   padding:.7em 1.2em;border-radius:14px;font-weight:700;max-width:92%;opacity:0;pointer-events:none;transition:opacity .25s}
 #toast.on{opacity:1}
 
+/* ---------- 14. SHARED: TEAMS, QUESTION PARTS, GAME BUTTONS ---------- */
+.tm-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column}
+.tm-area{flex:1;min-height:0;position:relative}
+.tm-bar{display:flex;justify-content:center;gap:calc(var(--su)*.25);padding:calc(var(--su)*.12) calc(var(--su)*.25);flex:none}
+.tm-chip{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:calc(var(--su)*.14);background:var(--tc);color:#fff;border-radius:calc(var(--su)*.28);
+  padding:calc(var(--su)*.07) calc(var(--su)*.12);font-size:calc(var(--su)*.42);font-weight:800;border:calc(var(--su)*.06) solid transparent}
+.tm-bar.turns .tm-chip{opacity:.62}
+.tm-bar.turns .tm-chip.turn{opacity:1;border-color:#fff;box-shadow:0 0 0 calc(var(--su)*.07) var(--accent)}
+.tm-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tm-score{font-size:calc(var(--su)*.62);font-variant-numeric:tabular-nums;min-width:1.5em;text-align:center;line-height:1}
+.tm-score.bump{animation:pulse .35s}
+.tm-pm{width:calc(var(--su)*.76);height:calc(var(--su)*.76);border-radius:50%;border:0;background:rgba(255,255,255,.3);color:#fff;font-size:calc(var(--su)*.55);font-weight:900;line-height:1;flex:none;padding:0;touch-action:none}
+.tm-pm:active{background:rgba(255,255,255,.6)}
+.tm-bar.many .tm-chip{flex-wrap:wrap;justify-content:center;padding-top:0}
+.tm-bar.many .tm-name{flex:0 0 100%;order:-1;text-align:center;font-size:calc(var(--su)*.32);line-height:1.35}
+.tm-bar.many .tm-pm{width:calc(var(--su)*.62);height:calc(var(--su)*.62);font-size:calc(var(--su)*.45)}
+.tm-bar.many .tm-score{flex:1;font-size:calc(var(--su)*.52)}
+.tm-award{display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--su)*.2)}
+.tm-give,.g-btn{border:0;border-radius:calc(var(--su)*.25);font-weight:800;font-size:calc(var(--su)*.42);padding:.4em .85em;min-height:calc(var(--su)*.95);white-space:nowrap}
+.tm-give{background:var(--tc);color:#fff;box-shadow:0 calc(var(--su)*.08) 0 rgba(0,0,0,.3)}
+.tm-give.none{background:var(--panel2);color:var(--ink)}
+.g-btn{background:var(--panel);color:var(--ink);box-shadow:0 calc(var(--su)*.08) 0 var(--line)}
+.g-btn.pri{background:var(--accent);color:#1b1300;box-shadow:0 calc(var(--su)*.08) 0 rgba(0,0,0,.3)}
+.g-btn.sm{font-size:calc(var(--su)*.34);min-height:calc(var(--su)*.75)}
+.tm-give:active,.g-btn:active{transform:translateY(2px)}
+.g-btn[disabled]{opacity:.45;pointer-events:none}
+.q-pic{background:#fff;border-radius:calc(var(--su)*.3);box-shadow:0 0 0 calc(var(--su)*.07) var(--ink);flex:none}
+.q-word{font:700 calc(var(--su)*1.3)/1.15 var(--font-word);text-align:center;overflow-wrap:anywhere}
+.q-clue{font:700 calc(var(--su)*.7)/1.25 var(--font-word);text-align:center;max-width:94%}
+.pfill{position:relative;min-height:0;min-width:0}
+.pfill>img,.pfill>svg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain}
+.pabs{position:absolute;top:5%;left:5%;right:5%;bottom:5%}
+.centre{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:6}
+.team-names{display:flex;flex-wrap:wrap;gap:.4rem}
+.team-inp{width:9.5rem;border-color:var(--tc);border-width:3px;font-weight:700}
+.end-trophy{font-size:5rem;line-height:1.15;animation:popin .6s}
+.end-teams{display:flex;justify-content:center;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin:1.6rem 0 1rem}
+.end-team{position:relative;background:var(--tc);color:#fff;border-radius:18px;padding:.8rem 1.5rem;min-width:9rem;font-weight:800;font-size:1.25rem;opacity:.85}
+.end-team b{display:block;font-size:3rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.end-team.win{opacity:1;padding:1.2rem 2rem;box-shadow:0 0 0 5px #ffb703}
+.end-crown{position:absolute;top:-2rem;left:50%;margin-left:-1.2rem;font-size:2.4rem;line-height:1}
+.end-more{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.9rem 0}
+#confetti{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;pointer-events:none;z-index:3}
+#confetti i{position:absolute;top:-6%;width:.7rem;height:1.1rem;border-radius:3px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(700deg)}}
+@keyframes shrink{to{transform:scaleX(0)}}
+
+/* ---------- 15. SPIN THE WHEEL ---------- */
+.wh-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex}
+.wh-left{flex:1;min-width:0;position:relative}
+.wh-holder{position:absolute;top:50%;left:50%;touch-action:none}
+.wh-holder canvas{display:block;border-radius:50%;box-shadow:0 0 0 calc(var(--su)*.1) var(--ink),0 calc(var(--su)*.2) calc(var(--su)*.4) rgba(0,0,0,.3);will-change:transform}
+.wh-hub{position:absolute;top:39%;left:39%;width:22%;height:22%;border-radius:50%;background:var(--ink);color:var(--bg);border:calc(var(--su)*.08) solid #fff;
+  font-weight:900;font-size:calc(var(--su)*.4);display:flex;align-items:center;justify-content:center;pointer-events:none}
+.wh-ptr{position:absolute;top:50%;right:calc(var(--su)*-.55);width:0;height:0;margin-top:calc(var(--su)*-.3);border-top:calc(var(--su)*.3) solid transparent;border-bottom:calc(var(--su)*.3) solid transparent;
+  border-right:calc(var(--su)*.8) solid var(--bad);transform-origin:100% 50%}
+.wh-side{flex:0 0 27%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--su)*.3);padding:calc(var(--su)*.2)}
+.wh-spin{width:calc(var(--su)*2.8);height:calc(var(--su)*2.8);border-radius:50%;border:calc(var(--su)*.1) solid rgba(255,255,255,.55);background:var(--accent);color:#1b1300;
+  font-size:calc(var(--su)*.72);font-weight:900;box-shadow:0 calc(var(--su)*.18) 0 rgba(0,0,0,.35);touch-action:none}
+.wh-spin:active{transform:translateY(calc(var(--su)*.1))}
+.wh-spin[disabled]{opacity:.5}
+.wh-info{font-size:calc(var(--su)*.45);font-weight:800;text-align:center}
+.wh-pop{position:absolute;top:0;left:0;right:0;bottom:0;z-index:20;background:rgba(10,14,40,.55);display:flex;align-items:center;justify-content:center;padding:calc(var(--su)*.25)}
+.wh-card{background:var(--panel);color:var(--ink);border-radius:calc(var(--su)*.4);padding:calc(var(--su)*.3);width:92%;max-width:calc(var(--su)*11.5);height:100%;
+  display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.18);animation:popin .3s}
+.wh-pic{flex:1;width:100%;background:#fff;border-radius:calc(var(--su)*.3)}
+.wh-word{font:700 calc(var(--su)*1.2)/1.15 var(--font-word);text-align:center;overflow-wrap:anywhere;flex:none}
+.wh-word.solo{flex:1;display:flex;align-items:center;font-size:calc(var(--su)*1.9)}
+.wh-clue{font-size:calc(var(--su)*.42);font-weight:700;color:var(--muted);text-align:center;flex:none}
+.wh-btns{display:flex;gap:calc(var(--su)*.25);flex:none;flex-wrap:wrap;justify-content:center}
+
+/* ---------- 16. GAME SHOW QUIZ ---------- */
+.stage.g-gameshow{background:radial-gradient(ellipse at 50% -10%,rgba(255,255,255,.3),rgba(255,255,255,0) 60%),linear-gradient(var(--cover),var(--cover-edge));color:#fff}
+.gs-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:calc(var(--su)*.2);padding:calc(var(--su)*.25)}
+.gs-top{display:flex;align-items:center;gap:calc(var(--su)*.2);flex:none}
+.gs-timer{flex:1;height:calc(var(--su)*.46);background:rgba(0,0,0,.4);border-radius:999px;overflow:hidden;position:relative}
+.gs-timer i{position:absolute;left:0;top:0;bottom:0;width:100%;background:#ffd23f;border-radius:999px}
+.gs-wrap.low .gs-timer i{background:#ff5d73}
+.gs-secs{font-size:calc(var(--su)*.72);font-weight:900;min-width:1.8em;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
+.gs-life{border:calc(var(--su)*.05) solid #fff;border-radius:999px;background:rgba(0,0,0,.32);color:#fff;font-weight:900;font-size:calc(var(--su)*.38);padding:.3em .75em;min-height:calc(var(--su)*.8);white-space:nowrap}
+.gs-life.used{opacity:.3;pointer-events:none;text-decoration:line-through}
+.gs-streak{font-size:calc(var(--su)*.42);font-weight:900;white-space:nowrap}
+.gs-mid{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center}
+.gs-wrap.pics .gs-mid{flex:none;min-height:calc(var(--su)*1.7)}
+.gs-opts{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--su)*.22);flex:none}
+.gs-wrap.pics .gs-opts{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr;flex:1;min-height:0}
+.gs-opts.n3{grid-template-columns:repeat(3,1fr)}
+.gs-wrap.pics .gs-opts.n3{grid-template-columns:repeat(3,1fr)}
+.gs-opts.n2{grid-template-columns:repeat(2,1fr)}
+.gs-opt{position:relative;display:flex;align-items:center;gap:.5em;border:0;border-radius:calc(var(--su)*.3);padding:.2em .6em;background:var(--tile);color:var(--tile-ink);
+  font:700 calc(var(--su)*.62)/1.15 var(--font-word);min-height:calc(var(--su)*1.25);min-width:0;box-shadow:0 calc(var(--su)*.1) 0 var(--tile-edge);text-align:left;overflow-wrap:anywhere}
+.gs-opt>b{flex:none;width:1.5em;height:1.5em;border-radius:50%;background:var(--tile-ink);color:var(--tile);display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.8em}
+.gs-opt.pic{min-height:0}
+.gs-opt.pic>b{position:absolute;top:4%;left:4%;z-index:1}
+.gs-opt.pic .pic{position:absolute;top:6%;left:6%;right:6%;bottom:6%;background:#fff;border-radius:calc(var(--su)*.2)}
+.gs-opts.long .gs-opt{font-size:calc(var(--su)*.44)}
+.gs-opt.lock{background:#ff9f1c;color:#1b1300;animation:pulse .45s infinite}
+.gs-opt.good{background:var(--good);color:var(--on-good);box-shadow:0 0 0 calc(var(--su)*.08) #fff}
+.gs-opt.bad{background:var(--bad);color:var(--on-bad);box-shadow:none;animation:shake .4s}
+.gs-opt.dim{opacity:.4;box-shadow:none}
+.gs-opt.out{visibility:hidden}
+.gs-x2{position:absolute;top:0;right:0;background:#ffd23f;color:#1b1300;font-weight:900;font-size:calc(var(--su)*.55);padding:.1em .5em;border-radius:999px;animation:pulse .8s infinite}
+.gs-banner{text-align:center;font-weight:900;font-size:calc(var(--su)*1.5);line-height:1.1;padding:.15em .5em;border-radius:calc(var(--su)*.4);background:var(--good);color:var(--on-good);
+  box-shadow:0 0 0 calc(var(--su)*.08) #fff;animation:popin .35s;white-space:nowrap}
+.gs-banner small{display:block;font-size:.34em;line-height:1.3}
+.gs-banner.bad{background:var(--bad);color:var(--on-bad)}
+
+/* ---------- 17. OPEN THE BOX ---------- */
+.ob-grid{position:absolute;top:0;left:0;right:0;bottom:0;display:grid;justify-content:center;align-content:center}
+.ob-box{width:var(--bs);height:var(--bs);padding:0;border:0;background:transparent;position:relative;touch-action:none}
+.ob-box i{position:absolute;top:7%;left:7%;right:7%;bottom:7%;border-radius:14%;background:var(--bc);box-shadow:inset 0 calc(var(--bs)*-.06) 0 rgba(0,0,0,.18),0 calc(var(--bs)*.03) 0 rgba(0,0,0,.28);
+  display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:calc(var(--bs)*.4);color:#1b2a4e;overflow:hidden}
+.ob-box i::before{content:"";position:absolute;left:0;right:0;top:0;height:24%;background:rgba(255,255,255,.42);border-bottom:calc(var(--bs)*.02) solid rgba(0,0,0,.16)}
+.ob-box i::after{content:"";position:absolute;top:0;bottom:0;left:44%;width:12%;background:rgba(255,255,255,.42)}
+.ob-box i span{position:relative;z-index:1;background:#fff;border-radius:50%;width:1.7em;height:1.7em;display:flex;align-items:center;justify-content:center}
+.ob-box:active i{transform:scale(.94)}
+.ob-box.open{pointer-events:none}
+.ob-box.open i{background:var(--panel2);color:var(--muted);box-shadow:inset 0 0 0 calc(var(--bs)*.02) var(--line);font:700 calc(var(--bs)*.13)/1.15 var(--font-word);padding:4%;text-align:center;overflow-wrap:anywhere}
+.ob-box.open i::before,.ob-box.open i::after{display:none}
+.ob-box.open i span{background:none;width:auto;height:auto;border-radius:0}
+.ob-over,.jp-q{position:absolute;top:0;left:0;right:0;bottom:0;z-index:10}
+.ob-over{background:rgba(10,14,40,.55);display:flex;align-items:center;justify-content:center;padding:calc(var(--su)*.2)}
+.ob-card{background:var(--panel);color:var(--ink);border-radius:calc(var(--su)*.4);padding:calc(var(--su)*.25);width:96%;max-width:calc(var(--su)*12.5);height:100%;display:flex;flex-direction:column;gap:calc(var(--su)*.15);animation:popin .3s}
+.ob-head{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:calc(var(--su)*.45);flex:none}
+.ob-body{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--su)*.1)}
+.ob-pic{flex:1;width:100%;background:#fff;border-radius:calc(var(--su)*.3)}
+.ob-word{font:700 calc(var(--su)*1.7)/1.15 var(--font-word);text-align:center;overflow-wrap:anywhere}
+.ob-word.small{font-size:calc(var(--su)*1);flex:none}
+.ob-clue{font:700 calc(var(--su)*.8)/1.25 var(--font-word);text-align:center}
+.ob-foot{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:calc(var(--su)*.2);flex:none}
+
+/* ---------- 18. TUG OF WAR ---------- */
+.tg-field{position:relative;height:calc(var(--su)*1.15);flex:none;overflow:hidden}
+.tg-line{position:absolute;top:6%;bottom:6%;width:calc(var(--su)*.12);margin-left:calc(var(--su)*-.06);border-radius:999px;background:var(--tc)}
+.tg-centre{position:absolute;top:0;bottom:0;left:50%;border-left:calc(var(--su)*.05) dashed var(--muted)}
+.tg-rope{position:absolute;top:50%;left:8%;width:84%;height:calc(var(--su)*.16);margin-top:calc(var(--su)*-.08);border-radius:999px;
+  background:repeating-linear-gradient(60deg,#d2ab6f 0,#d2ab6f 6px,#8f6e3d 6px,#8f6e3d 12px);transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
+.tg-flag{position:absolute;left:50%;top:50%;width:calc(var(--su)*.5);height:calc(var(--su)*.5);margin:calc(var(--su)*-.25) 0 0 calc(var(--su)*-.25);background:#fff;border:calc(var(--su)*.1) solid var(--bad);border-radius:50%;box-sizing:border-box}
+.tg-men{position:absolute;top:50%;display:flex;gap:calc(var(--su)*.05);margin-top:calc(var(--su)*-.32)}
+.tg-men.a{left:0}.tg-men.b{right:0}
+.tg-men i{width:calc(var(--su)*.64);height:calc(var(--su)*.64);border-radius:50%;background:var(--tc);border:calc(var(--su)*.05) solid #fff;box-sizing:border-box;font-style:normal;display:flex;align-items:center;justify-content:center;font-size:calc(var(--su)*.34)}
+.tg-main{flex:1;min-height:0;display:flex;gap:calc(var(--su)*.2);padding:0 calc(var(--su)*.2) calc(var(--su)*.2)}
+.tg-side{flex:0 0 29%;min-width:0;position:relative;display:flex;flex-direction:column;gap:calc(var(--su)*.16);background:var(--tc);border-radius:calc(var(--su)*.35);padding:calc(var(--su)*.16)}
+.tg-opt{flex:1 1 0;min-height:0;position:relative;border:0;border-radius:calc(var(--su)*.25);background:#fff;color:#1b2a4e;font:700 calc(var(--su)*.58)/1.1 var(--font-word);padding:.1em .3em;
+  overflow-wrap:anywhere;touch-action:none;box-shadow:0 calc(var(--su)*.08) 0 rgba(0,0,0,.28)}
+.tg-opt.long{font-size:calc(var(--su)*.4)}
+.tg-opt.good{background:var(--good);color:var(--on-good);box-shadow:0 0 0 calc(var(--su)*.06) #fff}
+.tg-opt.dead{background:#b9bcc6;color:#70747f;box-shadow:none}
+.tg-opt.dim{opacity:.5}
+.tg-lock{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:inherit;background:rgba(20,20,30,.74);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:calc(var(--su)*1.4);font-weight:900;z-index:3;line-height:1}
+.tg-lock i{display:block;width:60%;height:calc(var(--su)*.14);background:#fff;border-radius:999px;margin-top:calc(var(--su)*.25);transform-origin:0 50%;animation:shrink 2s linear forwards}
+.tg-q{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.12)}
+.tg-qbox{flex:1;min-height:0;width:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.tg-qbox .q-word{font-size:calc(var(--su)*1)}
+.tg-qbox .q-clue{font-size:calc(var(--su)*.55)}
+
+/* ---------- 19. JEOPARDY BOARD ---------- */
+.jp-board{position:absolute;top:0;left:0;right:0;bottom:0;display:grid;gap:calc(var(--su)*.14);padding:calc(var(--su)*.08) calc(var(--su)*.2) calc(var(--su)*.2);grid-template-rows:auto repeat(5,1fr)}
+.jp-cat{background:var(--ink);color:var(--bg);border-radius:calc(var(--su)*.18);font-weight:800;font-size:calc(var(--su)*.36);text-align:center;padding:.3em .2em;display:flex;align-items:center;justify-content:center;
+  min-width:0;overflow:hidden;overflow-wrap:anywhere;line-height:1.1;max-height:calc(var(--su)*1.1)}
+.jp-tile{border:0;border-radius:calc(var(--su)*.2);background:var(--cover);color:#ffd23f;font-weight:900;font-size:calc(var(--su)*.8);box-shadow:inset 0 calc(var(--su)*-.07) 0 var(--cover-edge);min-height:0;min-width:0;padding:0;touch-action:none}
+.jp-tile:active{transform:scale(.96)}
+.jp-tile.used{background:var(--panel2);color:transparent;box-shadow:inset 0 0 0 2px var(--line);pointer-events:none}
+.jp-q{background:var(--cover);color:#fff;display:flex;flex-direction:column;gap:calc(var(--su)*.14);padding:calc(var(--su)*.2);animation:popin .25s}
+.jp-head{display:flex;align-items:center;gap:.8em;font-weight:900;font-size:calc(var(--su)*.45);flex:none}
+.jp-head span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jp-head b{color:#ffd23f;font-size:1.35em}
+.jp-task{font-weight:800;font-size:calc(var(--su)*.5);text-align:center;flex:none}
+.jp-body{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;gap:calc(var(--su)*.3)}
+.jp-body.col{flex-direction:column}
+.jp-pic{flex:1 1 0;align-self:stretch;background:#fff;border-radius:calc(var(--su)*.3)}
+.jp-opts{flex:0 0 42%;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--su)*.18)}
+.jp-opt{border:0;border-radius:calc(var(--su)*.25);padding:.3em .5em;background:var(--tile);color:var(--tile-ink);font:700 calc(var(--su)*.62)/1.15 var(--font-word);box-shadow:0 calc(var(--su)*.1) 0 var(--tile-edge);overflow-wrap:anywhere;flex:1 1 0;min-height:0;max-height:calc(var(--su)*1.5)}
+.jp-opt.good{background:var(--good);color:var(--on-good);box-shadow:0 0 0 calc(var(--su)*.07) #fff}
+.jp-opt.bad{background:var(--bad);color:var(--on-bad);box-shadow:none;opacity:.6}
+.jp-opt.dim{opacity:.4;box-shadow:none}
+.jp-letters{display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--su)*.12)}
+.jp-letters span{width:calc(var(--su)*1.1);height:calc(var(--su)*1.25);background:var(--tile);color:var(--tile-ink);border-radius:calc(var(--su)*.18);font:700 calc(var(--su)*.8)/1 var(--font-word);display:flex;align-items:center;justify-content:center}
+.jp-letters span.sp{background:transparent;width:calc(var(--su)*.45)}
+.jp-letters span.fx{background:transparent;color:#fff;width:calc(var(--su)*.5)}
+.jp-answer{font:700 calc(var(--su)*1.15)/1.1 var(--font-word);text-align:center;color:#ffd23f;flex:none;overflow-wrap:anywhere;min-height:1.1em}
+.jp-foot{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:calc(var(--su)*.18);flex:none}
+
+/* ---------- 20. WATCH AND MEMORISE ---------- */
+.mm-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.18);padding:calc(var(--su)*.25)}
+.mm-msg{font-weight:900;font-size:calc(var(--su)*.6);text-align:center;flex:none;line-height:1.15}
+.mm-body{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.18)}
+.mm-show{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--su)*.15)}
+.mm-count{font-size:calc(var(--su)*3.4);font-weight:900;animation:popin .4s}
+.mm-pic{flex:1;width:100%;max-width:calc(var(--su)*9);background:#fff;border-radius:calc(var(--su)*.3);box-shadow:0 0 0 calc(var(--su)*.07) var(--ink);animation:popin .25s}
+.mm-word{font:700 calc(var(--su)*1.1)/1.15 var(--font-word);text-align:center;flex:none;overflow-wrap:anywhere}
+.mm-word.solo{font-size:calc(var(--su)*2);animation:popin .25s}
+.mm-grid{flex:1;min-height:0;width:100%;display:grid;gap:calc(var(--su)*.18)}
+.mm-card{position:relative;border:0;border-radius:calc(var(--su)*.25);background:#fff;color:#1b2a4e;box-shadow:0 calc(var(--su)*.08) 0 rgba(0,0,0,.25);min-height:0;min-width:0;padding:0;
+  font:700 calc(var(--su)*.6)/1.1 var(--font-word);overflow:hidden;overflow-wrap:anywhere;touch-action:none}
+.mm-card .pic{position:absolute;top:4%;left:4%;right:4%;bottom:24%}
+.mm-card .mm-lab{position:absolute;left:2%;right:2%;bottom:3%;height:19%;display:flex;align-items:center;justify-content:center;font-size:calc(var(--su)*.4);white-space:nowrap;overflow:hidden}
+.mm-card.sel{box-shadow:0 0 0 calc(var(--su)*.12) var(--primary);transform:scale(.95)}
+.mm-card.good{box-shadow:0 0 0 calc(var(--su)*.12) var(--good);background:#d9f7e2}
+.mm-card.bad{box-shadow:0 0 0 calc(var(--su)*.12) var(--bad);background:#ffd9df;animation:shake .4s}
+.mm-card.miss{box-shadow:0 0 0 calc(var(--su)*.1) #ffb703;background:#fff3c9}
+.mm-card.fade{opacity:.4}
+
 /* ---------- 13. PRINT (A4 worksheets) ---------- */
 #print-root{display:none}
 @page{size:A4;margin:12mm}
@@ -306,6 +513,22 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
   .pr-mrow .pic{width:32mm;height:32mm;flex:none}
   .pr-mrow .pr-clue{width:45mm}
   .pr-key{font:700 13pt/1.7 var(--font-word);columns:2;margin-top:5mm}
+}
+@media print{
+  .pr-cut{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:31%;height:60mm;margin:0 1% 4mm;border:.4mm dashed #000;border-radius:3mm;padding:2mm;
+    vertical-align:top;break-inside:avoid;page-break-inside:avoid;text-align:center;position:relative;box-sizing:border-box}
+  .pr-cut .pic{width:38mm;height:38mm}
+  .pr-big{font:700 20pt/1.2 var(--font-word);overflow-wrap:anywhere}
+  .pr-mid{font:700 13pt/1.25 var(--font-word)}
+  .pr-n{position:absolute;top:1.5mm;left:2.5mm;font-weight:800;font-size:11pt}
+  .pr-jp{width:100%;border-collapse:collapse;table-layout:fixed}
+  .pr-jp th,.pr-jp td{border:.4mm solid #000;padding:1.5mm;text-align:center;vertical-align:middle;font-size:9pt}
+  .pr-jp th{font-size:11pt;height:10mm}
+  .pr-jp td{height:44mm}
+  .pr-jp .pic{width:22mm;height:22mm;margin:0 auto}
+  .pr-jp b{display:block;font-size:13pt}
+  .pr-jp .pr-sm{font:700 10pt/1.2 var(--font-word);overflow-wrap:anywhere}
+  .pr-jp .pr-task{font-size:8pt}
 }
 </style>
 </head>
@@ -377,6 +600,7 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
   <!-- END: results -->
   <section id="scr-end" class="screen">
     <div class="scroll"><div id="end-box" class="panel end-box"></div></div>
+    <div id="confetti"></div>
   </section>
 </div>
 
@@ -401,25 +625,34 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 
    HOW TO ADD A NEW GAME (for future sessions)
    -------------------------------------------
-   Call Games.register({...}) with:
+   Source files (build.sh joins them): a.html = HTML + CSS, b.js = core + the
+   first three games, c.js = shared team + question helpers, g1/g2/g3.js = the
+   newer games, z.js = boot. Add a game by calling Games.register({...}) with:
      id, name, icon, blurb      text shown on the hub
      minItems                   smallest set size the game needs
      usable(item)               optional filter: can this item be used?
      options:[{key,label,choices:[[value,label],...],def}]   per-game settings
+     allItems:true              ignore the "Questions" limit (wheel, tug of war...)
+     noTimer:true               ignore the whole-game timer (game has its own)
+     noScore:true               no star score in the top bar; plain end screen
+     listAnswered:true          end screen lists only the items that were asked
+     hubExtra(set, rerender)    optional extra control(s) on the hub card
      init(ctx)                  build the DOM inside ctx.stage
      start()                    begin play
      destroy()                  drop references (timers/loops made with
                                 ctx.later / ctx.loop are cancelled for you)
-     print(p)                   return {sheet:Node, key:Node, instruction:String}
+     print(p)                   optional: return {sheet:Node, key:Node, instruction:String}
    ctx gives every game the same helpers:
      ctx.set, ctx.items (prepared: filtered, shuffled, limited), ctx.pool (all
      valid items, for distractors), ctx.g (this game's options), ctx.stage,
      ctx.word(item) (text with the letter-case option applied),
      ctx.size() -> {W,H,su}, ctx.onResize(fn), ctx.later(fn,ms), ctx.loop(fn(dt)),
      ctx.addScore(n), ctx.progress(i,n), ctx.record(item,correct,note),
-     ctx.sfx(name), ctx.say(item), ctx.canSpeak, ctx.advance(fn), ctx.finish()
-   Planned games: Spelling/Type the answer, Match up, Whack-a-mole, Tug of War
-   (two teams), Jeopardy-style board, Spin-the-wheel picker, Tickets.
+     ctx.sfx(name), ctx.say(item), ctx.canSpeak, ctx.advance(fn), ctx.finish(),
+     ctx.teams(n,opt) -> shared team scoreboard T (see c.js); a game that calls it
+     ends on the team winner screen instead of the per-word results list.
+   Shared question helpers (c.js): makeQuestion, pickItems, questionPrompt, fitBox.
+   Still planned: Spelling/Type the answer, Match up, Whack-a-mole, Tickets.
    ===================================================================== */
 
 /* ===================== 1. UTILITIES ===================== */
@@ -479,7 +712,8 @@ const hasVisual = it => hasPic(it) || !!clueText(it);
 /* ===================== 2. OPTIONS ===================== */
 const O = Object.assign({
   theme: 'classroom', timer: 'none', seconds: 60, shuffle: true, count: 'all',
-  letterCase: 'typed', sound: true, speak: 'en-GB', advance: 'auto', game: {}
+  letterCase: 'typed', sound: true, speak: 'en-GB', advance: 'auto', game: {},
+  teamCount: 2, teamNames: ['Team A', 'Team B', 'Team C', 'Team D']
 }, LS.get('wg.opts', {}));
 const saveOpts = () => LS.set('wg.opts', O);
 const caseWord = w => O.letterCase === 'lower' ? w.toLowerCase() : O.letterCase === 'upper' ? w.toUpperCase() : w;
@@ -531,6 +765,11 @@ const Sfx = {
         case 'bounce': T(230, 0, .18, 'sine', .2, 360); break;
         case 'win': [523, 659, 784, 1047].forEach((f, i) => T(f, i * .13, .22, 'triangle', .22)); T(1047, .55, .5, 'triangle', .2); break;
         case 'done': T(523, 0, .15, 'triangle', .2); T(659, .14, .3, 'triangle', .2); break;
+        case 'wtick': T(760, 0, .03, 'triangle', .14); break;
+        case 'lock': T(440, 0, .09, 'triangle', .15); T(554, .12, .09, 'triangle', .15); T(659, .24, .09, 'triangle', .15); T(880, .36, .16, 'triangle', .15); break;
+        case 'open': T(392, 0, .1, 'triangle', .18); T(523, .09, .1, 'triangle', .18); T(784, .18, .24, 'triangle', .18); break;
+        case 'life': T(880, 0, .08, 'sine', .16); T(1175, .07, .14, 'sine', .16); break;
+        case 'pull': T(150, 0, .2, 'sawtooth', .1, 260); break;
       }
     } catch (e) { /* ignore audio errors */ }
   }
@@ -853,7 +1092,8 @@ const Hub = {
         h('button', { class: 'gcard-play', disabled: !!why, onclick: () => Runner.start(g.id, set) },
           h('span', { class: 'gcard-i' }, g.icon), h('span', { class: 'gcard-n' }, g.name), h('span', { class: 'gcard-b' }, why || g.blurb)),
         (g.options || []).map(d => seg(d.label, d.choices, go[d.key], v => { (O.game[g.id] = O.game[g.id] || {})[d.key] = v; saveOpts(); })),
-        h('button', { class: 'btn sm', disabled: !!why, onclick: () => Print.open(g, set) }, '🖨 Print worksheet')));
+        g.hubExtra && g.hubExtra(set, () => this.render()),
+        g.print && h('button', { class: 'btn sm', disabled: !!why, onclick: () => Print.open(g, set) }, '🖨 ' + (g.printLabel || 'Print worksheet'))));
     });
     const set1 = (k, rerender) => v => { O[k] = v; saveOpts(); if (rerender) this.render(); };
     const o = $('#hub-opts'); o.innerHTML = '';
@@ -865,7 +1105,13 @@ const Hub = {
       seg('Letters', [['typed', 'As typed'], ['lower', 'lowercase'], ['upper', 'UPPERCASE']], O.letterCase, set1('letterCase')),
       seg('Next question', [['auto', 'Automatic'], ['tap', 'Tap “Next”']], O.advance, set1('advance')),
       seg('Sound effects', [[true, 'On'], [false, 'Off']], O.sound, v => { O.sound = v === true || v === 'true'; saveOpts(); }),
-      Speech.ok && seg('Speak the word', [['off', 'Off'], ['en-GB', 'British voice'], ['en-US', 'American voice']], O.speak, set1('speak'))].filter(Boolean));
+      Speech.ok && seg('Speak the word', [['off', 'Off'], ['en-GB', 'British voice'], ['en-US', 'American voice']], O.speak, set1('speak')),
+      h('h2', { style: 'margin-top:1rem' }, 'Teams (for team games)'),
+      seg('Number of teams', [[2, '2'], [3, '3'], [4, '4']], O.teamCount, set1('teamCount', true)),
+      h('div', { class: 'opt' }, h('span', { class: 'opt-l' }, 'Team names'),
+        h('div', { class: 'team-names' }, TEAM_COLS.slice(0, clamp(+O.teamCount || 2, 2, 4)).map((col, i) =>
+          h('input', { class: 'inp team-inp', type: 'text', value: O.teamNames[i] || '', placeholder: TEAM_DEFAULT[i], maxlength: '16', autocomplete: 'off', style: '--tc:' + col,
+            oninput: e => { O.teamNames[i] = e.target.value; saveOpts(); } }))))].filter(Boolean));
   }
 };
 
@@ -889,9 +1135,9 @@ const Runner = (() => {
     stop();
     let items = usable.slice();
     if (O.shuffle) shuffle(items);
-    if (O.count !== 'all') items = items.slice(0, +O.count);
+    if (O.count !== 'all' && !game.allItems) items = items.slice(0, +O.count);
     show('game');
-    const run = { game, set, items, results: new Map(), score: 0, alive: true, timeouts: new Set(), raf: 0, resize: [], dim: null, t0: performance.now(), lastTick: null };
+    const run = { game, set, items, results: new Map(), score: 0, teams: null, timed: O.timer !== 'none' && !game.noTimer, alive: true, timeouts: new Set(), raf: 0, resize: [], dim: null, t0: performance.now(), lastTick: null };
     cur = run;
     stage.className = 'stage g-' + game.id; stage.innerHTML = ''; stage.removeAttribute('style');
     run.dim = measure();
@@ -916,18 +1162,20 @@ const Runner = (() => {
         if (O.advance === 'auto') return ctx.later(fn, ms || 1900);
         const b = h('button', { class: 'next-btn', onclick: () => { b.remove(); if (run.alive) fn(); } }, 'Next ▶'); stage.append(b);
       },
+      /** Shared team scoreboard (see makeTeams in c.js). Calling this makes it a team game. */
+      teams(n, opt) { run.teams = makeTeams(n, opt); $('#g-score').hidden = true; return run.teams; },
       finish: () => finish('done')
     };
     // top bar
     $('#g-name').textContent = game.icon + ' ' + game.name; $('#g-set').textContent = set.title;
-    $('#g-score').textContent = '★ 0'; $('#g-progress').textContent = '';
-    const tm = $('#g-timer'); tm.hidden = O.timer === 'none'; tm.classList.remove('low'); tm.textContent = '⏱ ' + fmtTime(O.timer === 'down' ? O.seconds : 0);
+    $('#g-score').textContent = '★ 0'; $('#g-score').hidden = !!game.noScore; $('#g-progress').textContent = '';
+    const tm = $('#g-timer'); tm.hidden = !run.timed; tm.classList.remove('low'); tm.textContent = '⏱ ' + fmtTime(O.timer === 'down' ? O.seconds : 0);
     $('#g-sound').textContent = O.sound ? '🔊' : '🔇';
     const sw = $('#g-switch'); sw.innerHTML = '';
     Games.list.forEach(g => sw.append(h('button', { class: 'gbtn' + (g === game ? ' on' : ''), title: g.name, 'aria-label': g.name, onclick: () => { if (g !== game) start(g.id, set); } }, g.icon)));
     game.init(ctx); game.start();
     run.iv = setInterval(() => {
-      if (O.timer === 'none') return;
+      if (!run.timed) return;
       const el = (performance.now() - run.t0) / 1000;
       if (O.timer === 'up') { tm.textContent = '⏱ ' + fmtTime(Math.floor(el)); return; }
       const rem = O.seconds - el, s = Math.ceil(rem);
@@ -947,37 +1195,75 @@ const Runner = (() => {
   function finish(reason) {
     const run = cur; if (!run) return;
     const elapsed = (performance.now() - run.t0) / 1000;
-    stop(); End.show(run, reason, O.timer === 'down' && reason === 'time' ? O.seconds : elapsed);
+    stop();
+    const t = O.timer === 'down' && reason === 'time' ? O.seconds : elapsed;
+    if (run.teams) End.showTeams(run, reason, t); else if (run.game.noScore) End.showPlain(run, reason, t); else End.show(run, reason, t);
   }
   window.addEventListener('resize', () => { if (!cur) return; cur.dim = measure(); cur.resize.forEach(fn => { try { fn(); } catch (e) { /* ignore */ } }); });
   return { start, stop, get set() { return cur && cur.set; } };
 })();
 
-/* ===================== 10. END SCREEN ===================== */
+/* ===================== 10. END SCREENS ===================== */
+/* Three endings: show() = score + per-word results; showTeams() = team winner
+   screen; showPlain() = simple "all done" for games without scoring. */
 const End = {
+  open() { show('end'); const box = $('#end-box'); box.innerHTML = ''; box.parentNode.scrollTop = 0; $('#confetti').innerHTML = ''; return box; },
+  buttons(run) {
+    return [h('div', { class: 'end-btns' },
+      h('button', { class: 'btn big primary', onclick: () => Runner.start(run.game.id, run.set) }, '▶ Play again'),
+      h('button', { class: 'btn big', onclick: () => Hub.show(run.set) }, 'All games and options')),
+    h('div', { class: 'end-more' }, Games.list.filter(g => g !== run.game).map(g =>
+      h('button', { class: 'btn', onclick: () => Runner.start(g.id, run.set) }, g.icon + ' ' + g.name)))];
+  },
+  back() { return h('div', { class: 'end-btns' }, h('button', { class: 'btn', onclick: () => Library.show() }, '← Word sets')); },
+  confetti(cols) {
+    const layer = $('#confetti');
+    for (let i = 0; i < 44; i++) layer.append(h('i', { style: 'left:' + (Math.random() * 100) + '%;background:' + cols[i % cols.length] +
+      ';animation-delay:' + (Math.random() * 1.5) + 's;animation-duration:' + (2.4 + Math.random() * 2) + 's' }));
+  },
   show(run, reason, elapsed) {
-    show('end');
-    const box = $('#end-box'); box.innerHTML = ''; box.parentNode.scrollTop = 0;
-    const total = run.items.length, right = run.items.filter(i => (run.results.get(i.id) || {}).correct).length;
+    const box = this.open();
+    const list = run.game.listAnswered ? run.items.filter(i => run.results.has(i.id)) : run.items;
+    const total = list.length, right = list.filter(i => (run.results.get(i.id) || {}).correct).length;
     const frac = total ? right / total : 0, stars = frac >= 0.9 ? 3 : frac >= 0.6 ? 2 : right > 0 ? 1 : 0;
     const stat = (l, v) => h('div', { class: 'end-num' }, l, h('b', null, v));
     const word = it => caseWord(norm(it.word));
-    box.append(
+    add(box, 
       h('h2', { class: 'end-h' }, reason === 'time' ? 'Time’s up!' : stars === 3 ? 'Brilliant!' : stars === 2 ? 'Well done!' : 'Good try!'),
       h('div', { class: 'end-stars' }, [0, 1, 2].map(i => h('span', { class: i < stars ? 'on' : '' }, '★'))),
       h('div', { class: 'end-nums' }, stat('Score', run.score), stat('Correct', right + ' / ' + total), stat('Time', fmtTime(elapsed))),
-      h('div', { class: 'end-btns' },
-        h('button', { class: 'btn big primary', onclick: () => Runner.start(run.game.id, run.set) }, '▶ Play again'),
-        Games.list.filter(g => g !== run.game).map(g => h('button', { class: 'btn big', onclick: () => Runner.start(g.id, run.set) }, g.icon + ' ' + g.name)),
-        h('button', { class: 'btn', onclick: () => Hub.show(run.set) }, 'Try another game')),
-      h('div', { class: 'end-list' }, run.items.map(it => {
+      this.buttons(run),
+      h('div', { class: 'end-list' }, list.map(it => {
         const r = run.results.get(it.id);
         return h('div', { class: 'end-item ' + (r ? (r.correct ? 'y' : 'n') : '') },
           h('span', { class: 'end-mark' }, r ? (r.correct ? '✓' : '✗') : '–'), hasPic(it) && pic(it),
           h('span', { class: 'end-w' }, word(it), h('small', null, r ? (r.note || '') : 'not answered')));
       })),
-      h('div', { class: 'end-btns' }, h('button', { class: 'btn', onclick: () => Library.show() }, '← Word sets')));
+      this.back());
     Sfx.play(stars >= 2 ? 'win' : 'done');
+  },
+  /** Team games: who won, every team's score, celebration. */
+  showTeams(run, reason, elapsed) {
+    const box = this.open(), T = run.teams, max = Math.max(...T.scores);
+    const win = T.winner != null ? [T.winner] : T.scores.map((s, i) => s === max ? i : -1).filter(i => i >= 0);
+    const draw = win.length !== 1;
+    add(box, 
+      h('h2', { class: 'end-h' }, draw ? 'It’s a draw!' : 'Winner: ' + T.names[win[0]] + '!'),
+      h('div', { class: 'end-trophy' }, draw ? '🤝' : '🏆'),
+      h('div', { class: 'end-teams' }, T.names.map((nm, i) => h('div', { class: 'end-team' + (!draw && win[0] === i ? ' win' : ''), style: '--tc:' + T.cols[i] },
+        !draw && win[0] === i && h('span', { class: 'end-crown' }, '👑'), h('span', null, nm), h('b', null, T.scores[i])))),
+      h('p', { class: 'hint' }, (reason === 'time' ? 'Time’s up!  ' : '') + 'Time: ' + fmtTime(elapsed)),
+      this.buttons(run), this.back());
+    this.confetti(draw ? T.cols : [T.cols[win[0]], '#ffd23f', '#ffffff']);
+    Sfx.play('win');
+  },
+  /** Games with no scoring (Spin the wheel, Open the box without teams). */
+  showPlain(run, reason, elapsed) {
+    const box = this.open();
+    add(box, h('h2', { class: 'end-h' }, reason === 'time' ? 'Time’s up!' : 'All done!'), h('div', { class: 'end-trophy' }, '🎉'),
+      h('p', { class: 'hint' }, 'Time: ' + fmtTime(elapsed)), this.buttons(run), this.back());
+    this.confetti(['#ffd23f', '#ff8fab', '#7ae582', '#70d6ff']);
+    Sfx.play('win');
   }
 };
 
@@ -1361,6 +1647,742 @@ Games.register((() => {
   };
 })());
 
+/* ===================== 12d. SHARED HELPERS FOR TEAM AND QUIZ GAMES =====================
+   Used by: Game show quiz, Open the box, Tug of war, Jeopardy board, Watch and memorise.
+   - makeTeams()      one team system for every team game (names, colours, scoreboard,
+                      +/- buttons, award buttons). Games get it through ctx.teams().
+   - makeQuestion()   auto-builds a multiple-choice question from a word-set item.
+   - fitBox()         sizes a picture box in JavaScript (safe on older iPad Safari).   */
+const TEAM_COLS = ['#e23d4f', '#2b6fe8', '#159443', '#8b3fe0'];
+const TEAM_DEFAULT = ['Team A', 'Team B', 'Team C', 'Team D'];
+const BRIGHT = ['#ffd23f', '#ff8fab', '#7ae582', '#70d6ff', '#ffb347', '#c8b6ff', '#5eead4', '#f4f4f4'];   // dark text reads well on all of these
+const rnd = n => Math.floor(Math.random() * n);
+
+/** Team state + scoreboard element.
+    T.el            scoreboard DOM (each team: [−] name score [+]) – the game places it
+    T.add(i, pts)   give points (the +/- buttons call this with manual = true)
+    T.setTurn(i) / T.nextTurn()   highlight whose turn it is
+    T.awardRow(pts, cb)           row of "Team A +pts ... No points" buttons
+    T.onChange(i, pts, manual)    optional hook (Tug of war moves the rope with it)
+    T.winner        set by a game to force the winner; otherwise highest score wins */
+function makeTeams(n, opt) {
+  opt = opt || {};
+  n = clamp(+n || +O.teamCount || 2, 2, 4);
+  const T = { n, names: [], cols: TEAM_COLS.slice(0, n), scores: Array(n).fill(0), turn: -1, step: opt.step || 1, min: opt.min == null ? 0 : opt.min, winner: null, onChange: null };
+  for (let i = 0; i < n; i++) T.names.push(norm((O.teamNames || [])[i]) || TEAM_DEFAULT[i]);
+  const chips = [];
+  T.el = h('div', { class: 'tm-bar' + (n > 2 ? ' many' : '') });   // 3–4 teams: name above the score so it is not cut off
+  T.names.forEach((nm, i) => {
+    const score = h('b', { class: 'tm-score' }, '0');
+    const btn = (label, d) => h('button', { class: 'tm-pm', 'aria-label': (d > 0 ? 'Add points to ' : 'Take points from ') + nm,
+      onpointerdown: e => { e.preventDefault(); T.add(i, d * T.step, true); } }, label);
+    const el = h('div', { class: 'tm-chip', style: '--tc:' + T.cols[i] }, btn('−', -1), h('span', { class: 'tm-name' }, nm), score, btn('+', 1));
+    chips.push({ el, score }); T.el.append(el);
+  });
+  T.render = () => chips.forEach((c, i) => { c.score.textContent = T.scores[i]; c.el.classList.toggle('turn', i === T.turn); });
+  T.add = (i, pts, manual) => {
+    T.scores[i] = Math.max(T.min, T.scores[i] + pts); T.render();
+    const s = chips[i].score; s.classList.remove('bump'); void s.offsetWidth; s.classList.add('bump');
+    if (manual) Sfx.play(pts > 0 ? 'place' : 'back');
+    if (T.onChange) T.onChange(i, pts, !!manual);
+  };
+  T.setTurn = i => { T.turn = i; T.el.classList.add('turns'); T.render(); };
+  T.nextTurn = () => T.setTurn((T.turn + 1) % n);
+  T.awardRow = (pts, cb) => h('div', { class: 'tm-award' },
+    T.names.map((nm, i) => h('button', { class: 'tm-give', style: '--tc:' + T.cols[i], onclick: () => { T.add(i, pts); cb(i); } }, nm + '  +' + pts)),
+    h('button', { class: 'tm-give none', onclick: () => cb(-1) }, 'No points'));
+  return T;
+}
+
+/* ----- auto-generated questions ----- */
+const QTYPES = [['mix', 'Mix'], ['p2w', 'Picture → word'], ['w2p', 'Word → picture'], ['c2w', 'Clue → word']];
+/** Up to n other items with different words (optionally only ones that have a picture). */
+function pickItems(item, pool, n, word, needPic) {
+  const seen = new Set([word(item).toLowerCase()]), out = [];
+  for (const p of shuffle(pool.slice())) {
+    if (out.length >= n) break;
+    if (needPic && !hasPic(p)) continue;
+    const k = word(p).toLowerCase();
+    if (!seen.has(k)) { seen.add(k); out.push(p); }
+  }
+  return out;
+}
+/** One multiple-choice question for an item.
+    type: 'p2w' picture → choose the word, 'w2p' word → choose the picture,
+          'c2w' clue → choose the word, 'mix' = any type this item supports.
+    If the item cannot do the asked type, another possible type is used.
+    Returns { type, item, options:[items, shuffled, includes the item] }. */
+function makeQuestion(item, pool, word, type, n) {
+  const can = { p2w: hasPic(item), c2w: !!clueText(item), w2p: hasPic(item) && pickItems(item, pool, 1, word, true).length > 0 };
+  if (!can[type]) { const ok = ['p2w', 'w2p', 'c2w'].filter(k => can[k]); type = ok.length ? ok[rnd(ok.length)] : 'c2w'; }
+  return { type, item, options: shuffle([item, ...pickItems(item, pool, n - 1, word, type === 'w2p')]) };
+}
+/** The thing the children look at: a picture, a big word or a clue. */
+function questionPrompt(q, word) {
+  return q.type === 'p2w' ? pic(q.item, 'q-pic') : q.type === 'w2p' ? h('div', { class: 'q-word' }, word(q.item)) : h('div', { class: 'q-clue' }, clueText(q.item) || '?');
+}
+/** Size el to the biggest box of the given ratio that fits inside parent. */
+function fitBox(el, parent, ratio) {
+  el.style.width = el.style.height = '0px';
+  const w = Math.min(parent.clientWidth, parent.clientHeight * ratio);
+  el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(w / ratio) + 'px';
+}
+/* ----- letters (same rules as Anagram: spaces split words, punctuation stays put) ----- */
+const isLetterCh = ch => /[\p{L}\p{N}]/u.test(ch);
+const wordParts = text => text.split(' ').map(w => [...w].map(ch => ({ ch, fixed: !isLetterCh(ch) })));
+/** Scrambled copy of wordParts (each word mixed separately); never the correct order when avoidable. */
+function scrambleParts(words) {
+  const flat = ws => ws.map(w => w.map(x => x.ch).join('')).join(' '), orig = flat(words);
+  let out = words;
+  for (let t = 0; t < 40; t++) {
+    out = words.map(w => { const mov = shuffle(w.filter(x => !x.fixed).map(x => x.ch)); let k = 0; return w.map(x => x.fixed ? x : { ch: mov[k++], fixed: false }); });
+    if (flat(out) !== orig) break;
+  }
+  return out;
+}
+/** Append children, skipping null / false / '' (plain .append() would print "null"). */
+function add(el, ...kids) { el.append(...kids.flat(Infinity).filter(k => k != null && k !== false && k !== '')); return el; }
+/* ---------- 12e. SPIN THE WHEEL ---------- */
+/* The wheel is drawn once on a canvas and turned with a CSS rotation, so it stays
+   smooth on an iPad. The pointer is on the right, where the text reads level. */
+Games.register((() => {
+  let c = null, st = null;
+  const FONT = () => (getComputedStyle(document.body).getPropertyValue('--font-word') || 'sans-serif').trim();
+  /** What to draw in one segment. With a very full wheel "both" becomes pictures only. */
+  function modeFor(it) {
+    let m = c.g.show; if (m === 'both' && st.left.length > 24) m = 'pictures';
+    const p = hasPic(it);
+    return { pic: p && m !== 'words', text: m === 'words' || m === 'both' || !p };
+  }
+  function colour(i, n) { return (n > 1 && i === n - 1 && i % BRIGHT.length === 0) ? BRIGHT[4] : BRIGHT[i % BRIGHT.length]; }
+  function drawPic(x, it, rp, s) {
+    if (it.image) {
+      const im = st.imgs.get(it.id); if (!im || !im.complete || !im.naturalWidth) return;
+      const k = Math.min(s / im.naturalWidth, s / im.naturalHeight), w = im.naturalWidth * k, hh = im.naturalHeight * k;
+      x.fillStyle = '#fff'; x.fillRect(rp - w / 2 - 2, -hh / 2 - 2, w + 4, hh + 4); x.drawImage(im, rp - w / 2, -hh / 2, w, hh);
+    } else if (it.emoji) {
+      x.font = (s * 0.8) + 'px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#000'; x.fillText(it.emoji, rp, s * 0.05);
+    }
+  }
+  function draw() {
+    const cv = st.cv, n = st.left.length, D = st.D, dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = cv.height = Math.round(D * dpr); cv.style.width = cv.style.height = D + 'px';
+    const x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, D, D); x.translate(D / 2, D / 2);
+    const R = D / 2 - 2, th = Math.PI * 2 / Math.max(1, n), font = FONT();
+    const room = r => th >= Math.PI ? r * 2 : 2 * Math.sin(th / 2) * r;   // width of a segment at radius r
+    if (!n) { x.beginPath(); x.arc(0, 0, R, 0, Math.PI * 2); x.fillStyle = '#d7dbe6'; x.fill(); return; }
+    st.left.forEach((it, i) => {
+      x.save(); x.rotate(i * th);   // segment i is centred on angle i*th; angle 0 points at the pointer
+      x.beginPath(); x.moveTo(0, 0); x.arc(0, 0, R, -th / 2, th / 2); x.closePath();
+      x.fillStyle = colour(i, n); x.fill(); x.lineWidth = Math.max(1.5, D * 0.004); x.strokeStyle = '#1b2a4e'; if (n > 1) x.stroke();
+      const m = modeFor(it); let outer = R * 0.94;
+      if (m.pic) {
+        const rp = m.text ? R * 0.74 : R * 0.62, s = Math.min(m.text ? R * 0.34 : R * 0.52, room(rp) * 0.8);
+        drawPic(x, it, rp, s); outer = rp - s / 2 - R * 0.04;
+      }
+      if (m.text) {
+        const w = c.word(it), inner = R * 0.28, len = Math.max(10, outer - inner);   // keep clear of the centre hub
+        let fs = Math.min(R * 0.14, room(R * 0.45) * 0.55);
+        x.font = '700 ' + fs + 'px ' + font;
+        const tw = x.measureText(w).width; if (tw > len) fs *= len / tw;
+        x.font = '700 ' + Math.max(7, fs) + 'px ' + font; x.fillStyle = '#1b2a4e'; x.textAlign = 'right'; x.textBaseline = 'middle'; x.fillText(w, outer, 0, len);
+      }
+      x.restore();
+    });
+  }
+  function layout() {
+    const r = st.leftEl.getBoundingClientRect(), su = c.size().su;
+    st.D = Math.max(120, Math.floor(Math.min(r.height - su * 0.5, r.width - su * 1.5)));
+    const hd = st.holder.style; hd.width = hd.height = st.D + 'px'; hd.marginLeft = hd.marginTop = (-st.D / 2) + 'px';
+    draw();
+  }
+  const pointerIdx = () => { const n = st.left.length; return n ? mod(Math.round(-st.ang / (Math.PI * 2 / n)), n) : 0; };
+  function info() {
+    const n = st.left.length; c.progress(n, st.all.length);
+    st.info.textContent = c.g.remove === 'on' ? plural(n, 'word') + ' left' : 'Tap the wheel to spin!';
+    st.spinBtn.disabled = !n; st.resetBtn.hidden = n === st.all.length;
+  }
+  function spin() {
+    if (!st || st.spinning || st.busy || !st.left.length) return;
+    Sfx.unlock();
+    const n = st.left.length, th = Math.PI * 2 / n, secs = +c.g.time || 5;
+    st.win = rnd(n);
+    // finish with the winning segment under the pointer, a little off-centre so it looks natural
+    const target = (Math.random() - 0.5) * 0.76 * th - st.win * th, base = st.ang + secs * 1.3 * Math.PI * 2;
+    st.a0 = st.ang; st.a1 = target + Math.ceil((base - target) / (Math.PI * 2)) * Math.PI * 2;
+    st.t = 0; st.dur = secs; st.spinning = true; st.lastIdx = pointerIdx(); st.spinBtn.disabled = true;
+  }
+  function frame(dt) {
+    if (st.spinning) {
+      st.t += dt; const u = Math.min(1, st.t / st.dur), e = 1 - Math.pow(1 - u, 4);   // quartic ease-out = realistic slow-down
+      st.ang = st.a0 + (st.a1 - st.a0) * e; st.cv.style.transform = 'rotate(' + st.ang + 'rad)';
+      const idx = pointerIdx();
+      if (idx !== st.lastIdx) {   // a segment edge passed the pointer: tick + flick
+        st.lastIdx = idx; st.flick = 1;
+        const now = performance.now(); if (now - st.lastTick > 45) { st.lastTick = now; c.sfx('wtick'); }
+      }
+      if (u >= 1) { st.spinning = false; st.busy = true; const it = st.left[st.win]; c.later(() => result(it), 500); }
+    }
+    if (st.flick > 0) { st.flick = Math.max(0, st.flick - dt * 7); st.ptr.style.transform = 'rotate(' + (-st.flick * 20) + 'deg)'; }
+  }
+  /** The winner pops up large. In "pictures" or "words" mode the other half waits behind a button. */
+  function result(it) {
+    c.sfx('done');
+    const mode = c.g.show, p = hasPic(it), w = c.word(it);
+    const showPic = p && mode !== 'words', showWord = mode !== 'pictures' || !p;
+    const card = h('div', { class: 'wh-card' }), btns = h('div', { class: 'wh-btns' });
+    const fill = (pp, ww) => {
+      card.innerHTML = '';
+      if (pp) card.append(pic(it, 'pfill wh-pic'));
+      if (ww) card.append(h('div', { class: 'wh-word' + (pp ? '' : ' solo') }, w));
+      if (pp && ww && norm(it.clue)) card.append(h('div', { class: 'wh-clue' }, norm(it.clue)));
+      card.append(btns);
+    };
+    const close = () => {
+      pop.remove(); st.busy = false;
+      if (c.g.remove === 'on') { st.left = st.left.filter(x => x !== it); draw(); }
+      info();
+      if (!st.left.length) allDone();
+    };
+    if (c.canSpeak) btns.append(h('button', { class: 'g-btn', onclick: () => c.say(it) }, '🔊 Listen'));
+    if (!(showPic && showWord) && (p || !showWord)) {
+      const more = h('button', { class: 'g-btn', onclick: () => { more.remove(); fill(p, true); c.say(it); } }, showPic ? 'Show the word' : 'Show the picture');
+      if (p) btns.append(more);
+    }
+    btns.append(h('button', { class: 'g-btn pri', onclick: close }, c.g.remove === 'on' && st.left.length > 1 ? 'Next spin ▶' : 'OK ▶'));
+    fill(showPic, showWord);
+    const pop = h('div', { class: 'wh-pop' }, card); c.stage.append(pop);
+    if (mode === 'both') c.say(it);   // in pictures/words mode the children answer first; Listen or the reveal button says it
+  }
+  function allDone() {
+    st.busy = true;
+    const pop = h('div', { class: 'wh-pop' }, h('div', { class: 'wh-card' }, h('div', { class: 'wh-word solo' }, '🎉 All done!'),
+      h('div', { class: 'wh-btns' }, h('button', { class: 'g-btn pri', onclick: () => { pop.remove(); reset(); } }, '↺ Start again'))));
+    c.stage.append(pop); c.sfx('win');
+  }
+  function reset() { st.left = st.all.slice(); st.busy = false; draw(); info(); }
+  return {
+    id: 'wheel', name: 'Spin the wheel', icon: '🎡', minItems: 2, allItems: true, noTimer: true, noScore: true,
+    blurb: 'Tap to spin the wheel. The winner pops up big. Great for choosing a word, a picture or a pupil’s name.',
+    options: [
+      { key: 'show', label: 'Show', choices: [['both', 'Both'], ['pictures', 'Pictures'], ['words', 'Words']], def: 'both' },
+      { key: 'remove', label: 'After a spin', choices: [['on', 'Remove it'], ['off', 'Keep it']], def: 'on' },
+      { key: 'time', label: 'Spin time', choices: [[3, '3 s'], [5, '5 s'], [8, '8 s']], def: 5 }
+    ],
+    init(ctx) {
+      c = ctx;
+      st = { all: c.items.slice(), left: c.items.slice(), imgs: new Map(), ang: 0, spinning: false, busy: false, flick: 0, lastTick: 0, lastIdx: 0, D: 300 };
+      st.cv = h('canvas'); st.ptr = h('div', { class: 'wh-ptr' });
+      st.holder = h('div', { class: 'wh-holder', onpointerdown: e => { e.preventDefault(); spin(); } }, st.cv, h('div', { class: 'wh-hub' }, 'SPIN'), st.ptr);
+      st.leftEl = h('div', { class: 'wh-left' }, st.holder);
+      st.info = h('div', { class: 'wh-info' });
+      st.spinBtn = h('button', { class: 'wh-spin', onpointerdown: e => { e.preventDefault(); spin(); } }, 'Spin!');
+      st.resetBtn = h('button', { class: 'g-btn sm', hidden: true, onclick: reset }, '↺ Put them all back');
+      c.stage.append(h('div', { class: 'wh-wrap' }, st.leftEl, h('div', { class: 'wh-side' }, st.spinBtn, st.info, st.resetBtn)));
+      // photos have to be loaded as Image objects before a canvas can draw them
+      st.all.forEach(it => { if (it.image) { const im = new Image(); im.onload = () => { if (st && !st.spinning) draw(); }; im.src = it.image; st.imgs.set(it.id, im); } });
+      c.onResize(layout); layout(); info();
+    },
+    start() { c.loop(frame); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12f. GAME SHOW QUIZ ---------- */
+/* Multiple choice against the clock: faster = more points, streak bonus, three
+   lifelines (each once per game, or once per team when teams take turns). */
+Games.register((() => {
+  let c = null, st = null, T = null;
+  const LIFE = [['fifty', '50:50'], ['time', '+10 s'], ['double', '×2 points']];
+  const same = (a, b) => c.word(a).toLowerCase() === c.word(b).toLowerCase();
+  const who = () => T ? T.turn : 0;
+  function fit() { const q = st && st.cur; if (q && q.promptPic) fitBox(q.promptPic, q.mid, 4 / 3); }
+  function round() {
+    if (st.i >= c.items.length) return c.finish();
+    const item = c.items[st.i]; c.progress(st.i + 1, c.items.length);
+    if (T) T.setTurn(st.i % T.n);
+    const q = makeQuestion(item, c.pool, c.word, c.g.qtype, 4), total = +c.g.time || 15, pics = q.type === 'w2p';
+    const cur = st.cur = { q, total, left: total, max: total, double: false, phase: 'ask', btns: [], lastSec: -1 };
+    cur.bar = h('i'); cur.secs = h('div', { class: 'gs-secs' }, total);
+    const L = st.lives[who()];
+    const lifeBtns = c.g.lifelines === 'on' ? LIFE.map(([k, label]) => { const b = h('button', { class: 'gs-life' + (L[k] ? '' : ' used'), onclick: () => useLife(k, b) }, label); return b; }) : [];
+    const opts = h('div', { class: 'gs-opts n' + q.options.length + (!pics && Math.max(...q.options.map(o => c.word(o).length)) > 13 ? ' long' : '') });
+    q.options.forEach((o, i) => {
+      const b = h('button', { class: 'gs-opt' + (pics ? ' pic' : ''), onclick: () => choose(o, b) }, h('b', null, 'ABCD'[i]), pics ? pic(o, 'pfill') : h('span', null, c.word(o)));
+      b._o = o; cur.btns.push(b); opts.append(b);
+    });
+    const prompt = questionPrompt(q, c.word); cur.promptPic = q.type === 'p2w' ? prompt : null;
+    cur.mid = h('div', { class: 'gs-mid' }, prompt);
+    const s = st.streak[who()];
+    cur.wrap = h('div', { class: 'gs-wrap' + (pics ? ' pics' : '') },
+      h('div', { class: 'gs-top' }, h('div', { class: 'gs-timer' }, cur.bar), cur.secs, lifeBtns, h('div', { class: 'gs-streak' }, s >= 2 ? '🔥 ' + s + ' in a row' : '')),
+      cur.mid, opts);
+    st.body.innerHTML = ''; st.body.append(cur.wrap); fit();
+  }
+  function useLife(k, b) {
+    const cur = st.cur, L = st.lives[who()]; if (!cur || cur.phase !== 'ask' || !L[k]) return;
+    if (k === 'fifty') {
+      const wrong = shuffle(cur.btns.filter(x => !same(x._o, cur.q.item) && !x.classList.contains('out')));
+      const drop = wrong.slice(0, Math.min(2, wrong.length - 1)); if (!drop.length) return;   // nothing to remove: keep the lifeline
+      drop.forEach(x => { x.classList.add('out'); x.disabled = true; });
+    }
+    if (k === 'time') { cur.left += 10; cur.max = Math.max(cur.max, cur.left); }
+    if (k === 'double') { cur.double = true; cur.mid.append(h('div', { class: 'gs-x2' }, '×2')); }
+    L[k] = false; b.classList.add('used'); c.sfx('life');
+  }
+  function choose(o, b) {
+    const cur = st.cur; if (!cur || cur.phase !== 'ask') return;
+    cur.phase = 'locked'; b.classList.add('lock'); c.sfx('lock');   // lock it in, short drum-roll pause, then the reveal
+    const frac = clamp(cur.left / cur.total, 0, 1);
+    c.later(() => reveal(o, b, frac), 950);
+  }
+  function reveal(o, b, frac) {
+    const cur = st.cur; if (!cur) return;
+    cur.phase = 'done';
+    const ok = !!o && same(o, cur.q.item), w = who();
+    cur.btns.forEach(x => { x.classList.remove('lock'); x.classList.add(same(x._o, cur.q.item) ? 'good' : x === b ? 'bad' : 'dim'); });
+    let note = '', big, small = '';
+    if (ok) {
+      const s = ++st.streak[w], base = Math.round((50 + 50 * frac) / 5) * 5, bonus = Math.min(50, 10 * (s - 1)), pts = (base + bonus) * (cur.double ? 2 : 1);
+      if (T) T.add(w, pts); else c.addScore(pts);
+      c.sfx('correct'); big = '+' + pts; small = [cur.double ? 'Double points!' : '', bonus ? '🔥 ' + s + ' in a row: +' + bonus + ' bonus' : ''].filter(Boolean).join('  ');
+    } else {
+      st.streak[w] = 0; c.sfx(o ? 'wrong' : 'buzz'); big = o ? '✗' : 'Time’s up!';
+      note = o ? 'answered “' + c.word(o) + '”' : 'ran out of time';
+    }
+    cur.mid.append(h('div', { class: 'centre' }, h('div', { class: 'gs-banner' + (ok ? '' : ' bad') }, big, small && h('small', null, small))));
+    c.record(cur.q.item, ok, note); c.say(cur.q.item);
+    st.i++; c.advance(round, 2400);
+  }
+  function frame(dt) {
+    const cur = st && st.cur; if (!cur || cur.phase !== 'ask') return;
+    cur.left -= dt;
+    const s = Math.max(0, Math.ceil(cur.left));
+    cur.bar.style.width = (clamp(cur.left / cur.max, 0, 1) * 100) + '%';
+    if (s !== cur.lastSec) {
+      cur.lastSec = s; cur.secs.textContent = s; cur.wrap.classList.toggle('low', s <= 5);
+      if (s <= 5 && s > 0) c.sfx('tick');
+    }
+    if (cur.left <= 0) { cur.phase = 'locked'; reveal(null, null, 0); }
+  }
+  return {
+    id: 'gameshow', name: 'Game show quiz', icon: '📺', minItems: 3, noTimer: true,
+    blurb: 'A TV quiz against the clock. Answer fast for more points, build a streak and use your lifelines.',
+    usable: hasVisual,
+    options: [
+      { key: 'qtype', label: 'Questions', choices: QTYPES, def: 'mix' },
+      { key: 'time', label: 'Time each', choices: [[10, '10 s'], [15, '15 s'], [20, '20 s'], [30, '30 s']], def: 15 },
+      { key: 'lifelines', label: 'Lifelines', choices: [['on', 'On'], ['off', 'Off']], def: 'on' },
+      { key: 'players', label: 'Players', choices: [['solo', 'Whole class'], ['teams', 'Teams take turns']], def: 'solo' }
+    ],
+    init(ctx) {
+      c = ctx; T = c.g.players === 'teams' ? c.teams(0, { step: 10 }) : null;
+      const n = T ? T.n : 1;
+      st = { i: 0, cur: null, streak: Array(n).fill(0), lives: Array.from({ length: n }, () => ({ fifty: true, time: true, double: true })), body: c.stage };
+      if (T) { st.body = h('div', { class: 'tm-area' }); c.stage.append(h('div', { class: 'tm-wrap' }, T.el, st.body)); }
+      c.onResize(fit);
+    },
+    start() { round(); c.loop(frame); },
+    destroy() { c = null; st = null; T = null; },
+    printLabel: 'Print quiz sheet',
+    print(p) {
+      const sheet = h('div'), key = h('ol', { class: 'pr-key' });
+      p.items.forEach((it, n) => {
+        const opts = shuffle([it, ...pickItems(it, p.pool, 3, p.word)]);
+        sheet.append(h('div', { class: 'pr-card' }, h('b', { class: 'pr-num' }, n + 1),
+          hasPic(it) ? pic(it) : h('div', { class: 'pr-clue' }, clueText(it)),
+          h('div', { class: 'pr-choices' }, opts.map((o, i) => h('div', { class: 'pr-choice' }, h('span', { class: 'pr-letter' }, 'ABCD'[i]), p.word(o))))));
+        key.append(h('li', null, 'ABCD'[opts.indexOf(it)] + '   ' + p.word(it)));
+      });
+      return { sheet, key, instruction: 'Quiz time! Circle the letter of the correct answer: A, B, C or D.' };
+    }
+  };
+})());
+/* ---------- 12g. OPEN THE BOX ---------- */
+/* A grid of numbered boxes. Tap one: it opens full size with a picture, a word or
+   a clue. "Show the answer" reveals and says the word. Optional team points. */
+Games.register((() => {
+  let c = null, st = null, T = null;
+  function kindOf(it, show) {
+    const can = ['word']; if (hasPic(it)) can.push('picture'); if (clueText(it)) can.push('clue');
+    if (show === 'mix') return can[rnd(can.length)];
+    if (can.includes(show)) return show;
+    return show === 'picture' ? (can.includes('clue') ? 'clue' : 'word') : (can.includes('picture') ? 'picture' : 'word');
+  }
+  function layout() {
+    if (!st) return;
+    const pad = c.size().su * 0.2, W = st.area.clientWidth - pad * 2, H = st.area.clientHeight - pad * 2, n = st.boxes.length;
+    let best = 1, bs = 0;   // the number of columns that gives the biggest square boxes
+    for (let cols = 1; cols <= n; cols++) { const s = Math.min(W / cols, H / Math.ceil(n / cols)); if (s > bs) { bs = s; best = cols; } }
+    bs = Math.max(30, Math.floor(bs));
+    st.grid.style.gridTemplateColumns = 'repeat(' + best + ',' + bs + 'px)'; st.grid.style.setProperty('--bs', bs + 'px');
+  }
+  function open(box) {
+    if (!st || st.busy || box.done) return;
+    st.busy = true; c.sfx('open');
+    const it = box.item, w = c.word(it), k = box.kind, p = hasPic(it);
+    const body = h('div', { class: 'ob-body' });
+    body.append(k === 'picture' ? pic(it, 'pfill ob-pic') : k === 'word' ? h('div', { class: 'ob-word' }, w) : h('div', { class: 'ob-clue' }, clueText(it)));
+    const reveal = () => {
+      showBtn.remove(); body.innerHTML = '';
+      if (p) body.append(pic(it, 'pfill ob-pic'));
+      body.append(h('div', { class: 'ob-word' + (p ? ' small' : '') }, w));
+      c.say(it); c.sfx('correct');
+    };
+    const showBtn = h('button', { class: 'g-btn pri', onclick: reveal }, k === 'word' ? (p ? 'Show the picture' : '🔊 Say it') : 'Show the answer');
+    const close = () => {
+      over.remove(); box.done = true; box.el.classList.add('open'); box.el.disabled = true; box.label.textContent = w;
+      st.busy = false; st.opened++; c.progress(st.opened, st.boxes.length);
+      if (T) T.nextTurn();
+      if (st.opened >= st.boxes.length) c.later(() => c.finish(), 900);
+    };
+    const over = h('div', { class: 'ob-over' }, h('div', { class: 'ob-card' },
+      h('div', { class: 'ob-head' }, h('span', null, 'Box ' + box.n), h('span', null, k === 'word' ? 'Read it!' : 'What is it?')),
+      body,
+      h('div', { class: 'ob-foot' }, (k !== 'word' || p || c.canSpeak) && showBtn, T ? T.awardRow(1, close) : h('button', { class: 'g-btn', onclick: close }, 'Done ✓'))));
+    st.area.append(over);
+  }
+  return {
+    id: 'boxes', name: 'Open the box', icon: '🎁', minItems: 2, noScore: true,
+    blurb: 'Pick a numbered box and open it. What is inside? Play as a class, or give points to teams.',
+    options: [
+      { key: 'show', label: 'Inside', choices: [['picture', 'Pictures'], ['word', 'Words'], ['clue', 'Clues'], ['mix', 'Mix']], def: 'picture' },
+      { key: 'teams', label: 'Team points', choices: [['off', 'Off'], ['on', 'On']], def: 'off' }
+    ],
+    init(ctx) {
+      c = ctx; T = c.g.teams === 'on' ? c.teams() : null;
+      st = { busy: false, opened: 0, boxes: [] };
+      st.grid = h('div', { class: 'ob-grid' }); st.area = h('div', { class: 'tm-area' }, st.grid);
+      c.items.forEach((item, i) => {
+        const box = { item, n: i + 1, kind: kindOf(item, c.g.show), done: false };
+        box.label = h('span', null, i + 1);
+        box.el = h('button', { class: 'ob-box', style: '--bc:' + BRIGHT[i % BRIGHT.length], 'aria-label': 'Box ' + (i + 1), onclick: () => open(box) }, h('i', null, box.label));
+        st.boxes.push(box); st.grid.append(box.el);
+      });
+      c.stage.append(h('div', { class: 'tm-wrap' }, T && T.el, st.area));
+      if (T) T.setTurn(0);
+      c.onResize(layout); layout(); c.progress(0, st.boxes.length);
+    },
+    start() {},
+    destroy() { c = null; st = null; T = null; },
+    printLabel: 'Print question cards',
+    print(p) {
+      const sheet = h('div'), key = h('ol', { class: 'pr-key' });
+      p.items.forEach((it, n) => {
+        const k = kindOf(it, p.g.show);
+        sheet.append(h('div', { class: 'pr-cut' }, h('span', { class: 'pr-n' }, n + 1),
+          k === 'picture' ? pic(it) : k === 'word' ? h('div', { class: 'pr-big' }, p.word(it)) : h('div', { class: 'pr-mid' }, clueText(it))));
+        key.append(h('li', null, p.word(it)));
+      });
+      return { sheet, key, instruction: 'Open the box cards: cut them out, put them face down and take turns to pick one.' };
+    }
+  };
+})());
+
+/* ---------- 12h. TUG OF WAR ---------- */
+/* Two teams answer the same question at the same time, one half of the screen each.
+   Every button listens for pointerdown, so two children can tap together (multi-touch).
+   The rope position is simply score B − score A, so the +/- buttons move it too. */
+Games.register((() => {
+  let c = null, st = null, T = null;
+  const LEN = { short: 3, medium: 5, long: 7 };
+  const same = (a, b) => c.word(a).toLowerCase() === c.word(b).toLowerCase();
+  function nextItem() {
+    if (!st.deck.length) { st.deck = shuffle(c.items.slice()); if (st.deck.length > 1 && st.deck[st.deck.length - 1] === st.last) st.deck.reverse(); }
+    return (st.last = st.deck.pop());
+  }
+  function rope() {
+    if (!st) return;
+    const p = clamp(T.scores[1] - T.scores[0], -st.N, st.N);
+    st.ropeEl.style.transform = 'translateX(' + (p / st.N * st.field.clientWidth * 0.15) + 'px)';
+    if (!st.over && Math.abs(p) >= st.N) win(p < 0 ? 0 : 1);
+  }
+  function fit() { if (!st) return; const q = st.cur; if (q && q.promptPic) fitBox(q.promptPic, st.qbox, 4 / 3); rope(); }
+  function win(i) {
+    st.over = true; T.winner = i; c.sfx('win');
+    st.qbox.innerHTML = ''; st.qbox.append(h('div', { class: 'gs-banner', style: 'background:' + T.cols[i] + ';color:#fff' }, '🏆', h('small', null, 'Winner: ' + T.names[i] + '!')));
+    c.later(() => c.finish(), 2000);
+  }
+  function round() {
+    if (!st || st.over) return;
+    const q = makeQuestion(nextItem(), c.pool, c.word, c.g.qtype, +c.g.choices || 3), pics = q.type === 'w2p';
+    const cur = st.cur = { q, done: false, lock: [0, 0], sides: [] };
+    const prompt = questionPrompt(q, c.word); cur.promptPic = q.type === 'p2w' ? prompt : null;
+    st.qbox.innerHTML = ''; st.qbox.append(prompt);
+    // the same answers on both sides, but in a different order so nobody can copy
+    const orderA = q.options.slice(); let orderB = shuffle(q.options.slice());
+    for (let t = 0; t < 12 && orderB.length > 1 && orderB.every((o, i) => o === orderA[i]); t++) orderB = shuffle(q.options.slice());
+    [orderA, orderB].forEach((order, side) => {
+      const el = st.sides[side]; el.innerHTML = '';
+      const btns = order.map(o => {
+        const b = h('button', { class: 'tg-opt' + (!pics && c.word(o).length > 9 ? ' long' : ''), onpointerdown: e => { e.preventDefault(); tap(side, o, b); } }, pics ? pic(o, 'pfill pabs') : c.word(o));
+        b._o = o; return b;
+      });
+      el.append(...btns); cur.sides.push(btns);
+    });
+    fit();
+  }
+  function tap(side, o, b) {
+    const cur = st && st.cur; if (!cur || cur.done || st.over || b._dead || performance.now() < cur.lock[side]) return;
+    if (same(o, cur.q.item)) {
+      cur.done = true; c.sfx('correct'); c.sfx('pull');
+      cur.sides.forEach(bs => bs.forEach(x => x.classList.add(same(x._o, cur.q.item) ? 'good' : 'dim')));
+      c.say(cur.q.item);
+      T.add(side, 1);   // T.onChange moves the rope and checks for a winner
+      if (!st.over) c.later(round, 1500);
+    } else {   // wrong: that answer is crossed out and the team waits 2 seconds
+      b._dead = true; b.classList.add('dead'); c.sfx('wrong');
+      cur.lock[side] = performance.now() + 2000;
+      const lock = h('div', { class: 'tg-lock' }, '✗', h('i')); st.sides[side].append(lock);
+      c.later(() => lock.remove(), 2000);
+    }
+  }
+  return {
+    id: 'tug', name: 'Tug of war', icon: '🪢', minItems: 3, allItems: true, noScore: true,
+    blurb: 'Two teams, one question, one half of the screen each. Every right answer pulls the rope your way!',
+    usable: hasVisual,
+    options: [
+      { key: 'qtype', label: 'Questions', choices: QTYPES, def: 'mix' },
+      { key: 'choices', label: 'Answers', choices: [[2, '2'], [3, '3'], [4, '4']], def: 3 },
+      { key: 'length', label: 'Game length', choices: [['short', 'Short'], ['medium', 'Medium'], ['long', 'Long']], def: 'medium' }
+    ],
+    init(ctx) {
+      c = ctx; T = c.teams(2);
+      st = { deck: [], last: null, cur: null, over: false, N: LEN[c.g.length] || 5, sides: [] };
+      const men = (cls, i) => h('div', { class: 'tg-men ' + cls, style: '--tc:' + T.cols[i] }, h('i'), h('i'), h('i'));
+      st.ropeEl = h('div', { class: 'tg-rope' }, men('a', 0), h('div', { class: 'tg-flag' }), men('b', 1));
+      st.field = h('div', { class: 'tg-field' }, h('div', { class: 'tg-centre' }),
+        h('div', { class: 'tg-line', style: 'left:35%;--tc:' + T.cols[0] }), h('div', { class: 'tg-line', style: 'left:65%;--tc:' + T.cols[1] }), st.ropeEl);
+      st.sides = [0, 1].map(i => h('div', { class: 'tg-side', style: '--tc:' + T.cols[i] }));
+      st.qbox = h('div', { class: 'tg-qbox' });
+      const skip = h('button', { class: 'g-btn sm', onclick: () => { if (st && !st.over && st.cur && !st.cur.done) round(); } }, '⏭ Skip');
+      c.stage.append(h('div', { class: 'tm-wrap' }, T.el, st.field, h('div', { class: 'tg-main' }, st.sides[0], h('div', { class: 'tg-q' }, st.qbox, skip), st.sides[1])));
+      T.onChange = () => rope();
+      c.onResize(fit);
+    },
+    start() { round(); },
+    destroy() { c = null; st = null; T = null; }
+  };
+})());
+
+/* ---------- 12i. JEOPARDY BOARD ---------- */
+/* Categories × 100–500. Bigger numbers = harder question types:
+   100 choose from 3 · 200 choose from 4 · 300 unscramble · 400 say it · 500 spell it.
+   The teacher taps "Show the answer" and gives the points to a team (or nobody).
+   Categories: the current set split into groups, or up to five chosen word sets. */
+Games.register((() => {
+  let c = null, st = null, T = null;
+  const VALUES = [100, 200, 300, 400, 500], KINDS = ['choose3', 'choose4', 'unscramble', 'say', 'spell'];
+  const NAMES = ['⭐ Stars', '🌙 Moon', '☀️ Sun', '🌈 Rainbow', '⚡ Flash'];
+  const cfg = () => (O.game.jeopardy = O.game.jeopardy || {});
+  const chosenSets = () => (cfg().sets || []).map(id => APP.sets.find(s => s.id === id)).filter(s => s && validItems(s).length >= 5).slice(0, 5);
+  /** Question type for a tile: the row decides, then it is adjusted to what the item can do. */
+  function kindFor(it, row, speak) {
+    const vis = hasVisual(it), letters = [...norm(it.word)].filter(isLetterCh).length >= 2;
+    let k = KINDS[row];
+    if ((k === 'choose3' || k === 'choose4' || k === 'say') && !vis) k = letters ? 'unscramble' : 'read';
+    if (k === 'spell' && !vis && !speak) k = letters ? 'unscramble' : 'read';
+    if (k === 'unscramble' && !letters) k = vis ? 'say' : 'read';
+    return k;
+  }
+  function buildBoard(set, g, speak) {
+    const cats = [], sets = g.cats === 'sets' ? chosenSets() : [];
+    if (sets.length >= 2) sets.forEach(s => { const v = shuffle(validItems(s)); cats.push({ name: s.title, items: v.slice(0, 5), pool: v }); });
+    else {   // split one set: each category gets five different words; small sets reuse words in other categories
+      const v = shuffle(validItems(set)), n = v.length, C = clamp(Math.floor(n / 2), 2, 5);
+      for (let ci = 0; ci < C; ci++) cats.push({ name: NAMES[ci], items: shuffle(VALUES.map((_, r) => v[(5 * ci + r) % n])), pool: v });
+    }
+    cats.forEach(cat => { cat.tiles = cat.items.map((it, r) => ({ cat, item: it, value: VALUES[r], kind: kindFor(it, r, speak), pool: cat.pool, used: false })); });
+    return cats;
+  }
+  async function pickSets() {
+    const chosen = new Set(cfg().sets || []);
+    const rows = APP.sets.slice().sort((a, b) => a.title.localeCompare(b.title)).map(s => {
+      const n = validItems(s).length, ok = n >= 5, cb = h('input', { type: 'checkbox', checked: ok && chosen.has(s.id), disabled: !ok });
+      return { id: s.id, ok, cb, el: h('label', { class: 'chk' }, cb, s.title + ' (' + plural(n, 'word') + (ok ? ')' : ', needs 5)')) };
+    });
+    const limit = () => { const full = rows.filter(r => r.cb.checked).length >= 5; rows.forEach(r => { if (r.ok && !r.cb.checked) r.cb.disabled = full; }); };
+    rows.forEach(r => r.cb.addEventListener('change', limit)); limit();
+    const ok = await modal({
+      title: 'Choose 2 to 5 category sets', wide: true,
+      body: h('div', null, h('p', null, 'Each word set you tick becomes one category on the board. A set needs at least 5 words.'), rows.map(r => r.el)),
+      buttons: [{ label: 'Cancel', value: null }, { label: 'Save', value: 1, kind: 'primary' }]
+    });
+    if (!ok) return;
+    cfg().sets = rows.filter(r => r.cb.checked).map(r => r.id);
+    cfg().cats = cfg().sets.length >= 2 ? 'sets' : 'auto';
+    if (cfg().sets.length === 1) toast('Tick at least 2 sets to use them as categories.');
+    saveOpts();
+  }
+  const same = (a, b) => c.word(a).toLowerCase() === c.word(b).toLowerCase();
+  function openTile(t) {
+    if (!st || st.open || t.used) return;
+    st.open = t; c.sfx('open');
+    const it = t.item, w = c.word(it), k = t.kind, p = hasPic(it), clue = clueText(it);
+    const body = h('div', { class: 'jp-body' }), answer = h('div', { class: 'jp-answer' });
+    const visual = () => p ? pic(it, 'pfill jp-pic') : clue ? h('div', { class: 'q-clue' }, clue) : null;
+    let task, optBtns = [];
+    const reveal = () => {
+      if (t.revealed) return; t.revealed = true;
+      answer.textContent = w; optBtns.forEach(b => b.classList.add(b._ok ? 'good' : 'dim')); showBtn.remove();
+      c.sfx('done'); c.say(it);
+    };
+    if (k === 'choose3' || k === 'choose4') {
+      task = 'What is it? Choose the word.';
+      optBtns = shuffle([it, ...pickItems(it, t.pool, k === 'choose3' ? 2 : 3, c.word)]).map(o => {
+        const b = h('button', { class: 'jp-opt', onclick: () => { if (t.revealed) return; if (b._ok) reveal(); else { b.classList.add('bad'); b.disabled = true; c.sfx('wrong'); } } }, c.word(o));
+        b._ok = same(o, it); return b;
+      });
+      add(body, visual(), h('div', { class: 'jp-opts' }, optBtns));
+    } else if (k === 'unscramble') {
+      task = 'Unscramble the word!'; body.classList.add('col');
+      const letters = h('div', { class: 'jp-letters' });
+      scrambleParts(wordParts(w)).forEach((wd, i) => { if (i) letters.append(h('span', { class: 'sp' })); wd.forEach(x => letters.append(h('span', { class: x.fixed ? 'fx' : '' }, x.ch))); });
+      add(body, letters, clue && h('div', { class: 'q-clue' }, clue));
+    } else if (k === 'say') { task = 'What is it? Say the word!'; add(body, visual()); }
+    else if (k === 'spell') { task = 'How do you spell it? No peeking!'; add(body, visual() || h('div', { class: 'q-clue' }, 'Listen, then spell the word.')); }
+    else { task = 'Read it aloud!'; body.append(h('div', { class: 'q-word' }, w)); }
+    const showBtn = h('button', { class: 'g-btn pri', onclick: reveal }, 'Show the answer');
+    const close = used => {
+      over.remove(); st.open = null;
+      if (!used) return;
+      t.used = true; t.el.classList.add('used'); t.el.disabled = true; st.used++; c.progress(st.used, st.total); T.nextTurn();
+      if (st.used >= st.total) c.later(() => c.finish(), 800);
+    };
+    const over = h('div', { class: 'jp-q' },
+      h('div', { class: 'jp-head' }, h('button', { class: 'g-btn sm', onclick: () => close(false) }, '↩ Back'), h('span', null, t.cat.name), h('b', null, t.value)),
+      h('div', { class: 'jp-task' }, task), body, !optBtns.length && answer,   // choose questions show the answer by turning the right button green
+      h('div', { class: 'jp-foot' }, k === 'spell' && c.canSpeak && h('button', { class: 'g-btn', onclick: () => c.say(it) }, '🔊 Listen'), showBtn,
+        T.awardRow(t.value, () => close(true))));
+    st.area.append(over);
+    if (k === 'spell' && !p && !clue) c.say(it);
+  }
+  return {
+    id: 'jeopardy', name: 'Jeopardy board', icon: '💯', minItems: 5, allItems: true, noScore: true,
+    blurb: 'Pick a category and a number of points. Bigger numbers are harder questions. Most points wins!',
+    options: [{ key: 'cats', label: 'Categories', choices: [['auto', 'Split this set'], ['sets', 'My chosen sets']], def: 'auto' }],
+    hubExtra(set, rerender) {
+      const n = chosenSets().length;
+      return h('button', { class: 'btn sm', onclick: async () => { await pickSets(); rerender(); } }, '📚 Choose category sets (' + (n ? n + ' chosen' : 'none yet') + ')');
+    },
+    init(ctx) {
+      c = ctx; T = c.teams(0, { step: 100, min: -99900 });
+      if (c.g.cats === 'sets' && chosenSets().length < 2) toast('Choose 2 to 5 category sets first. Using this set for now.');
+      st = { cats: buildBoard(c.set, c.g, c.canSpeak), open: null, used: 0 };
+      st.total = st.cats.length * 5;
+      st.board = h('div', { class: 'jp-board', style: 'grid-template-columns:repeat(' + st.cats.length + ',1fr)' }, st.cats.map(cat => h('div', { class: 'jp-cat' }, cat.name)));
+      VALUES.forEach((v, r) => st.cats.forEach(cat => {
+        const t = cat.tiles[r]; t.el = h('button', { class: 'jp-tile', onclick: () => openTile(t) }, v); st.board.append(t.el);
+      }));
+      st.area = h('div', { class: 'tm-area' }, st.board);
+      c.stage.append(h('div', { class: 'tm-wrap' }, T.el, st.area));
+      T.setTurn(0); c.progress(0, st.total);
+    },
+    start() {},
+    destroy() { c = null; st = null; T = null; },
+    printLabel: 'Print board + answers',
+    print(p) {
+      const cats = buildBoard(p.set, p.g, false), key = h('div');
+      const table = h('table', { class: 'pr-jp' }, h('tr', null, cats.map(cat => h('th', null, cat.name))));
+      VALUES.forEach((v, r) => table.append(h('tr', null, cats.map(cat => {
+        const t = cat.tiles[r], it = t.item, k = t.kind, vis = () => hasPic(it) ? pic(it) : h('div', { class: 'pr-sm' }, clueText(it));
+        const td = h('td', null, h('b', null, v));
+        if (k === 'choose3' || k === 'choose4') add(td, vis(), h('div', { class: 'pr-sm' }, shuffle([it, ...pickItems(it, t.pool, k === 'choose3' ? 2 : 3, p.word)]).map(o => p.word(o)).join('  /  ')));
+        else if (k === 'unscramble') add(td, h('div', { class: 'pr-big' }, scrambleParts(wordParts(p.word(it))).map(wd => wd.map(x => x.ch).join(' ')).join('   ')), h('div', { class: 'pr-task' }, 'Unscramble the word'));
+        else if (k === 'read') add(td, h('div', { class: 'pr-big' }, p.word(it)), h('div', { class: 'pr-task' }, 'Read it aloud'));
+        else add(td, vis(), h('div', { class: 'pr-task' }, k === 'say' ? 'Say the word' : 'Spell the word'));
+        return td;
+      }))));
+      cats.forEach(cat => key.append(h('p', { class: 'pr-mid' }, cat.name + ':  ' + cat.tiles.map(t => t.value + ' ' + p.word(t.item)).join('   ·   '))));
+      return { sheet: table, key, instruction: 'Quiz board: pick a category and a number of points. Bigger numbers are harder questions.' };
+    }
+  };
+})());
+/* ---------- 12j. WATCH AND MEMORISE ---------- */
+/* Some words flash up one at a time. Then a bigger grid appears and the children
+   tap the ones they saw. Ten points for each one remembered, 20 bonus for all. */
+Games.register((() => {
+  let c = null, st = null;
+  const SPEED = { slow: 3000, normal: 2000, fast: 1200 };
+  function round() {
+    if (st.r >= st.rounds) return c.finish();
+    c.progress(st.r + 1, st.rounds);
+    const n = c.items.length, k = clamp(+c.g.count || 4, 2, n - 2);
+    // words that have not been shown yet come first, so every round feels new
+    const deck = shuffle(c.items.slice()).sort((a, b) => (st.seen.has(a.id) ? 1 : 0) - (st.seen.has(b.id) ? 1 : 0));
+    const shown = deck.slice(0, k); shown.forEach(it => st.seen.add(it.id));
+    const others = shuffle(c.items.filter(it => !shown.includes(it))).slice(0, clamp(k, 2, 16 - k));
+    st.cur = { shown, grid: shuffle(shown.concat(others)), k, sel: new Set(), phase: 'watch', cards: [] };
+    st.msg.textContent = 'Watch carefully! Remember ' + k + ' things.';
+    countdown(3);
+  }
+  function countdown(left) {
+    if (!left) return showItem(0);
+    st.body.innerHTML = ''; st.body.append(h('div', { class: 'mm-show' }, h('div', { class: 'mm-count' }, left)));
+    c.sfx('tick'); c.later(() => countdown(left - 1), 700);
+  }
+  function showItem(i) {
+    const cur = st.cur; if (i >= cur.shown.length) return pick();
+    const it = cur.shown[i], p = hasPic(it);
+    st.msg.textContent = (i + 1) + ' of ' + cur.k;
+    st.body.innerHTML = ''; st.body.append(h('div', { class: 'mm-show' }, p && pic(it, 'pfill mm-pic'), h('div', { class: 'mm-word' + (p ? '' : ' solo') }, c.word(it))));
+    c.sfx('place'); c.say(it);
+    c.later(() => { st.body.innerHTML = ''; c.later(() => showItem(i + 1), 250); }, SPEED[c.g.speed] || 2000);
+  }
+  function pick() {
+    const cur = st.cur; cur.phase = 'pick';
+    st.msg.textContent = 'Which ' + cur.k + ' did you see? Tap them.';
+    const n = cur.grid.length, rows = n <= 4 ? 1 : n <= 10 ? 2 : 3, cols = Math.ceil(n / rows);
+    const grid = h('div', { class: 'mm-grid', style: 'grid-template-columns:repeat(' + cols + ',1fr);grid-template-rows:repeat(' + rows + ',1fr)' });
+    cur.cards = cur.grid.map(it => {
+      const card = { it }, p = hasPic(it);
+      card.el = h('button', { class: 'mm-card', onclick: () => toggle(card) }, p ? [pic(it, 'pfill'), h('span', { class: 'mm-lab' }, c.word(it))] : c.word(it));
+      grid.append(card.el); return card;
+    });
+    cur.check = h('button', { class: 'g-btn pri', disabled: true, onclick: check }, 'Pick ' + cur.k);
+    st.body.innerHTML = ''; st.body.append(grid, cur.check);
+  }
+  function toggle(card) {
+    const cur = st.cur; if (!cur || cur.phase !== 'pick') return;
+    if (cur.sel.has(card)) { cur.sel.delete(card); card.el.classList.remove('sel'); c.sfx('back'); }
+    else if (cur.sel.size < cur.k) { cur.sel.add(card); card.el.classList.add('sel'); c.sfx('place'); }
+    else return c.sfx('wrong');   // already picked enough: un-pick one first
+    const more = cur.k - cur.sel.size;
+    cur.check.disabled = more !== 0; cur.check.textContent = more ? 'Pick ' + more + ' more' : 'Check ✓';
+  }
+  function check() {
+    const cur = st.cur; if (!cur || cur.phase !== 'pick' || cur.sel.size !== cur.k) return;
+    cur.phase = 'done';
+    let right = 0;
+    cur.cards.forEach(card => {
+      const was = cur.shown.includes(card.it), sel = cur.sel.has(card);
+      card.el.classList.remove('sel');
+      card.el.classList.add(was && sel ? 'good' : sel ? 'bad' : was ? 'miss' : 'fade');
+      if (was && sel) right++;
+      if (was) c.record(card.it, sel, sel ? '' : 'forgotten');
+    });
+    const perfect = right === cur.k;
+    c.addScore(right * 10 + (perfect ? 20 : 0)); c.sfx(perfect ? 'correct' : right ? 'done' : 'wrong');
+    st.msg.textContent = perfect ? 'Perfect! You remembered all ' + cur.k + '!' : 'You remembered ' + right + ' out of ' + cur.k + '.';
+    cur.check.remove(); st.r++; c.advance(round, 3400);
+  }
+  return {
+    id: 'memory', name: 'Watch and memorise', icon: '👀', minItems: 4, allItems: true, listAnswered: true,
+    blurb: 'Watch the words flash by, then pick the ones you saw. How many can you remember?',
+    options: [
+      { key: 'count', label: 'To remember', choices: [[3, '3'], [4, '4'], [5, '5'], [6, '6'], [8, '8']], def: 4 },
+      { key: 'speed', label: 'Speed', choices: [['slow', 'Slow'], ['normal', 'Normal'], ['fast', 'Fast']], def: 'normal' },
+      { key: 'rounds', label: 'Rounds', choices: [[1, '1'], [3, '3'], [5, '5']], def: 3 }
+    ],
+    init(ctx) {
+      c = ctx; st = { r: 0, rounds: +c.g.rounds || 3, seen: new Set(), cur: null };
+      st.msg = h('div', { class: 'mm-msg' }); st.body = h('div', { class: 'mm-body' });
+      c.stage.append(h('div', { class: 'mm-wrap' }, st.msg, st.body));
+    },
+    start() { round(); },
+    destroy() { c = null; st = null; }
+  };
+})());
 /* ===================== 13. BOOT ===================== */
 (function wire() {
   // library
