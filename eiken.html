@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Eiken Quiz">
+<meta name="format-detection" content="telephone=no">
+<title>Eiken Quiz</title>
+<style>
+/* =====================================================================
+   EIKEN QUIZ — companion page to Word Games (index.html), same look.
+   Plays Eiken-style question sets on the classroom TV and prints worksheets.
+   Question sets are made outside the page (by Claude) as .eiken.json files
+   and imported; they are stored on this device only (IndexedDB "eiken-quiz").
+   CSS: 1 Themes  2 Base  3 Buttons  4 Library/Set  5 Play  6 Question types
+        7 End  8 Modal/toast  9 Print
+   ===================================================================== */
+
+/* ---------- 1. THEMES (same as Word Games) ---------- */
+:root{
+  --font-ui:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Hiragino Maru Gothic ProN",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-word:"Chalkboard SE","Comic Sans MS","Comic Neue",ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;
+  --font-jp:"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+  --g5:#16a34a;--g4:#2563eb;--g3:#7c3aed;
+}
+body,body[data-theme="classroom"]{
+  --bg:#fff6dc;--bg-img:radial-gradient(#f1dc9f 1.5px,transparent 1.7px);--bg-size:26px 26px;
+  --panel:#ffffff;--panel2:#fff0c2;--ink:#1b2a4e;--muted:#56628a;--line:#e8d9a8;
+  --primary:#2563eb;--on-primary:#ffffff;--accent:#ff8c1a;
+  --good:#15933f;--on-good:#ffffff;--bad:#dc2647;--on-bad:#ffffff;
+  --tile:#ffd23f;--tile-ink:#1b2a4e;--tile-edge:#d9a400;
+}
+body[data-theme="space"]{
+  --bg:#0c1136;--bg-img:radial-gradient(#ffffff 1px,transparent 1.3px),radial-gradient(#8fa6ff 1.2px,transparent 1.5px);--bg-size:90px 90px,140px 140px;
+  --panel:#1b2360;--panel2:#2a347f;--ink:#f5f7ff;--muted:#b9c2f2;--line:#3d489c;
+  --primary:#8b6cff;--on-primary:#ffffff;--accent:#ffd23f;
+  --good:#34d399;--on-good:#062a1e;--bad:#ff6b8b;--on-bad:#3a0614;
+  --tile:#3fe0c5;--tile-ink:#06262b;--tile-edge:#16a892;
+}
+body[data-theme="jungle"]{
+  --bg:#e3f4d0;--bg-img:radial-gradient(#c2e2a0 2px,transparent 2.3px);--bg-size:30px 30px;
+  --panel:#fffdf0;--panel2:#e9f5cf;--ink:#17331a;--muted:#4a6746;--line:#c6dda9;
+  --primary:#15803d;--on-primary:#ffffff;--accent:#f97316;
+  --good:#15803d;--on-good:#ffffff;--bad:#d62839;--on-bad:#ffffff;
+  --tile:#ffdd4a;--tile-ink:#17331a;--tile-edge:#d1a800;
+}
+
+/* ---------- 2. BASE ---------- */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{height:100%;font-size:clamp(15px,1.05vw + 6px,20px)}
+body{margin:0;position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden;font-family:var(--font-ui);color:var(--ink);
+  background-color:var(--bg);background-image:var(--bg-img);background-size:var(--bg-size);
+  -webkit-text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#app{position:absolute;top:0;left:0;right:0;bottom:0}
+.screen{position:absolute;top:0;left:0;right:0;bottom:0;display:none;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.screen.active{display:flex}
+.bar{display:flex;align-items:center;gap:.6rem;padding:.6rem .9rem;background:var(--panel);border-bottom:3px solid var(--line);flex-wrap:wrap;flex:none}
+.bar h1{font-size:1.45rem;margin:0;flex:1;min-width:6em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:1rem}
+.panel{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:1rem 1.2rem;margin-bottom:1rem}
+.panel h2{margin:.1rem 0 .6rem;font-size:1.25rem}
+.hint,.foot{color:var(--muted);margin:.2rem 0 .9rem;line-height:1.4}
+.empty{color:var(--muted);font-size:1.15rem;padding:2rem 0;text-align:center}
+.jp{font-family:var(--font-jp)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6%)}40%{transform:translateX(6%)}60%{transform:translateX(-4%)}80%{transform:translateX(4%)}}
+@keyframes popin{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+
+/* ---------- 3. BUTTONS AND FORMS ---------- */
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;appearance:none}
+a{color:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;border:0;border-radius:14px;padding:.55em 1em;font-weight:700;text-decoration:none;
+  background:var(--panel2);color:var(--ink);box-shadow:0 3px 0 var(--line);min-height:44px;white-space:nowrap}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.btn.primary{background:var(--primary);color:var(--on-primary);box-shadow:0 3px 0 rgba(0,0,0,.28)}
+.btn.danger{background:var(--bad);color:var(--on-bad);box-shadow:0 3px 0 rgba(0,0,0,.28)}
+.btn.big{font-size:1.3rem;padding:.7em 1.4em}
+.btn.sm{font-size:.85rem;padding:.4em .7em;min-height:38px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.sel{border:2px solid var(--line);border-radius:12px;padding:.4em .6em;background:var(--panel);color:var(--ink);font-weight:700;font-size:max(16px,1rem);min-height:44px}
+.chk{display:flex;align-items:center;gap:.6em;font-weight:700;padding:.35em 0;font-size:1.05rem}
+.chk input{width:1.4em;height:1.4em;flex:none}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;left:-10px;top:0}
+.opt{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:.45rem 0}
+.opt-l{font-weight:700;min-width:10.5em}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;background:var(--panel2);padding:4px;border-radius:14px}
+.seg-b{border:0;background:transparent;padding:.4em .8em;border-radius:10px;font-weight:700;min-height:40px}
+.seg-b.on{background:var(--primary);color:var(--on-primary)}
+.chip{display:inline-flex;align-items:center;gap:.35em;border-radius:999px;padding:.15em .7em;font-weight:800;font-size:.9rem;background:var(--panel2)}
+.gchip{color:#fff;border-radius:999px;padding:.08em .6em;font-weight:800;font-size:.85em;white-space:nowrap}
+.gchip.g5{background:var(--g5)}.gchip.g4{background:var(--g4)}.gchip.g3{background:var(--g3)}
+
+/* ---------- 4. LIBRARY AND SET SCREEN ---------- */
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.card-main{border:0;background:transparent;text-align:left;padding:.9rem 1rem .5rem;display:block;width:100%}
+.card-t{font-size:1.25rem;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-n{color:var(--muted);font-size:.95rem;margin-top:.2rem}
+.card-st{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
+.card-acts{display:flex;flex-wrap:wrap;gap:.4rem;padding:.5rem 1rem .9rem}
+.st-table{width:100%;border-collapse:collapse}
+.st-table td,.st-table th{padding:.45rem .4rem;border-bottom:1px solid var(--line);text-align:left}
+.st-table th{color:var(--muted);font-size:.9rem}
+.st-dot{display:inline-block;width:.9em;height:.9em;border-radius:50%;vertical-align:-.1em;margin-right:.35em}
+.start-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.pick-sum{margin:.6rem 0 0;font-weight:800;font-size:1.05rem;color:var(--primary)}
+
+/* ---------- 5. PLAY SHELL ---------- */
+#scr-play{touch-action:none}
+.gbar{display:flex;align-items:center;gap:.5em;padding:.3em .6em;background:var(--panel);border-bottom:3px solid var(--line);flex:none;font-size:clamp(15px,min(2.7vh,2.2vw),30px)}
+.gbtn{width:2.3em;height:2.3em;border-radius:.55em;border:0;background:var(--panel2);font-size:1em;flex:none;padding:0;line-height:1}
+.gtitle{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
+.gtitle b{font-size:1.05em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gtitle small{font-size:.65em;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gstat{font-size:1.1em;font-weight:800;background:var(--panel2);border-radius:.55em;padding:.3em .6em;white-space:nowrap;font-variant-numeric:tabular-nums}
+#stage{flex:1;min-height:0;position:relative;overflow:hidden;--su:40px}
+.sb{display:flex;justify-content:center;flex-wrap:wrap;gap:calc(var(--su)*.2);padding:calc(var(--su)*.15);flex:none;background:var(--panel);border-top:3px solid var(--line);font-size:calc(var(--su)*.38)}
+.sb-p{display:flex;align-items:center;gap:.4em;border-radius:999px;padding:.15em .8em;font-weight:800;background:var(--panel2);border:.12em solid transparent;transition:transform .2s}
+.sb-p.now{border-color:var(--pc);transform:scale(1.12);background:var(--panel)}
+.sb-p b{font-variant-numeric:tabular-nums}
+.sb-p.bump b{animation:pulse .4s}
+.q-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.22);padding:calc(var(--su)*.25) calc(var(--su)*.45) calc(var(--su)*1.35)}
+.turn{display:flex;align-items:center;gap:.45em;font-size:calc(var(--su)*.5);font-weight:900;flex:none;animation:popin .3s}
+.turn-name{background:var(--pc);color:#fff;border-radius:.4em;padding:.05em .55em}
+.turn-type{color:var(--muted);font-weight:800;font-size:.75em}
+.q-body{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:calc(var(--su)*.26);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.q-body>:first-child{margin-top:auto}.q-body>:last-child{margin-bottom:auto}
+.q-text{font:700 calc(var(--su)*var(--qs,.62))/1.35 var(--font-word);text-align:left;max-width:100%;background:var(--panel);border:3px solid var(--line);border-radius:calc(var(--su)*.3);padding:.45em .9em}
+.q-line{display:flex;gap:.4em}
+.q-who{flex:none;color:var(--muted);min-width:1.3em}
+.blank{display:inline-block;min-width:3.2em;border-bottom:.08em solid var(--ink);text-align:center;padding:0 .2em;color:transparent}
+.blank.show{color:var(--good);border-color:var(--good);animation:popin .3s}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--su)*.22);width:min(100%,calc(var(--su)*15));flex:none}
+.opts.three{grid-template-columns:1fr 1fr 1fr}
+.op{display:flex;align-items:center;gap:.45em;border:0;border-radius:calc(var(--su)*.25);padding:.3em .55em;background:var(--tile);color:var(--tile-ink);text-align:left;
+  font:700 calc(var(--su)*.58)/1.2 var(--font-word);box-shadow:0 calc(var(--su)*.1) 0 var(--tile-edge);min-height:calc(var(--su)*1.15);overflow-wrap:anywhere}
+.op i{font-style:normal;flex:none;display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border-radius:50%;background:rgba(255,255,255,.75);color:#1b2a4e;font-size:.8em}
+.op.numonly{justify-content:center;font-size:calc(var(--su)*.9)}
+.op.numonly i{width:auto;height:auto;background:none;font-size:1em}
+.op.good{background:var(--good);color:var(--on-good);box-shadow:none}
+.op.bad{background:var(--bad);color:var(--on-bad);box-shadow:none;animation:shake .4s}
+.op.dim{opacity:.4;box-shadow:none}
+.note{font-size:calc(var(--su)*.4);font-weight:700;background:var(--panel2);border-radius:.5em;padding:.25em .7em;max-width:100%;animation:popin .3s;flex:none}
+.next-btn{position:absolute;right:calc(var(--su)*.3);bottom:calc(var(--su)*.3);z-index:30;border:0;border-radius:calc(var(--su)*.3);
+  background:var(--accent);color:#1b1300;font-weight:900;font-size:calc(var(--su)*.6);padding:.3em .8em;box-shadow:0 calc(var(--su)*.1) 0 rgba(0,0,0,.3);animation:popin .3s}
+
+/* ---------- 6. QUESTION TYPES ---------- */
+.ja{font:700 calc(var(--su)*.55)/1.4 var(--font-jp);background:var(--panel);border:3px solid var(--line);border-radius:calc(var(--su)*.3);padding:.3em .8em;text-align:center;max-width:100%}
+.frame{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:calc(var(--su)*.15);font:700 calc(var(--su)*.6)/1.2 var(--font-word);max-width:100%}
+.slot{min-width:calc(var(--su)*2.1);height:calc(var(--su)*1.15);border:calc(var(--su)*.06) dashed var(--muted);border-radius:calc(var(--su)*.2);background:var(--panel);
+  display:inline-flex;align-items:center;justify-content:center;padding:0 .35em;font:inherit;color:var(--ink)}
+.slot.full{border-style:solid;border-color:var(--tile-edge);background:var(--tile);color:var(--tile-ink);animation:popin .15s}
+.slot.ok{background:var(--good);border-color:var(--good);color:var(--on-good)}
+.slot.no{background:var(--bad);border-color:var(--bad);color:var(--on-bad);animation:shake .4s}
+.chunks{display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--su)*.25);flex:none}
+.chunk{border:0;border-radius:calc(var(--su)*.2);background:var(--tile);color:var(--tile-ink);box-shadow:0 calc(var(--su)*.09) 0 var(--tile-edge);
+  font:700 calc(var(--su)*.6)/1.1 var(--font-word);padding:.3em .55em;min-height:calc(var(--su)*1.1)}
+.chunk i{font-style:normal;font-size:.7em;margin-right:.3em;opacity:.7}
+.chunk.used{visibility:hidden}
+.answer-line{font:700 calc(var(--su)*.55)/1.3 var(--font-word);color:var(--good);animation:popin .3s;text-align:center}
+.listen-row{display:flex;gap:calc(var(--su)*.3);align-items:center;flex:none}
+.play-big{border:0;border-radius:calc(var(--su)*.5);background:var(--primary);color:var(--on-primary);font-weight:900;font-size:calc(var(--su)*.7);padding:.35em 1em;
+  box-shadow:0 calc(var(--su)*.12) 0 rgba(0,0,0,.3)}
+.play-big.playing{animation:pulse 1s infinite}
+.play-sm{border:0;border-radius:calc(var(--su)*.3);background:var(--panel2);color:var(--ink);font-weight:800;font-size:calc(var(--su)*.42);padding:.35em .8em;box-shadow:0 3px 0 var(--line)}
+.ear{font-size:calc(var(--su)*1.6);line-height:1}
+.script{font:700 calc(var(--su)*.36)/1.35 var(--font-word);background:var(--panel);border:2px dashed var(--line);border-radius:calc(var(--su)*.25);padding:.4em .8em;max-width:100%;animation:popin .25s}
+.lq{font:700 calc(var(--su)*.55)/1.3 var(--font-word);text-align:center}
+.sp-wrap{flex:1;min-height:0;width:100%;display:flex;gap:calc(var(--su)*.35);align-items:center}
+.sp-wrap.port{flex-direction:column}
+.card-sp{flex:1.1;min-width:0;max-height:100%;overflow:auto;background:#fff;color:#1b2a4e;border-radius:calc(var(--su)*.25);box-shadow:0 0 0 calc(var(--su)*.07) var(--ink);padding:.5em .9em;
+  font:700 calc(var(--su)*var(--ps,.46))/1.45 var(--font-word)}
+.card-sp h3{margin:0 0 .2em;text-align:center;font-size:1.15em}
+.sp-qs{flex:1;min-width:0;display:flex;flex-direction:column;gap:calc(var(--su)*.15);max-height:100%;overflow-y:auto;overflow-x:hidden;padding:2px calc(var(--su)*.1) 2px 2px}
+.sp-wrap.port .sp-qs,.sp-wrap.port .card-sp{width:100%;flex:none}
+.sp-q{display:grid;grid-template-columns:auto auto 1fr auto auto;align-items:center;gap:calc(var(--su)*.15) calc(var(--su)*.2);background:var(--panel);border:2px solid var(--line);border-radius:calc(var(--su)*.25);padding:calc(var(--su)*.12) calc(var(--su)*.2);font-size:calc(var(--su)*.34);font-weight:800}
+.sp-q .play-sm{white-space:nowrap;font-size:calc(var(--su)*.34)}
+.sp-q .sp-show{justify-self:start}
+.sp-q .sp-t{grid-column:1/-1;line-height:1.3}
+.sp-q .sp-m{display:block;color:var(--good);font-family:var(--font-word);margin-top:.1em}
+.sp-q.ok{border-color:var(--good)}.sp-q.no{border-color:var(--bad)}
+.mk{border:0;border-radius:.4em;font-weight:900;padding:.2em .5em;min-height:44px;min-width:2.2em}
+.mk.y{background:var(--good);color:var(--on-good)}.mk.n{background:var(--bad);color:var(--on-bad)}
+
+/* ---------- 7. END SCREEN ---------- */
+.end-box{max-width:62rem;margin:0 auto;text-align:center}
+.end-h{font-size:2.5rem;margin:.2rem 0}
+.end-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;text-align:left;margin:1rem 0}
+.end-st{background:var(--panel);border:3px solid var(--pc);border-radius:18px;padding:.8rem 1rem}
+.end-st h3{margin:0 0 .3rem;display:flex;align-items:center;gap:.4em;flex-wrap:wrap}
+.end-score{font-size:2rem;font-weight:900}
+.end-miss{margin:.4rem 0 0;padding-left:1.1rem;color:var(--muted);line-height:1.35}
+.end-miss b{color:var(--good)}
+.end-btns{display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap;margin:1rem 0}
+
+/* ---------- 8. MODAL AND TOAST ---------- */
+.modal-back{position:fixed;top:0;left:0;right:0;bottom:0;z-index:100;background:rgba(10,14,40,.6);display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal{background:var(--panel);color:var(--ink);border-radius:20px;padding:1.2rem 1.4rem;width:min(34rem,100%);max-height:92%;overflow:auto;animation:popin .2s}
+.modal h2{margin:0 0 .6rem;font-size:1.4rem}
+.modal p{margin:.3rem 0 .8rem;line-height:1.45}
+.modal-btns{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:flex-end;margin-top:1rem}
+#toast{position:fixed;left:50%;top:calc(4.6rem + env(safe-area-inset-top));transform:translateX(-50%);z-index:120;background:#1b2a4e;color:#fff;
+  padding:.7em 1.2em;border-radius:14px;font-weight:700;max-width:92%;opacity:0;pointer-events:none;transition:opacity .25s}
+#toast.on{opacity:1}
+
+/* ---------- 9. PRINT (A4) ---------- */
+#print-root{display:none}
+@page{size:A4;margin:12mm}
+@media print{
+  html,body{position:static!important;overflow:visible!important;height:auto!important;background:#fff!important;font-size:11pt}
+  #app,#modal-root,#toast{display:none!important}
+  #print-root{display:block;color:#000;font-family:var(--font-ui)}
+  .pr-page+.pr-page{break-before:page;page-break-before:always}
+  .pr-head{display:flex;justify-content:space-between;align-items:flex-end;gap:6mm;border-bottom:.6mm solid #000;padding-bottom:2.5mm;margin-bottom:4mm}
+  .pr-title{font-size:17pt;font-weight:800}
+  .pr-sub{font-size:10.5pt;margin-top:1mm}
+  .pr-name{font-size:10.5pt;white-space:nowrap}
+  .pr-sec{font-size:12pt;font-weight:800;margin:4mm 0 2mm;padding:1mm 2.5mm;background:#eee;border-radius:1.5mm}
+  .pr-sec span{font-family:var(--font-jp);font-weight:700;font-size:9.5pt;margin-left:3mm}
+  .pr-q{display:flex;gap:3mm;padding:2mm 0;border-bottom:.25mm solid #bbb;break-inside:avoid;page-break-inside:avoid}
+  .pr-n{font-weight:800;min-width:9mm}
+  .pr-body{flex:1;min-width:0}
+  .pr-line{font:700 11.5pt/1.45 var(--font-word)}
+  .pr-blank{display:inline-block;min-width:16mm;border-bottom:.3mm solid #000}
+  .pr-opts{display:flex;flex-wrap:wrap;gap:1mm 7mm;font:700 11pt/1.4 var(--font-word);margin-top:1mm}
+  .pr-ans{width:11mm;height:9mm;border:.35mm solid #000;border-radius:1.5mm;flex:none;align-self:center}
+  .pr-ja{font:10.5pt/1.4 var(--font-jp)}
+  .pr-frame{font:700 11.5pt/1.6 var(--font-word);margin:1mm 0}
+  .pr-box{display:inline-block;width:12mm;height:8mm;border:.35mm solid #000;vertical-align:middle;margin:0 .8mm}
+  .pr-chunks{font:700 11pt var(--font-word);display:flex;gap:6mm;flex-wrap:wrap}
+  .pr-card{border:.45mm solid #000;border-radius:2.5mm;padding:3mm 4mm;font:700 12pt/1.5 var(--font-word);margin:1mm 0 2mm}
+  .pr-card h4{margin:0 0 1mm;text-align:center}
+  .pr-lines{height:7mm;border-bottom:.25mm solid #999}
+  .pr-key{font:10.5pt/1.55 var(--font-ui)}
+  .pr-key b{font-family:var(--font-word)}
+  .pr-script{font:10.5pt/1.5 var(--font-word);margin:0 0 2.5mm}
+  .gchip{color:#000!important;background:none!important;border:.3mm solid #000;padding:0 2mm}
+}
+</style>
+</head>
+<body data-theme="classroom">
+
+<div id="app">
+  <!-- LIBRARY -->
+  <section id="scr-lib" class="screen active">
+    <header class="bar">
+      <h1>🎓 Eiken Quiz</h1>
+      <select id="theme-sel" class="sel" aria-label="Theme">
+        <option value="classroom">🍎 Classroom</option><option value="space">🚀 Space</option><option value="jungle">🌴 Jungle</option>
+      </select>
+      <a class="btn" href="index.html">🎈 Word Games</a>
+      <button class="btn primary" id="btn-import">⬆ Import</button>
+    </header>
+    <div class="scroll">
+      <div id="lib-grid" class="lib-grid"></div>
+      <p class="foot" id="lib-foot"></p>
+    </div>
+  </section>
+
+  <!-- ONE SET: students, options, start / print / export -->
+  <section id="scr-set" class="screen">
+    <header class="bar">
+      <button class="btn" id="set-back">← Sets</button>
+      <h1 id="set-title"></h1>
+      <button class="btn" id="set-print">🖨 Print</button>
+      <button class="btn primary" id="set-play">▶ Start</button>
+    </header>
+    <div class="scroll"><div id="set-body"></div></div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="scr-play" class="screen">
+    <div class="gbar">
+      <button class="gbtn" id="p-exit" aria-label="Stop">✕</button>
+      <div class="gtitle"><b id="p-name"></b><small id="p-set"></small></div>
+      <div class="gstat" id="p-progress"></div>
+      <button class="gbtn" id="p-sound" aria-label="Sound on or off">🔊</button>
+      <button class="gbtn" id="p-full" aria-label="Full screen">⛶</button>
+    </div>
+    <div id="stage"></div>
+    <div id="scoreboard" class="sb"></div>
+  </section>
+
+  <!-- END -->
+  <section id="scr-end" class="screen">
+    <div class="scroll"><div id="end-box" class="end-box"></div></div>
+  </section>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast"></div>
+<div id="print-root"></div>
+<input type="file" id="file-import" class="vh" accept=".json,application/json" tabindex="-1" aria-hidden="true">
+
+<script>
+'use strict';
+/* =====================================================================
+   EIKEN QUIZ — JavaScript
+   Sections: 1 Utilities  2 Options  3 Sound + speech  4 Storage  5 Files
+             6 Library  7 Set screen  8 Play  9 Question types  10 End
+             11 Print  12 Sample set  13 Boot
+
+   FILE FORMAT (.eiken.json) — what Claude writes for each lesson
+   ---------------------------------------------------------------
+   { "app":"eiken-quiz", "version":1, "sets":[ {
+       "id":"…", "title":"Weekend · 18 Nov", "topic":"Weekend",
+       "students":[ {"name":"Yuto","grade":4}, … ],
+       "questions":[ one of:
+         {"type":"gap",  "student":"Yuto", "text":"A: …( )…\nB: …", "options":[4 strings], "answer":1-4, "note":"…"}
+         {"type":"order","student":"Yuto", "ja":"日本文", "before":"text before the boxes", "after":"text after",
+                         "chunks":[4 strings in the CORRECT order], "note":"…"}
+         {"type":"listen","student":"Yuto","mode":"reply",    "say":["A: …"],            "options":[3 replies],  "answer":1-3}
+         {"type":"listen","student":"Yuto","mode":"question", "say":["A: …","B: …"], "question":"…?", "options":[4], "answer":1-4}
+         {"type":"speak", "student":"Yuto","title":"…", "passage":"…", "questions":[{"q":"…","model":"…"}, …]}
+       ] } ] }
+   - "answer" counts from 1, like the Eiken papers. "student":"" = a question for everyone.
+   - Lines that start "A:", "B:", "W:", "M:" or a name + ":" are read in different voices.
+   - After a lesson, the page saves results in the set ("sessions"); Export includes them,
+     so the next set can target what each student got wrong.
+   ===================================================================== */
+
+/* ===================== 1. UTILITIES ===================== */
+const $ = (s, r = document) => r.querySelector(s);
+const PROPS = new Set(['value', 'checked', 'disabled', 'hidden', 'textContent']);
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
+    else if (PROPS.has(k)) e[k] = v;
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  add(e, ...kids);
+  return e;
+}
+/** Append children, skipping null / false / ''. Arrays are flattened. Strings become text (never HTML). */
+function add(el, ...kids) {
+  kids.flat(9).forEach(k => { if (k == null || k === false || k === '') return; el.append(k instanceof Node ? k : String(k)); });
+  return el;
+}
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const norm = w => String(w == null ? '' : w).trim().replace(/\s+/g, ' ');
+const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } }
+};
+const NUMS = ['①', '②', '③', '④', '⑤', '⑥'];
+const COLS = ['#2563eb', '#e11d48', '#16a34a', '#d97706', '#7c3aed', '#0891b2', '#db2777', '#65a30d'];
+const TYPE_NAME = { gap: 'Gap-fill', order: 'Word order', listen: 'Listening', speak: 'Speaking' };
+const TYPE_JA = { gap: '筆記', order: '並べかえ', listen: 'リスニング', speak: 'スピーキング' };
+const gchip = g => g ? h('span', { class: 'gchip g' + g }, 'Grade ' + g) : null;
+const fmtDate = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+/** "A: Hello" -> {who:'A', text:'Hello'}; plain text -> {who:'', text}. */
+function splitLine(line) {
+  const m = /^\s*([A-Z][A-Za-z]{0,11}(?: \d)?|☆|★)\s*[:：]\s*(.*)$/.exec(line);
+  return m ? { who: m[1], text: m[2] } : { who: '', text: line.trim() };
+}
+
+/* ===================== 2. OPTIONS ===================== */
+const O = Object.assign({
+  theme: (LS.get('wg.opts', {}) || {}).theme || 'classroom',
+  sound: true, voice: 'en-US', twice: true, showReplies: false, order: 'turns', advance: 'tap'
+}, LS.get('eq.opts', {}));
+const saveOpts = () => LS.set('eq.opts', O);
+function applyTheme() { document.body.setAttribute('data-theme', O.theme); $('#theme-sel').value = O.theme; }
+function seg(label, choices, value, onpick) {
+  const g = h('div', { class: 'seg' });
+  choices.forEach(([v, l]) => {
+    const b = h('button', { class: 'seg-b' + (String(v) === String(value) ? ' on' : ''), onclick: () => {
+      g.querySelectorAll('.seg-b').forEach(x => x.classList.remove('on')); b.classList.add('on'); onpick(v);
+    } }, l);
+    g.append(b);
+  });
+  return h('div', { class: 'opt' }, h('span', { class: 'opt-l' }, label), g);
+}
+
+/* ===================== 3. SOUND AND SPEECH ===================== */
+const Sfx = {
+  ac: null,
+  unlock() {
+    try {
+      if (!this.ac) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) this.ac = new AC(); }
+      if (this.ac && this.ac.state === 'suspended') this.ac.resume();
+    } catch (e) { /* no audio */ }
+  },
+  tone(f, at, dur, type, vol, f2) {
+    const a = this.ac, t = a.currentTime + at, o = a.createOscillator(), g = a.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.2, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
+  },
+  play(name) {
+    if (!O.sound) return;
+    this.unlock(); if (!this.ac) return;
+    try {
+      const T = (...x) => this.tone(...x);
+      if (name === 'place') T(520, 0, .07, 'sine', .16);
+      else if (name === 'back') T(330, 0, .07, 'sine', .13);
+      else if (name === 'correct') { T(660, 0, .13, 'triangle', .22); T(880, .1, .13, 'triangle', .22); T(1320, .2, .28, 'triangle', .22); }
+      else if (name === 'wrong') { T(300, 0, .2, 'sine', .2, 230); T(230, .17, .3, 'sine', .2, 170); }
+      else if (name === 'turn') { T(523, 0, .09, 'triangle', .14); T(784, .09, .14, 'triangle', .14); }
+      else if (name === 'win') { [523, 659, 784, 1047].forEach((f, i) => T(f, i * .13, .22, 'triangle', .22)); T(1047, .55, .5, 'triangle', .2); }
+    } catch (e) { /* ignore */ }
+  }
+};
+/** Text-to-speech with up to three voices (speaker A, speaker B, narrator) and pauses between lines. */
+const Speech = {
+  ok: ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window),
+  token: 0,
+  voices() {
+    if (!this.ok) return [];
+    const all = speechSynthesis.getVoices() || [], lang = O.voice;
+    const exact = all.filter(v => (v.lang || '').replace('_', '-') === lang), en = all.filter(v => /^en/i.test(v.lang || ''));
+    const pool = (exact.length ? exact : en).slice();
+    // prefer good iOS/macOS voices first
+    pool.sort((a, b) => (/(enhanced|premium|samantha|daniel|serena|karen|moira|aaron|nicky)/i.test(b.name) ? 1 : 0) - (/(enhanced|premium|samantha|daniel|serena|karen|moira|aaron|nicky)/i.test(a.name) ? 1 : 0));
+    return pool;
+  },
+  stop() { this.token++; try { if (this.ok) speechSynthesis.cancel(); } catch (e) { /* ignore */ } },
+  /** Speak a list of {text, who} with gaps; calls done() at the end (unless stopped). */
+  run(parts, done) {
+    if (!this.ok || !parts.length) { if (done) setTimeout(done, 50); return; }
+    this.stop();
+    const tok = this.token, vs = this.voices(), speakers = [];
+    const say = i => {
+      if (tok !== this.token) return;
+      if (i >= parts.length) { if (done) done(); return; }
+      const p = parts[i];
+      if (p.pause) { setTimeout(() => say(i + 1), p.pause); return; }
+      let vIdx = 0, pitch = 1;
+      if (p.who === 'narrator') { vIdx = 2; pitch = 0.9; }
+      else if (p.who) { let k = speakers.indexOf(p.who); if (k < 0) { speakers.push(p.who); k = speakers.length - 1; } vIdx = k % 2; pitch = k % 2 ? 1.25 : 1; }
+      const u = new SpeechSynthesisUtterance(p.text);
+      u.lang = O.voice; u.rate = 0.82;
+      const v = vs.length ? vs[vIdx % vs.length] : null;
+      if (v) u.voice = v;
+      if (vs.length < 2 || (v && vs.indexOf(v) === 0 && vIdx)) u.pitch = pitch;   // only one voice: change pitch instead
+      let fired = false;
+      const next = () => { if (fired) return; fired = true; setTimeout(() => say(i + 1), p.gap == null ? 650 : p.gap); };
+      u.onend = next; u.onerror = next;
+      try { speechSynthesis.speak(u); } catch (e) { next(); }
+      // safety net: some browsers never fire onend
+      setTimeout(() => { if (!fired && !speechSynthesis.speaking) next(); }, 1500 + p.text.length * 140);
+    };
+    say(0);
+  }
+};
+if (Speech.ok) try { speechSynthesis.onvoiceschanged = () => Speech.voices(); speechSynthesis.getVoices(); } catch (e) { /* ignore */ }
+
+/* ===================== 4. STORAGE (IndexedDB "eiken-quiz") ===================== */
+const DB = {
+  db: null, mem: null,
+  open() {
+    return new Promise(res => {
+      let done = false;
+      const fail = () => { if (done) return; done = true; this.mem = new Map(); res(false); };
+      try {
+        const rq = indexedDB.open('eiken-quiz', 1);
+        rq.onupgradeneeded = () => rq.result.createObjectStore('sets', { keyPath: 'id' });
+        rq.onsuccess = () => { if (done) return; done = true; this.db = rq.result; res(true); };
+        rq.onerror = fail; rq.onblocked = fail;
+      } catch (e) { fail(); }
+      setTimeout(fail, 5000);
+    });
+  },
+  tx(mode, fn) {
+    return new Promise((res, rej) => {
+      const t = this.db.transaction('sets', mode), rq = fn(t.objectStore('sets'));
+      t.oncomplete = () => res(rq && rq.result);
+      t.onerror = t.onabort = () => rej(t.error || new Error('Storage error'));
+    });
+  },
+  all() { return this.mem ? Promise.resolve([...this.mem.values()]) : this.tx('readonly', s => s.getAll()); },
+  put(set) { if (this.mem) { this.mem.set(set.id, set); return Promise.resolve(); } return this.tx('readwrite', s => s.put(set)); },
+  del(id) { if (this.mem) { this.mem.delete(id); return Promise.resolve(); } return this.tx('readwrite', s => s.delete(id)); }
+};
+const APP = { sets: [] };
+async function storeSet(s) {
+  if (!APP.sets.includes(s)) APP.sets.push(s);
+  try { await DB.put(s); } catch (e) { toast('Could not save. The storage on this device may be full.'); }
+}
+
+/* ===================== 5. FILES: validate, import, export ===================== */
+/** Validate anything from an imported file. Unknown fields are dropped; text is length-limited. */
+function cleanSet(r) {
+  if (!r || typeof r !== 'object' || !Array.isArray(r.questions)) return null;
+  const str = (v, n) => norm(v).slice(0, n);
+  const list = (a, n, len) => (Array.isArray(a) ? a : []).slice(0, n).map(x => str(x, len));
+  const grade = g => [5, 4, 3].includes(+g) ? +g : 0;
+  const students = (Array.isArray(r.students) ? r.students : []).slice(0, 12)
+    .map((s, i) => ({ name: str(s && s.name, 24), grade: grade(s && s.grade), color: /^#[0-9a-f]{6}$/i.test(s && s.color) ? s.color : COLS[i % COLS.length] }))
+    .filter(s => s.name);
+  const qs = r.questions.slice(0, 200).map(q => {
+    if (!q || typeof q !== 'object') return null;
+    const base = { id: typeof q.id === 'string' && q.id ? q.id.slice(0, 40) : uid(), type: q.type, student: str(q.student, 24), note: str(q.note, 300) };
+    if (q.type === 'gap') {
+      const options = list(q.options, 4, 80), text = String(q.text == null ? '' : q.text).split('\n').map(l => norm(l)).filter(Boolean).slice(0, 6).join('\n').slice(0, 500);
+      if (options.length < 2 || !text) return null;
+      return Object.assign(base, { text, options, answer: clamp(+q.answer || 1, 1, options.length) });
+    }
+    if (q.type === 'order') {
+      const chunks = list(q.chunks, 6, 40).filter(Boolean);
+      if (chunks.length < 2) return null;
+      return Object.assign(base, { ja: str(q.ja, 160), before: str(q.before, 120), after: str(q.after, 120), chunks });
+    }
+    if (q.type === 'listen') {
+      const options = list(q.options, 4, 120), say = list(q.say, 10, 300).filter(Boolean), mode = q.mode === 'question' ? 'question' : 'reply';
+      if (options.length < 2 || !say.length) return null;
+      return Object.assign(base, { mode, say, question: str(q.question, 200), options, answer: clamp(+q.answer || 1, 1, options.length) });
+    }
+    if (q.type === 'speak') {
+      const questions = (Array.isArray(q.questions) ? q.questions : []).slice(0, 6).map(x => ({ q: str(x && x.q, 200), model: str(x && x.model, 200) })).filter(x => x.q);
+      if (!questions.length) return null;
+      return Object.assign(base, { title: str(q.title, 80), passage: str(q.passage, 900), questions });
+    }
+    return null;
+  }).filter(Boolean);
+  if (!qs.length) return null;
+  // students named in questions but missing from the list
+  qs.forEach(q => { if (q.student && !students.some(s => s.name === q.student)) students.push({ name: q.student, grade: 0, color: COLS[students.length % COLS.length] }); });
+  const sessions = (Array.isArray(r.sessions) ? r.sessions : []).slice(-30).map(s => ({
+    date: +(s && s.date) || Date.now(),
+    results: (Array.isArray(s && s.results) ? s.results : []).slice(0, 400).map(x => ({ qid: str(x && x.qid, 40), student: str(x && x.student, 24), ok: !!(x && x.ok), score: +(x && x.score) || 0, of: +(x && x.of) || 1 }))
+  }));
+  return {
+    id: typeof r.id === 'string' && r.id ? r.id.slice(0, 40) : uid(),
+    title: str(r.title, 120) || 'Eiken set', topic: str(r.topic, 80),
+    created: +r.created || Date.now(), updated: Date.now(), students, questions: qs, sessions
+  };
+}
+function download(name, text) {
+  const url = URL.createObjectURL(new Blob([text], { type: 'application/json' })), a = h('a', { href: url, download: name, class: 'vh' });
+  document.body.append(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 4000);
+}
+async function exportSet(s) {
+  const text = JSON.stringify({ app: 'eiken-quiz', version: 1, exported: new Date().toISOString(), sets: [s] }, null, 1);
+  const full = (norm(s.title).replace(/[^\p{L}\p{N}\- _]+/gu, '').replace(/\s+/g, '-').slice(0, 60) || 'eiken-set') + '.eiken.json';
+  let file = null; try { file = new File([text], full, { type: 'application/json' }); } catch (e) { /* old browser */ }
+  let canShare = false; try { canShare = !!(file && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) { /* no share */ }
+  if (canShare) {
+    const r = await modal({ title: 'Export', body: 'The file includes the results from each lesson, so the next set can practise what each student found hard. “Share” lets you AirDrop it to your Mac.',
+      buttons: [{ label: 'Cancel', value: null }, { label: '⬇ Download', value: 'dl' }, { label: 'Share / AirDrop', value: 'share', kind: 'primary' }] });
+    if (!r) return;
+    if (r === 'share') { try { await navigator.share({ files: [file], title: full }); } catch (e) { if (!e || e.name !== 'AbortError') download(full, text); } return; }
+  }
+  download(full, text); toast('Saved ' + full);
+}
+async function importFile(file) {
+  let data;
+  try { data = JSON.parse(await new Response(file).text()); } catch (e) { return toast('That file is not an Eiken Quiz file.'); }
+  if (data && data.app === 'word-games') return modal({ title: 'That is a Word Games file', body: 'Open it in Word Games instead (the 🎈 Word Games button).' });
+  const raw = Array.isArray(data) ? data : (data && Array.isArray(data.sets)) ? data.sets : [data];
+  const sets = raw.map(cleanSet).filter(Boolean);
+  if (!sets.length) return toast('No question sets were found in that file.');
+  let n = 0;
+  for (const s of sets) {
+    const ex = APP.sets.find(x => x.id === s.id);
+    if (ex) {
+      const r = await modal({ title: '“' + s.title + '” is already here', body: 'Replace the copy on this device? Its saved results will be replaced by the ones in the file.',
+        buttons: [{ label: 'Skip', value: null }, { label: 'Keep both', value: 'both' }, { label: 'Replace', value: 'replace', kind: 'danger' }] });
+      if (r === 'replace') { APP.sets[APP.sets.indexOf(ex)] = s; await storeSet(s); n++; }
+      else if (r === 'both') { s.id = uid(); s.title += ' (2)'; await storeSet(s); n++; }
+    } else { await storeSet(s); n++; }
+  }
+  Library.render(); toast(n ? plural(n, 'set') + ' imported' : 'Nothing was imported');
+}
+
+/* ----- modal / toast ----- */
+function show(name) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'scr-' + name)); }
+function modal({ title, body, buttons }) {
+  return new Promise(res => {
+    const close = v => { back.remove(); res(v); };
+    const back = h('div', { class: 'modal-back', onpointerdown: e => { if (e.target === back) close(null); } },
+      h('div', { class: 'modal' }, title && h('h2', null, title), h('div', null, typeof body === 'string' ? h('p', null, body) : body),
+        h('div', { class: 'modal-btns' }, (buttons || [{ label: 'OK', value: true, kind: 'primary' }]).map(b =>
+          h('button', { class: 'btn ' + (b.kind || ''), onclick: () => close(b.value) }, b.label)))));
+    $('#modal-root').append(back);
+  });
+}
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2800); }
+
+/* ===================== 6. LIBRARY ===================== */
+const counts = s => { const c = { gap: 0, order: 0, listen: 0, speak: 0 }; s.questions.forEach(q => c[q.type]++); return c; };
+const Library = {
+  show() { show('lib'); this.render(); },
+  render() {
+    const grid = $('#lib-grid'); grid.innerHTML = '';
+    const list = APP.sets.slice().sort((a, b) => b.created - a.created);
+    if (!list.length) grid.append(h('div', { class: 'panel' }, h('h2', null, 'No question sets yet'),
+      h('p', { class: 'hint' }, 'Claude makes a .eiken.json file for each lesson. Tap “Import” to add it (AirDrop it to the iPad first, or open this page on the Mac).'),
+      h('button', { class: 'btn primary', onclick: async () => { const s = cleanSet(SAMPLE()); await storeSet(s); this.render(); } }, '✨ Add a sample set to try')));
+    list.forEach(s => {
+      const c = counts(s), last = s.sessions.length ? s.sessions[s.sessions.length - 1] : null;
+      grid.append(h('div', { class: 'card' },
+        h('button', { class: 'card-main', onclick: () => SetScreen.show(s) },
+          h('div', { class: 'card-t' }, s.title),
+          h('div', { class: 'card-n' }, plural(s.questions.length, 'question') + ' · ' + Object.keys(c).filter(k => c[k]).map(k => c[k] + ' ' + TYPE_NAME[k].toLowerCase()).join(', ')),
+          h('div', { class: 'card-st' }, s.students.map(st => h('span', { class: 'chip' }, h('span', { class: 'st-dot', style: 'background:' + st.color }), st.name, st.grade ? ' · ' + st.grade + '級' : ''))),
+          last && h('div', { class: 'card-n' }, 'Last played ' + fmtDate(last.date))),
+        h('div', { class: 'card-acts' },
+          h('button', { class: 'btn sm primary', onclick: () => SetScreen.show(s) }, '▶ Open'),
+          h('button', { class: 'btn sm', onclick: () => Print.open(s) }, '🖨 Print'),
+          h('button', { class: 'btn sm', onclick: () => exportSet(s) }, '⬇ Export'),
+          h('button', { class: 'btn sm', onclick: async () => {
+            const r = await modal({ title: 'Delete “' + s.title + '”?', body: 'This removes the set and its saved results from this device. Export it first if you want to keep the results.',
+              buttons: [{ label: 'Cancel', value: null }, { label: 'Delete', value: 1, kind: 'danger' }] });
+            if (r) { APP.sets = APP.sets.filter(x => x !== s); try { await DB.del(s.id); } catch (e) { /* ignore */ } this.render(); }
+          } }, '🗑 Delete'))));
+    });
+    $('#lib-foot').textContent = DB.mem ? '⚠️ Storage is not available in this browser window, so sets will not be saved.' :
+      'Sets and results are stored on this device only. Export a set after the lesson to send the results back to your Mac.';
+  }
+};
+
+/* ===================== 7. SET SCREEN ===================== */
+const SetScreen = {
+  set: null, only: '', grade: 'all', types: null,
+  show(s) {
+    if (this.set !== s) { this.grade = 'all'; this.types = null; }
+    this.set = s; this.only = this.only && s.students.some(x => x.name === this.only) ? this.only : (s.students[0] || {}).name || '';
+    show('set'); this.render();
+  },
+  /** Types present in the set (in play order). */
+  typesIn(s) { return ['gap', 'order', 'listen', 'speak'].filter(t => s.questions.some(q => q.type === t)); },
+  gradeOf(q) { const st = this.set.students.find(x => x.name === q.student); return st ? st.grade : 0; },
+  /** The questions that the current choices would play, in turn order. */
+  pick() {
+    const s = this.set, types = this.types || new Set(this.typesIn(s));
+    const keep = q => types.has(q.type) && (O.order === 'one' || this.grade === 'all' || (q.student && this.gradeOf(q) === +this.grade));
+    if (O.order === 'one') return s.questions.filter(q => (q.student === this.only || !q.student) && keep(q));
+    // round robin: one question per student in turn, "everyone" questions after each round
+    const queues = s.students.map(st => s.questions.filter(q => q.student === st.name && keep(q)));
+    const all = s.questions.filter(q => !q.student && keep(q));
+    const seq = [];
+    while (queues.some(q => q.length) || all.length) {
+      queues.forEach(q => { if (q.length) seq.push(q.shift()); });
+      if (all.length) seq.push(all.shift());
+    }
+    return seq;
+  },
+  render() {
+    const s = this.set, body = $('#set-body'); body.innerHTML = '';
+    $('#set-title').textContent = s.title;
+    const by = name => s.questions.filter(q => q.student === name);
+    const last = s.sessions.length ? s.sessions[s.sessions.length - 1] : null;
+    const lastScore = name => { if (!last) return '–'; const r = last.results.filter(x => x.student === name); if (!r.length) return '–'; const sc = r.reduce((a, x) => a + x.score, 0), of = r.reduce((a, x) => a + x.of, 0); return sc + ' / ' + of; };
+    const everyone = by('');
+    add(body,
+      h('div', { class: 'panel' }, h('h2', null, 'Students'),
+        h('table', { class: 'st-table' },
+          h('tr', null, h('th', null, 'Student'), h('th', null, 'Target'), h('th', null, 'Questions'), h('th', null, 'Last lesson')),
+          s.students.map(st => { const qs = by(st.name), c = {}; qs.forEach(q => c[q.type] = (c[q.type] || 0) + 1);
+            return h('tr', null, h('td', null, h('span', { class: 'st-dot', style: 'background:' + st.color }), h('b', null, st.name)), h('td', null, gchip(st.grade)),
+              h('td', null, Object.keys(c).map(k => c[k] + ' ' + TYPE_NAME[k].toLowerCase()).join(', ') || '–'), h('td', null, lastScore(st.name))); }),
+          everyone.length > 0 && h('tr', null, h('td', null, h('b', null, 'Everyone')), h('td', null), h('td', null, plural(everyone.length, 'question')), h('td', null)))),
+      this.choosePanel(),
+      h('div', { class: 'panel' }, h('h2', null, 'How to play'),
+        seg('Next question', [['tap', 'Tap “Next” (teacher)'], ['auto', 'Automatic']], O.advance, v => { O.advance = v; saveOpts(); }),
+        seg('Sound effects', [[true, 'On'], [false, 'Off']], O.sound, v => { O.sound = v === true || v === 'true'; saveOpts(); }),
+        h('h2', { style: 'margin-top:1rem' }, 'Listening'),
+        Speech.ok ? [
+          seg('Voice', [['en-US', 'American (like the test)'], ['en-GB', 'British']], O.voice, v => { O.voice = v; saveOpts(); }),
+          seg('Play the English', [[true, 'Twice (like the test)'], [false, 'Once']], O.twice, v => { O.twice = v === true || v === 'true'; saveOpts(); }),
+          seg('Reply choices', [[false, 'Spoken only (like the test)'], [true, 'Also show the words']], O.showReplies, v => { O.showReplies = v === true || v === 'true'; saveOpts(); }),
+          h('button', { class: 'btn sm', onclick: () => Speech.run([{ who: 'A', text: 'Hello! This is speaker A.' }, { who: 'B', text: 'And this is speaker B.' }, { who: 'narrator', text: 'Question. Who is speaking?' }]) }, '🔊 Test the voices')
+        ] : h('p', { class: 'hint' }, '⚠️ This browser cannot speak, so read the listening questions aloud yourself (the script is on the print-out).')),
+      h('div', { class: 'start-row' },
+        h('button', { class: 'btn big primary', onclick: () => this.start() }, '▶ Start'),
+        h('button', { class: 'btn', onclick: () => Print.open(s) }, '🖨 Print worksheets'),
+        h('button', { class: 'btn', onclick: () => exportSet(s) }, '⬇ Export with results')),
+      s.topic && h('p', { class: 'foot' }, 'Topic: ' + s.topic + ' · Made ' + fmtDate(s.created)));
+  },
+  /** Panel: who answers, which grade, which question types, with a live count. */
+  choosePanel() {
+    const s = this.set, present = this.typesIn(s);
+    if (!this.types) this.types = new Set(present);
+    const grades = [5, 4, 3].filter(g => s.students.some(st => st.grade === g));
+    const summary = h('p', { class: 'pick-sum' });
+    const update = () => {
+      const seq = this.pick(), per = new Map();
+      seq.forEach(q => per.set(q.student || 'Everyone', (per.get(q.student || 'Everyone') || 0) + 1));
+      summary.textContent = seq.length ? '▶ ' + plural(seq.length, 'question') + ': ' + [...per].map(([n, c]) => n + ' ' + c).join(', ') : '⚠️ No questions match these choices.';
+      $('#set-play').disabled = !seq.length;
+    };
+    const typeBtns = h('div', { class: 'seg' }, present.map(t => {
+      const n = s.questions.filter(q => q.type === t).length;
+      const b = h('button', { class: 'seg-b' + (this.types.has(t) ? ' on' : ''), onclick: () => {
+        if (this.types.has(t)) { if (this.types.size === 1) return toast('Keep at least one type.'); this.types.delete(t); } else this.types.add(t);
+        b.classList.toggle('on', this.types.has(t)); update();
+      } }, TYPE_NAME[t] + ' (' + n + ')');
+      return b;
+    }));
+    const panel = h('div', { class: 'panel' }, h('h2', null, 'Choose the questions'),
+      seg('Who answers', [['turns', 'Take turns (everyone)'], ['one', 'One student only']], O.order, v => { O.order = v; saveOpts(); this.render(); }),
+      O.order === 'one' && seg('Student', s.students.map(st => [st.name, st.name + (st.grade ? ' (' + st.grade + '級)' : '')]), this.only, v => { this.only = v; update(); }),
+      O.order !== 'one' && grades.length > 1 && seg('Grade', [['all', 'All grades']].concat(grades.map(g => [g, 'Grade ' + g])), this.grade, v => { this.grade = v; update(); }),
+      h('div', { class: 'opt' }, h('span', { class: 'opt-l' }, 'Question types'), typeBtns),
+      summary);
+    setTimeout(update, 0);
+    return panel;
+  },
+  start() {
+    const seq = this.pick();
+    if (!seq.length) return toast('There are no questions for that choice.');
+    Play.start(this.set, seq);
+  }
+};
+
+/* ===================== 8. PLAY ===================== */
+const Play = (() => {
+  let run = null;
+  const stage = $('#stage');
+  function measure() {
+    const r = stage.getBoundingClientRect(), su = Math.max(10, Math.min(r.width / 16, r.height / 9));
+    stage.style.setProperty('--su', su + 'px'); $('#scoreboard').style.setProperty('--su', su + 'px');
+  }
+  function start(set, seq) {
+    stop();
+    const players = set.students.filter(s => seq.some(q => q.student === s.name)).map(s => ({ name: s.name, grade: s.grade, color: s.color, score: 0, of: 0 }));
+    run = { set, seq, i: -1, players, results: [], alive: true, timers: new Set(), resize: [] };
+    show('play');
+    $('#p-name').textContent = '🎓 ' + set.title; $('#p-set').textContent = set.topic || '';
+    $('#p-sound').textContent = O.sound ? '🔊' : '🔇';
+    measure(); drawBoard(); next();
+  }
+  const later = (fn, ms) => { const r = run; const id = setTimeout(() => { r.timers.delete(id); if (r.alive) fn(); }, ms); r.timers.add(id); };
+  function drawBoard(now, bump) {
+    const sb = $('#scoreboard'); sb.innerHTML = '';
+    if (!run.players.length) { sb.hidden = true; return; }
+    sb.hidden = false;
+    run.players.forEach(p => sb.append(h('div', { class: 'sb-p' + (p.name === now ? ' now' : '') + (p.name === bump ? ' bump' : ''), style: '--pc:' + p.color },
+      h('span', { class: 'st-dot', style: 'background:' + p.color }), p.name, h('b', null, '★ ' + p.score))));
+  }
+  function next() {
+    Speech.stop();
+    run.i++;
+    if (run.i >= run.seq.length) return finish();
+    const q = run.seq[run.i], p = run.players.find(x => x.name === q.student);
+    run.resize = [];
+    $('#p-progress').textContent = (run.i + 1) + ' / ' + run.seq.length;
+    stage.innerHTML = '';
+    drawBoard(p && p.name);
+    const wrap = h('div', { class: 'q-wrap' },
+      h('div', { class: 'turn', style: '--pc:' + (p ? p.color : 'var(--primary)') },
+        h('span', { class: 'turn-name' }, p ? p.name : 'Everyone'), p && gchip(p.grade), h('span', { class: 'turn-type' }, TYPE_NAME[q.type] + ' · ' + TYPE_JA[q.type])));
+    const body = h('div', { class: 'q-body' });
+    wrap.append(body); stage.append(wrap);
+    Sfx.play('turn');
+    const api = {
+      body, later, onResize: fn => run.resize.push(fn),
+      /** Mark the question. score/of lets speaking questions give part marks. */
+      done(ok, score, of) {
+        if (score == null) { score = ok ? 1 : 0; of = 1; }
+        if (p) { p.score += score; p.of += of; }
+        run.results.push({ qid: q.id, student: q.student, ok, score, of });
+        Sfx.play(ok ? 'correct' : 'wrong');
+        drawBoard(p && p.name, score ? (p && p.name) : null);
+        if (q.note) body.append(h('div', { class: 'note' }, '💡 ' + q.note));
+        if (O.advance === 'auto') later(next, q.type === 'gap' || q.type === 'order' ? 2600 : 3200);
+        else stage.append(h('button', { class: 'next-btn', onclick: e => { e.currentTarget.remove(); next(); } }, run.i + 1 < run.seq.length ? 'Next ▶' : 'Finish 🏁'));
+      }
+    };
+    QTypes[q.type](q, api);
+  }
+  function stop() {
+    if (!run) return;
+    run.alive = false; run.timers.forEach(clearTimeout); Speech.stop(); stage.innerHTML = '';
+  }
+  async function finish() {
+    const r = run; stop(); run = null;
+    if (r.results.length) {
+      r.set.sessions.push({ date: Date.now(), results: r.results });
+      r.set.sessions = r.set.sessions.slice(-30);
+      await storeSet(r.set);
+    }
+    End.show(r);
+  }
+  async function quit() {
+    if (!run) return;
+    const ok = !run.results.length || await modal({ title: 'Stop the quiz?', body: 'The answers so far will be saved.', buttons: [{ label: 'Keep playing', value: null }, { label: 'Stop', value: 1, kind: 'danger' }] });
+    if (ok) finish();
+  }
+  window.addEventListener('resize', () => { if (!run) return; measure(); run.resize.forEach(fn => { try { fn(); } catch (e) { /* ignore */ } }); });
+  return { start, quit };
+})();
+
+/* ===================== 9. QUESTION TYPES ===================== */
+/** Render dialogue / sentence text; "( )" becomes a blank that can be revealed. */
+function qText(text, fillWith) {
+  let blank = null;
+  const box = h('div', { class: 'q-text' });
+  text.split('\n').forEach(line => {
+    const { who, text: t } = splitLine(line);
+    const parts = t.split(/\(\s*\)|（\s*）/);
+    const lineEl = h('div', { class: 'q-line' }, who && h('span', { class: 'q-who' }, who + ':'));
+    const span = h('span');
+    parts.forEach((pt, i) => { if (i) { blank = h('span', { class: 'blank' }, fillWith || ''); span.append(blank); } span.append(pt); });
+    lineEl.append(span); box.append(lineEl);
+  });
+  const len = text.length;
+  box.style.setProperty('--qs', len > 150 ? .4 : len > 110 ? .44 : len > 70 ? .5 : .58);
+  return { box, blank };
+}
+/** Four numbered option buttons; one try, then the right one is shown. */
+function optionButtons(q, api, opts) {
+  const three = q.options.length === 3, numOnly = opts && opts.numOnly;
+  const grid = h('div', { class: 'opts' + (three ? ' three' : '') });
+  let locked = false;
+  const btns = q.options.map((o, i) => h('button', { class: 'op' + (numOnly ? ' numonly' : ''), onclick: () => {
+    if (locked) return; locked = true;
+    const ok = i + 1 === q.answer;
+    btns.forEach((b, j) => {
+      if (j + 1 === q.answer) b.classList.add('good'); else if (j === i) b.classList.add('bad'); else b.classList.add('dim');
+      if (numOnly) { b.classList.remove('numonly'); b.append(h('span', null, q.options[j])); }
+    });
+    if (opts && opts.onAnswer) opts.onAnswer(ok);
+    api.done(ok);
+  } }, h('i', null, i + 1), numOnly ? null : o));
+  add(grid, btns);
+  return grid;
+}
+const QTypes = {
+  gap(q, api) {
+    const t = qText(q.text, q.options[q.answer - 1]);
+    add(api.body, t.box, optionButtons(q, api, { onAnswer: () => t.blank && t.blank.classList.add('show') }));
+  },
+  order(q, api) {
+    const n = q.chunks.length, order = shuffle(q.chunks.map((c, i) => i));
+    if (order.every((v, i) => v === i) && n > 1) order.reverse();  // never start already in order
+    const slots = [], picked = [];
+    const frame = h('div', { class: 'frame' }, q.before);
+    for (let i = 0; i < n; i++) { const s = h('button', { class: 'slot', onclick: () => undo(i) }, ''); slots.push(s); frame.append(s); }
+    add(frame, q.after);
+    const tiles = order.map((ci, k) => h('button', { class: 'chunk', onclick: () => pick(ci, tiles[k]) }, h('i', null, NUMS[k]), q.chunks[ci]));
+    let locked = false;
+    function pick(ci, tile) {
+      if (locked || tile.classList.contains('used')) return;
+      const at = slots.findIndex((s, i) => picked[i] == null); if (at < 0) return;
+      picked[at] = { ci, tile }; slots[at].textContent = q.chunks[ci]; slots[at].classList.add('full'); tile.classList.add('used'); Sfx.play('place');
+      if (picked.filter(x => x).length === n) check();
+    }
+    function undo(i) {
+      if (locked || !picked[i]) return;
+      picked[i].tile.classList.remove('used'); picked[i] = null; slots[i].textContent = ''; slots[i].classList.remove('full'); Sfx.play('back');
+    }
+    function check() {
+      locked = true;
+      const ok = picked.every((x, i) => q.chunks[x.ci] === q.chunks[i]);
+      slots.forEach((s, i) => s.classList.add(q.chunks[picked[i].ci] === q.chunks[i] ? 'ok' : 'no'));
+      if (!ok) api.later(() => {
+        slots.forEach((s, i) => { s.textContent = q.chunks[i]; s.classList.remove('no'); s.classList.add('ok'); });
+        api.body.insertBefore(h('div', { class: 'answer-line' }, '✗ → ✓ ' + [q.before, q.chunks.join(' '), q.after].join(' ').trim()), api.body.children[2] || null);
+      }, 1300);
+      api.done(ok);
+    }
+    add(api.body, q.ja && h('div', { class: 'ja jp' }, q.ja), frame, h('div', { class: 'chunks' }, tiles));
+  },
+  listen(q, api) {
+    const reply = q.mode === 'reply';
+    const parts = [];
+    q.say.forEach(l => { const { who, text } = splitLine(l); parts.push({ who: who || 'A', text }); });
+    if (reply) q.options.forEach((o, i) => parts.push({ who: 'narrator', text: (i + 1) + '.', gap: 250 }, { who: splitLine(q.say[q.say.length - 1]).who === 'A' ? 'B' : 'A', text: o }));
+    else if (q.question) parts.push({ who: 'narrator', text: 'Question. ' + q.question });
+    const seqParts = O.twice ? parts.concat([{ pause: 1400 }], parts) : parts;
+    const playBtn = h('button', { class: 'play-big', onclick: () => play() }, '▶ Listen');
+    const script = h('div', { class: 'script', hidden: true },
+      q.say.map(l => h('div', null, l)), reply ? q.options.map((o, i) => h('div', null, (i + 1) + '. ' + o)) : h('div', null, h('b', null, 'Question: '), q.question));
+    function play() {
+      if (!Speech.ok) { script.hidden = false; return; }
+      playBtn.classList.add('playing'); playBtn.textContent = '🔊 Listening…';
+      Speech.run(seqParts, () => { playBtn.classList.remove('playing'); playBtn.textContent = '▶ Listen again'; });
+    }
+    const showOpts = !reply || O.showReplies;
+    const grid = optionButtons(q, api, { numOnly: !showOpts, onAnswer: () => { script.hidden = false; } });
+    add(api.body,
+      h('div', { class: 'listen-row' }, h('span', { class: 'ear' }, '👂'), playBtn,
+        h('button', { class: 'play-sm', onclick: () => { script.hidden = !script.hidden; } }, '📝 Script')),
+      grid, script);
+    if (!Speech.ok) script.hidden = false;
+  },
+  speak(q, api) {
+    let marked = 0, score = 0;
+    const rows = q.questions.map((x, i) => {
+      const model = h('span', { class: 'sp-m', hidden: !x.model }, '✓ ' + x.model);
+      const txt = h('div', { class: 'sp-t', hidden: true }, x.q, model);
+      const reveal = () => { txt.hidden = false; showBtn.style.visibility = 'hidden'; };
+      const showBtn = h('button', { class: 'play-sm sp-show', onclick: reveal }, '👀 Show');
+      const row = h('div', { class: 'sp-q' },
+        h('b', null, 'No.' + (i + 1)),
+        h('button', { class: 'play-sm', onclick: () => Speech.ok ? Speech.run([{ who: 'narrator', text: x.q }]) : reveal() }, '🔊 Ask'),
+        showBtn,
+        h('button', { class: 'mk y', onclick: () => mark(row, true) }, '✓'),
+        h('button', { class: 'mk n', onclick: () => mark(row, false) }, '✗'),
+        txt);
+      return row;
+    });
+    function mark(row, ok) {
+      if (row.dataset.m) return;
+      row.dataset.m = '1'; row.classList.add(ok ? 'ok' : 'no'); row.querySelectorAll('.mk').forEach(b => b.disabled = true);
+      marked++; if (ok) score++;
+      Sfx.play(ok ? 'correct' : 'back');
+      if (marked === rows.length) api.done(score * 2 >= rows.length, score, rows.length);
+    }
+    const card = h('div', { class: 'card-sp' }, q.title && h('h3', null, q.title), q.passage);
+    const len = (q.passage || '').length;
+    card.style.setProperty('--ps', len > 320 ? .36 : len > 200 ? .41 : .46);
+    const wrap = h('div', { class: 'sp-wrap' }, card, h('div', { class: 'sp-qs' }, rows));
+    const fit = () => { const r = api.body.getBoundingClientRect(); wrap.classList.toggle('port', r.width < r.height * 1.2); };
+    add(api.body, wrap); fit(); api.onResize(fit);
+  }
+};
+
+/* ===================== 10. END ===================== */
+const End = {
+  show(r) {
+    show('end');
+    const box = $('#end-box'); box.innerHTML = '';
+    const byId = new Map(r.seq.map(q => [q.id, q]));
+    const answerOf = q => q.type === 'gap' || q.type === 'listen' ? q.options[q.answer - 1] : q.type === 'order' ? [q.before, q.chunks.join(' '), q.after].join(' ').trim() : (q.title || 'Speaking');
+    const cut = (t, n) => t.length <= n ? t : t.slice(0, t.lastIndexOf(' ', n) > n * .6 ? t.lastIndexOf(' ', n) : n) + '…';
+    const promptOf = q => q.type === 'gap' ? q.text.replace(/\n/g, ' / ') : q.type === 'order' ? q.ja : q.type === 'listen' ? (q.mode === 'question' ? q.question : q.say.join(' / ')) : (q.title || '');
+    add(box, h('h2', { class: 'end-h' }, '🏁 Well done, everyone!'),
+      h('div', { class: 'end-grid' }, r.players.filter(p => p.of).map(p => {
+        const miss = r.results.filter(x => x.student === p.name && !x.ok).map(x => byId.get(x.qid)).filter(Boolean);
+        return h('div', { class: 'end-st', style: '--pc:' + p.color },
+          h('h3', null, h('span', { class: 'st-dot', style: 'background:' + p.color }), p.name, gchip(p.grade)),
+          h('div', { class: 'end-score' }, '★ ' + p.score + ' / ' + p.of),
+          miss.length ? h('ul', { class: 'end-miss' }, miss.map(q => h('li', null, TYPE_NAME[q.type] + ': ' + cut(promptOf(q), 80) + ' → ', h('b', null, answerOf(q))))) :
+            h('p', { class: 'hint' }, 'Everything right! 🎉'));
+      })),
+      h('div', { class: 'end-btns' },
+        h('button', { class: 'btn big primary', onclick: () => SetScreen.show(r.set) }, '↩ Back to the set'),
+        h('button', { class: 'btn big', onclick: () => exportSet(r.set) }, '⬇ Export with results'),
+        h('button', { class: 'btn big', onclick: () => Library.show() }, '← All sets')));
+    Sfx.play('win');
+  }
+};
+
+/* ===================== 11. PRINT ===================== */
+const Print = {
+  async open(s) {
+    const checks = s.students.map(st => ({ st, box: h('input', { type: 'checkbox', checked: true }) }));
+    const key = h('input', { type: 'checkbox', checked: true }), teacher = h('input', { type: 'checkbox', checked: true });
+    const ok = await modal({ title: '🖨 Print worksheets', body: h('div', null,
+      h('p', null, 'One A4 worksheet per student, at their own grade.'),
+      checks.map(c => h('label', { class: 'chk' }, c.box, c.st.name, ' ', gchip(c.st.grade))),
+      h('hr'), h('label', { class: 'chk' }, teacher, 'Teacher page (listening script + speaking questions)'),
+      h('label', { class: 'chk' }, key, 'Answer key page')),
+      buttons: [{ label: 'Cancel', value: null }, { label: 'Print', value: 1, kind: 'primary' }] });
+    if (!ok) return;
+    const who = checks.filter(c => c.box.checked).map(c => c.st);
+    const everyone = s.questions.filter(q => !q.student);
+    const root = $('#print-root'); root.innerHTML = '';
+    who.forEach(st => root.append(this.sheet(s, st, s.questions.filter(q => q.student === st.name).concat(everyone))));
+    if (!who.length && everyone.length) root.append(this.sheet(s, null, everyone));
+    if (teacher.checked) root.append(this.teacher(s, who));
+    if (key.checked) root.append(this.key(s, who));
+    setTimeout(() => { try { window.print(); } catch (e) { toast('Printing is not available in this browser.'); } }, 300);
+  },
+  head(s, title, sub, noName) {
+    return h('div', { class: 'pr-head' }, h('div', null, h('div', { class: 'pr-title' }, title), h('div', { class: 'pr-sub' }, sub)),
+      !noName && h('div', { class: 'pr-name' }, 'Name: __________________  Date: __________'));
+  },
+  lineText(text) {
+    return text.split('\n').map(l => { const { who, text: t } = splitLine(l); const parts = t.split(/\(\s*\)|（\s*）/);
+      return h('div', { class: 'pr-line' }, who && h('b', null, who + ': '), parts.map((p, i) => [i ? h('span', { class: 'pr-blank' }, '(　　)') : null, p])); });
+  },
+  sheet(s, st, qs) {
+    const page = h('div', { class: 'pr-page' }, this.head(s, (st ? st.name + ' · ' : '') + s.title, (st && st.grade ? 'Eiken Grade ' + st.grade + ' practice' : 'Eiken practice') + (s.topic ? ' · ' + s.topic : '')));
+    let n = 0;
+    const sec = (type, ja, list, fn) => { if (!list.length) return; page.append(h('div', { class: 'pr-sec' }, TYPE_NAME[type], h('span', { class: 'jp' }, ja))); list.forEach(q => page.append(fn(q, ++n))); };
+    const of = t => qs.filter(q => q.type === t);
+    sec('gap', '（　）に入るものを 1〜4 から選んで、□に番号を書きましょう。', of('gap'), (q, k) => h('div', { class: 'pr-q' }, h('div', { class: 'pr-n' }, '(' + k + ')'),
+      h('div', { class: 'pr-body' }, this.lineText(q.text), h('div', { class: 'pr-opts' }, q.options.map((o, i) => h('span', null, (i + 1) + '  ' + o)))), h('div', { class: 'pr-ans' })));
+    sec('order', '日本文の意味になるように ①〜④ を並べかえて、□に番号を書きましょう。', of('order'), (q, k) => {
+      const order = this.orderFor(q);
+      return h('div', { class: 'pr-q' }, h('div', { class: 'pr-n' }, '(' + k + ')'), h('div', { class: 'pr-body' },
+        q.ja && h('div', { class: 'pr-ja jp' }, q.ja),
+        h('div', { class: 'pr-chunks' }, order.map((ci, j) => h('span', null, NUMS[j] + ' ' + q.chunks[ci]))),
+        h('div', { class: 'pr-frame' }, q.before, ' ', q.chunks.map(() => h('span', { class: 'pr-box' })), ' ', q.after)));
+    });
+    sec('listen', '英語を聞いて、答えの番号を□に書きましょう。', of('listen'), (q, k) => h('div', { class: 'pr-q' }, h('div', { class: 'pr-n' }, 'No.' + k),
+      h('div', { class: 'pr-body' }, q.mode === 'reply' ? h('div', { class: 'pr-opts' }, q.options.map((o, i) => h('span', null, (i + 1)))) :
+        h('div', { class: 'pr-opts' }, q.options.map((o, i) => h('span', null, (i + 1) + '  ' + o)))), h('div', { class: 'pr-ans' })));
+    sec('speak', 'カードを声に出して読みましょう。先生の質問に答えましょう。', of('speak'), (q, k) => h('div', { class: 'pr-q' }, h('div', { class: 'pr-n' }, '(' + k + ')'),
+      h('div', { class: 'pr-body' }, h('div', { class: 'pr-card' }, q.title && h('h4', null, q.title), q.passage))));
+    return page;
+  },
+  /** Stable chunk order for print (so the key matches the sheet). */
+  orderFor(q) {
+    let seed = 0; for (const ch of q.id) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+    const idx = q.chunks.map((c, i) => i), rnd = () => { seed = (seed * 1103515245 + 12345) >>> 0; return seed / 4294967296; };
+    for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+    if (idx.every((v, i) => v === i)) idx.reverse();
+    return idx;
+  },
+  teacher(s, who) {
+    const page = h('div', { class: 'pr-page' }, this.head(s, 'Teacher page · ' + s.title, 'Listening script (read each one twice) and speaking questions', true));
+    (who.length ? who : [null]).forEach(st => {
+      const qs = s.questions.filter(q => (st ? q.student === st.name : true) && (q.type === 'listen' || q.type === 'speak'));
+      if (!qs.length) return;
+      page.append(h('div', { class: 'pr-sec' }, st ? st.name + ' ' : 'Everyone ', st && gchip(st.grade)));
+      qs.forEach(q => {
+        if (q.type === 'listen') page.append(h('div', { class: 'pr-script' }, h('b', null, 'Listening No.' + (this.numberOn(s, st, q)) + '  '),
+          q.say.map(l => h('div', null, l)), q.mode === 'reply' ? q.options.map((o, i) => h('div', null, (i + 1) + '. ' + o)) : h('div', null, h('b', null, 'Question: '), q.question),
+          h('div', null, h('b', null, 'Answer: ' + q.answer))));
+        else page.append(h('div', { class: 'pr-script' }, h('b', null, 'Speaking: ' + (q.title || '')),
+          q.questions.map((x, i) => h('div', null, 'No.' + (i + 1) + '  ' + x.q, h('br'), h('i', null, '  e.g. ' + x.model)))));
+      });
+    });
+    return page;
+  },
+  /** Number of a question as printed on that student's sheet. */
+  numberOn(s, st, q) {
+    const qs = s.questions.filter(x => (st ? x.student === st.name : false) || !x.student);
+    const orderT = ['gap', 'order', 'listen', 'speak'];
+    let n = 0;
+    for (const t of orderT) for (const x of qs.filter(y => y.type === t)) { n++; if (x === q) return n; }
+    return '?';
+  },
+  key(s, who) {
+    const page = h('div', { class: 'pr-page' }, this.head(s, 'Answer key · ' + s.title, '', true));
+    (who.length ? who : [null]).forEach(st => {
+      const qs = s.questions.filter(x => (st ? x.student === st.name : false) || !x.student);
+      page.append(h('div', { class: 'pr-sec' }, st ? st.name + ' ' : 'Everyone ', st && gchip(st.grade)));
+      const lines = [];
+      ['gap', 'order', 'listen', 'speak'].forEach(t => qs.filter(q => q.type === t).forEach(q => {
+        const n = this.numberOn(s, st, q);
+        if (q.type === 'gap') lines.push(h('div', null, '(' + n + ') ' + q.answer + ' ', h('b', null, q.options[q.answer - 1]), q.note ? '  — ' + q.note : ''));
+        else if (q.type === 'order') { const ord = this.orderFor(q); lines.push(h('div', null, '(' + n + ') ' + q.chunks.map((c, i) => NUMS[ord.indexOf(i)]).join(' '), '  ', h('b', null, [q.before, q.chunks.join(' '), q.after].join(' ').trim()))); }
+        else if (q.type === 'listen') lines.push(h('div', null, 'No.' + n + ' ' + q.answer + ' ', h('b', null, q.options[q.answer - 1])));
+      }));
+      page.append(h('div', { class: 'pr-key' }, lines));
+    });
+    return page;
+  }
+};
+
+/* ===================== 12. SAMPLE SET (fictional students) ===================== */
+function SAMPLE() {
+  return {
+    id: 'sample-weekend', title: 'Sample · Weekends', topic: 'Weekends and hobbies',
+    students: [{ name: 'Student A', grade: 5 }, { name: 'Student B', grade: 4 }, { name: 'Student C', grade: 3 }],
+    questions: [
+      { id: 'a1', student: 'Student A', type: 'gap', text: 'A: Do you like ( ), Ken?\nB: Yes. I play it every Sunday.', options: ['milk', 'tennis', 'pencils', 'lunch'], answer: 2, note: 'play + sport: play tennis' },
+      { id: 'a2', student: 'Student A', type: 'gap', text: 'My sister ( ) the piano every day.', options: ['play', 'plays', 'playing', 'to play'], answer: 2, note: 'she → plays (add -s)' },
+      { id: 'a3', student: 'Student A', type: 'order', ja: 'あなたは日曜日に何をしますか。', before: '', after: 'Sundays?', chunks: ['What', 'do you', 'do', 'on'] },
+      { id: 'a4', student: 'Student A', type: 'listen', mode: 'reply', say: ['A: What time do you get up on Saturdays?'], options: ['At seven.', 'On Sunday.', 'Yes, I do.'], answer: 1 },
+      { id: 'b1', student: 'Student B', type: 'gap', text: 'A: What did you do last weekend?\nB: I ( ) to the zoo with my family.', options: ['go', 'went', 'going', 'goes'], answer: 2, note: 'last weekend → past: go → went' },
+      { id: 'b2', student: 'Student B', type: 'gap', text: 'Kenta likes making food. He wants to be a ( ) in the future.', options: ['cook', 'nurse', 'pilot', 'singer'], answer: 1, note: 'cook = a person who makes food' },
+      { id: 'b3', student: 'Student B', type: 'order', ja: '私は明日、友だちとサッカーをするつもりです。', before: "I'm", after: 'my friends tomorrow.', chunks: ['going', 'to play', 'soccer', 'with'] },
+      { id: 'b4', student: 'Student B', type: 'listen', mode: 'question', say: ['A: Mom, can I go to the park after lunch?', 'B: Yes, but finish your homework first.', "A: OK. I'll do it now."], question: 'What will the boy do now?', options: ['Eat lunch.', 'Go to the park.', 'Do his homework.', 'Play soccer.'], answer: 3 },
+      { id: 'c1', student: 'Student C', type: 'gap', text: 'Emi has ( ) to Kyoto three times. She loves the old temples there.', options: ['be', 'been', 'being', 'was'], answer: 2, note: 'has + been = present perfect' },
+      { id: 'c2', student: 'Student C', type: 'gap', text: 'A: How was the concert?\nB: Great! I was very ( ) when my favourite singer came on stage.', options: ['excited', 'hungry', 'sleepy', 'careful'], answer: 1 },
+      { id: 'c3', student: 'Student C', type: 'listen', mode: 'reply', say: ['A: Excuse me. Could you tell me the way to the station?'], options: ['Sure. Go straight and turn left.', 'Yes, I took the train.', "No, it isn't mine."], answer: 1 },
+      { id: 'c4', student: 'Student C', type: 'speak', title: 'Weekends in the Park', passage: 'Many people in Japan enjoy going to the park on weekends. Some people go there to play sports, and others go there to relax with their families. Parks are good places for people of all ages.',
+        questions: [{ q: 'Please look at the passage. Why do some people go to the park?', model: 'They go there to play sports.' }, { q: 'What do you usually do on weekends?', model: 'I usually play soccer with my friends.' }, { q: 'Do you like going to the park? Please tell me more.', model: 'Yes. I like playing with my dog there.' }] }
+    ]
+  };
+}
+
+/* ===================== 13. BOOT ===================== */
+(async function boot() {
+  applyTheme();
+  $('#theme-sel').onchange = e => { O.theme = e.target.value; saveOpts(); applyTheme(); };
+  $('#btn-import').onclick = () => $('#file-import').click();
+  $('#file-import').onchange = async e => { const f = e.target.files[0]; e.target.value = ''; if (f) await importFile(f); };
+  $('#set-back').onclick = () => Library.show();
+  $('#set-play').onclick = () => SetScreen.start();
+  $('#set-print').onclick = () => Print.open(SetScreen.set);
+  $('#p-exit').onclick = () => Play.quit();
+  $('#p-sound').onclick = () => { O.sound = !O.sound; saveOpts(); $('#p-sound').textContent = O.sound ? '🔊' : '🔇'; };
+  const de = document.documentElement, fsOn = () => document.fullscreenElement || document.webkitFullscreenElement;
+  if ((de.requestFullscreen || de.webkitRequestFullscreen) && !navigator.standalone) {
+    $('#p-full').onclick = () => { try { if (fsOn()) (document.exitFullscreen || document.webkitExitFullscreen).call(document); else (de.requestFullscreen || de.webkitRequestFullscreen).call(de); } catch (e) { /* ignore */ } };
+  } else $('#p-full').hidden = true;
+  document.addEventListener('pointerdown', () => Sfx.unlock(), { once: true });
+  // drag a file onto the page (Mac) to import it
+  document.addEventListener('dragover', e => e.preventDefault());
+  document.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) importFile(f); });
+  await DB.open();
+  try { (await DB.all()).forEach(s => { const c = cleanSet(s); if (c) { c.id = s.id; c.created = s.created || c.created; APP.sets.push(c); } }); } catch (e) { /* ignore */ }
+  Library.render();
+})();
+</script>
+</body>
+</html>
