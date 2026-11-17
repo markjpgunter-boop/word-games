@@ -108,6 +108,12 @@ a{color:inherit}
 .st-table th{color:var(--muted);font-size:.9rem}
 .st-dot{display:inline-block;width:.9em;height:.9em;border-radius:50%;vertical-align:-.1em;margin-right:.35em}
 .start-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.tc-row{display:flex;gap:.9rem;align-items:flex-start;padding:.6rem 0;border-top:1px solid var(--line)}
+.tc-thumb{width:7.5rem;height:5.6rem;object-fit:cover;border-radius:12px;background:#fff;border:2px solid var(--line);flex:none}
+.tc-empty{display:flex;align-items:center;justify-content:center;font-size:2rem;border-style:dashed}
+.tc-info{flex:1;min-width:0}
+.tc-idea{color:var(--muted);font-size:.9rem;margin:.25rem 0;line-height:1.35;-webkit-user-select:text;user-select:text}
+.tc-btns{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.3rem}
 .pick-sum{margin:.6rem 0 0;font-weight:800;font-size:1.05rem;color:var(--primary)}
 
 /* ---------- 5. PLAY SHELL ---------- */
@@ -171,18 +177,24 @@ a{color:inherit}
 .ear{font-size:calc(var(--su)*1.6);line-height:1}
 .script{font:700 calc(var(--su)*.36)/1.35 var(--font-word);background:var(--panel);border:2px dashed var(--line);border-radius:calc(var(--su)*.25);padding:.4em .8em;max-width:100%;animation:popin .25s}
 .lq{font:700 calc(var(--su)*.55)/1.3 var(--font-word);text-align:center}
-.sp-wrap{flex:1;min-height:0;width:100%;display:flex;gap:calc(var(--su)*.35);align-items:center}
+.sp-wrap{flex:1;min-height:0;width:100%;display:flex;gap:calc(var(--su)*.35);align-items:center;padding:calc(var(--su)*.1)}
 .sp-wrap.port{flex-direction:column}
 .card-sp{flex:1.1;min-width:0;max-height:100%;overflow:auto;background:#fff;color:#1b2a4e;border-radius:calc(var(--su)*.25);box-shadow:0 0 0 calc(var(--su)*.07) var(--ink);padding:.5em .9em;
   font:700 calc(var(--su)*var(--ps,.46))/1.45 var(--font-word)}
 .card-sp h3{margin:0 0 .2em;text-align:center;font-size:1.15em}
+.card-sp.has-pic{display:flex;flex-direction:column;align-items:center;align-self:stretch}
+.sp-pass{align-self:stretch;flex:none}
+.card-sp.has-pic h3{flex:none}
+.sp-pic{display:block;flex:1 1 0;min-height:calc(var(--su)*1.5);width:100%;object-fit:contain;margin-top:.35em;border-radius:calc(var(--su)*.12)}
+.sp-nopic{margin-top:.35em;border:3px dashed #b9bfd0;border-radius:calc(var(--su)*.15);padding:.6em 1em;color:#56628a;font-size:.8em;text-align:center}
+.sp-qt{color:var(--ink)}
 .sp-qs{flex:1;min-width:0;display:flex;flex-direction:column;gap:calc(var(--su)*.15);max-height:100%;overflow-y:auto;overflow-x:hidden;padding:2px calc(var(--su)*.1) 2px 2px}
 .sp-wrap.port .sp-qs,.sp-wrap.port .card-sp{width:100%;flex:none}
 .sp-q{display:grid;grid-template-columns:auto auto 1fr auto auto;align-items:center;gap:calc(var(--su)*.15) calc(var(--su)*.2);background:var(--panel);border:2px solid var(--line);border-radius:calc(var(--su)*.25);padding:calc(var(--su)*.12) calc(var(--su)*.2);font-size:calc(var(--su)*.34);font-weight:800}
 .sp-q .play-sm{white-space:nowrap;font-size:calc(var(--su)*.34)}
 .sp-q .sp-show{justify-self:start}
 .sp-q .sp-t{grid-column:1/-1;line-height:1.3}
-.sp-q .sp-m{display:block;color:var(--good);font-family:var(--font-word);margin-top:.1em}
+.sp-q .sp-m{display:block;color:var(--good);font-family:var(--font-word);margin-top:.15em}
 .sp-q.ok{border-color:var(--good)}.sp-q.no{border-color:var(--bad)}
 .mk{border:0;border-radius:.4em;font-weight:900;padding:.2em .5em;min-height:44px;min-width:2.2em}
 .mk.y{background:var(--good);color:var(--on-good)}.mk.n{background:var(--bad);color:var(--on-bad)}
@@ -235,6 +247,7 @@ a{color:inherit}
   .pr-chunks{font:700 11pt var(--font-word);display:flex;gap:6mm;flex-wrap:wrap}
   .pr-card{border:.45mm solid #000;border-radius:2.5mm;padding:3mm 4mm;font:700 12pt/1.5 var(--font-word);margin:1mm 0 2mm}
   .pr-card h4{margin:0 0 1mm;text-align:center}
+  .pr-pic{display:block;max-width:100%;max-height:70mm;margin:2mm auto 0}
   .pr-lines{height:7mm;border-bottom:.25mm solid #999}
   .pr-key{font:10.5pt/1.55 var(--font-ui)}
   .pr-key b{font-family:var(--font-word)}
@@ -316,7 +329,9 @@ a{color:inherit}
                          "chunks":[4 strings in the CORRECT order], "note":"…"}
          {"type":"listen","student":"Yuto","mode":"reply",    "say":["A: …"],            "options":[3 replies],  "answer":1-3}
          {"type":"listen","student":"Yuto","mode":"question", "say":["A: …","B: …"], "question":"…?", "options":[4], "answer":1-4}
-         {"type":"speak", "student":"Yuto","title":"…", "passage":"…", "questions":[{"q":"…","model":"…"}, …]}
+         {"type":"speak", "student":"Yuto","title":"…", "passage":"…", "imagePrompt":"what the picture shows",
+                          "image":"data:image/jpeg;base64,… (optional; Mark adds it on the set screen)",
+                          "questions":[{"q":"…","model":"…"}, …]}   (shown as a "Topic card")
        ] } ] }
    - "answer" counts from 1, like the Eiken papers. "student":"" = a question for everyone.
    - Lines that start "A:", "B:", "W:", "M:" or a name + ":" are read in different voices.
@@ -355,7 +370,7 @@ const LS = {
 };
 const NUMS = ['①', '②', '③', '④', '⑤', '⑥'];
 const COLS = ['#2563eb', '#e11d48', '#16a34a', '#d97706', '#7c3aed', '#0891b2', '#db2777', '#65a30d'];
-const TYPE_NAME = { gap: 'Gap-fill', order: 'Word order', listen: 'Listening', speak: 'Speaking' };
+const TYPE_NAME = { gap: 'Gap-fill', order: 'Word order', listen: 'Listening', speak: 'Topic card' };
 const TYPE_JA = { gap: '筆記', order: '並べかえ', listen: 'リスニング', speak: 'スピーキング' };
 const gchip = g => g ? h('span', { class: 'gchip g' + g }, 'Grade ' + g) : null;
 const fmtDate = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -521,7 +536,8 @@ function cleanSet(r) {
     if (q.type === 'speak') {
       const questions = (Array.isArray(q.questions) ? q.questions : []).slice(0, 6).map(x => ({ q: str(x && x.q, 200), model: str(x && x.model, 200) })).filter(x => x.q);
       if (!questions.length) return null;
-      return Object.assign(base, { title: str(q.title, 80), passage: str(q.passage, 900), questions });
+      const image = typeof q.image === 'string' && q.image.length < 5e6 && /^data:image\/(jpeg|png|gif|webp);base64,/.test(q.image) ? q.image : '';
+      return Object.assign(base, { title: str(q.title, 80), passage: str(q.passage, 900), questions, image, imagePrompt: str(q.imagePrompt, 500) });
     }
     return null;
   }).filter(Boolean);
@@ -537,6 +553,22 @@ function cleanSet(r) {
     title: str(r.title, 120) || 'Eiken set', topic: str(r.topic, 80),
     created: +r.created || Date.now(), updated: Date.now(), students, questions: qs, sessions
   };
+}
+/** Picture file -> compressed JPEG data URL (longest side 1100 px). */
+function fileToDataURL(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      try {
+        const w = im.naturalWidth || 1000, hh = im.naturalHeight || 1000, m = Math.max(w, hh), sc = m > 1100 ? 1100 / m : 1;
+        const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * sc)); c.height = Math.max(1, Math.round(hh * sc));
+        const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.85));
+      } catch (e) { URL.revokeObjectURL(url); rej(e); }
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('bad image')); };
+    im.src = url;
+  });
 }
 function download(name, text) {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' })), a = h('a', { href: url, download: name, class: 'vh' });
@@ -668,18 +700,48 @@ const SetScreen = {
       h('div', { class: 'panel' }, h('h2', null, 'How to play'),
         seg('Next question', [['tap', 'Tap “Next” (teacher)'], ['auto', 'Automatic']], O.advance, v => { O.advance = v; saveOpts(); }),
         seg('Sound effects', [[true, 'On'], [false, 'Off']], O.sound, v => { O.sound = v === true || v === 'true'; saveOpts(); }),
-        h('h2', { style: 'margin-top:1rem' }, 'Listening'),
-        Speech.ok ? [
+        s.questions.some(q => q.type === 'listen') && h('h2', { style: 'margin-top:1rem' }, 'Listening'),
+        !s.questions.some(q => q.type === 'listen') ? null : Speech.ok ? [
           seg('Voice', [['en-US', 'American (like the test)'], ['en-GB', 'British']], O.voice, v => { O.voice = v; saveOpts(); }),
           seg('Play the English', [[true, 'Twice (like the test)'], [false, 'Once']], O.twice, v => { O.twice = v === true || v === 'true'; saveOpts(); }),
           seg('Reply choices', [[false, 'Spoken only (like the test)'], [true, 'Also show the words']], O.showReplies, v => { O.showReplies = v === true || v === 'true'; saveOpts(); }),
           h('button', { class: 'btn sm', onclick: () => Speech.run([{ who: 'A', text: 'Hello! This is speaker A.' }, { who: 'B', text: 'And this is speaker B.' }, { who: 'narrator', text: 'Question. Who is speaking?' }]) }, '🔊 Test the voices')
         ] : h('p', { class: 'hint' }, '⚠️ This browser cannot speak, so read the listening questions aloud yourself (the script is on the print-out).')),
+      this.cardsPanel(),
       h('div', { class: 'start-row' },
         h('button', { class: 'btn big primary', onclick: () => this.start() }, '▶ Start'),
         h('button', { class: 'btn', onclick: () => Print.open(s) }, '🖨 Print worksheets'),
         h('button', { class: 'btn', onclick: () => exportSet(s) }, '⬇ Export with results')),
       s.topic && h('p', { class: 'foot' }, 'Topic: ' + s.topic + ' · Made ' + fmtDate(s.created)));
+  },
+  /** Topic cards: add / change the picture for each card (stored in the set, exported with it). */
+  cardsPanel() {
+    const s = this.set, cards = s.questions.filter(q => q.type === 'speak');
+    if (!cards.length) return null;
+    return h('div', { class: 'panel' }, h('h2', null, '🖼 Topic card pictures'),
+      h('p', { class: 'hint' }, 'Make each picture (e.g. in Canva from the picture idea), save it, then tap “Add picture”. Pictures stay on this device and go into Export.'),
+      cards.map(q => {
+        const st = s.students.find(x => x.name === q.student);
+        return h('div', { class: 'tc-row' },
+          q.image ? h('img', { class: 'tc-thumb', src: q.image, alt: '' }) : h('div', { class: 'tc-thumb tc-empty' }, '🖼'),
+          h('div', { class: 'tc-info' },
+            h('b', null, q.title || 'Topic card'), ' ', st && gchip(st.grade), q.student ? ' · ' + q.student : '',
+            q.imagePrompt && h('div', { class: 'tc-idea' }, 'Picture idea: ' + q.imagePrompt),
+            h('div', { class: 'tc-btns' },
+              h('button', { class: 'btn sm primary', onclick: () => this.addPicture(q) }, q.image ? '📷 Change picture' : '📷 Add picture'),
+              q.image && h('button', { class: 'btn sm', onclick: async () => { q.image = ''; await storeSet(s); this.render(); } }, 'Remove'),
+              q.imagePrompt && navigator.clipboard && h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(q.imagePrompt).then(() => toast('Picture idea copied'), () => toast('Could not copy')) }, '📋 Copy idea'))));
+      }));
+  },
+  addPicture(q) {
+    const inp = h('input', { type: 'file', accept: 'image/*', class: 'vh' });
+    document.body.append(inp);
+    inp.onchange = async () => {
+      const f = inp.files[0]; inp.remove(); if (!f) return;
+      try { q.image = await fileToDataURL(f); await storeSet(this.set); this.render(); toast('Picture added'); }
+      catch (e) { toast('That picture could not be opened.'); }
+    };
+    inp.click();
   },
   /** Panel: who answers, which grade, which question types, with a live count. */
   choosePanel() {
@@ -892,14 +954,16 @@ const QTypes = {
   speak(q, api) {
     let marked = 0, score = 0;
     const rows = q.questions.map((x, i) => {
-      const model = h('span', { class: 'sp-m', hidden: !x.model }, '✓ ' + x.model);
-      const txt = h('div', { class: 'sp-t', hidden: true }, x.q, model);
-      const reveal = () => { txt.hidden = false; showBtn.style.visibility = 'hidden'; };
-      const showBtn = h('button', { class: 'play-sm sp-show', onclick: reveal }, '👀 Show');
+      const qt = h('div', { class: 'sp-qt' }, x.q);
+      const model = h('div', { class: 'sp-m', hidden: true }, '💡 ' + x.model);
+      const txt = h('div', { class: 'sp-t', hidden: true }, qt, model);
+      let step = 0;
+      const btn = h('button', { class: 'play-sm sp-show', onclick: () => {
+        if (step === 0) { txt.hidden = false; step = 1; if (x.model) btn.textContent = '💡 Answer'; else btn.style.visibility = 'hidden'; }
+        else { model.hidden = false; btn.style.visibility = 'hidden'; }
+      } }, '👀 Question');
       const row = h('div', { class: 'sp-q' },
-        h('b', null, 'No.' + (i + 1)),
-        h('button', { class: 'play-sm', onclick: () => Speech.ok ? Speech.run([{ who: 'narrator', text: x.q }]) : reveal() }, '🔊 Ask'),
-        showBtn,
+        h('b', null, 'No.' + (i + 1)), btn, h('span'),
         h('button', { class: 'mk y', onclick: () => mark(row, true) }, '✓'),
         h('button', { class: 'mk n', onclick: () => mark(row, false) }, '✗'),
         txt);
@@ -912,9 +976,11 @@ const QTypes = {
       Sfx.play(ok ? 'correct' : 'back');
       if (marked === rows.length) api.done(score * 2 >= rows.length, score, rows.length);
     }
-    const card = h('div', { class: 'card-sp' }, q.title && h('h3', null, q.title), q.passage);
+    const pic = q.image ? h('img', { class: 'sp-pic', src: q.image, alt: '' }) :
+      q.imagePrompt ? h('div', { class: 'sp-nopic' }, '🖼 Add the picture on the set screen') : null;
+    const card = h('div', { class: 'card-sp' + (pic ? ' has-pic' : '') }, q.title && h('h3', null, q.title), q.passage && h('div', { class: 'sp-pass' }, q.passage), pic);
     const len = (q.passage || '').length;
-    card.style.setProperty('--ps', len > 320 ? .36 : len > 200 ? .41 : .46);
+    card.style.setProperty('--ps', (len > 320 ? .36 : len > 200 ? .41 : .46) * (pic ? .88 : 1));
     const wrap = h('div', { class: 'sp-wrap' }, card, h('div', { class: 'sp-qs' }, rows));
     const fit = () => { const r = api.body.getBoundingClientRect(); wrap.classList.toggle('port', r.width < r.height * 1.2); };
     add(api.body, wrap); fit(); api.onResize(fit);
@@ -994,7 +1060,7 @@ const Print = {
       h('div', { class: 'pr-body' }, q.mode === 'reply' ? h('div', { class: 'pr-opts' }, q.options.map((o, i) => h('span', null, (i + 1)))) :
         h('div', { class: 'pr-opts' }, q.options.map((o, i) => h('span', null, (i + 1) + '  ' + o)))), h('div', { class: 'pr-ans' })));
     sec('speak', 'カードを声に出して読みましょう。先生の質問に答えましょう。', of('speak'), (q, k) => h('div', { class: 'pr-q' }, h('div', { class: 'pr-n' }, '(' + k + ')'),
-      h('div', { class: 'pr-body' }, h('div', { class: 'pr-card' }, q.title && h('h4', null, q.title), q.passage))));
+      h('div', { class: 'pr-body' }, h('div', { class: 'pr-card' }, q.title && h('h4', null, q.title), q.passage, q.image && h('img', { class: 'pr-pic', src: q.image, alt: '' })))));
     return page;
   },
   /** Stable chunk order for print (so the key matches the sheet). */
@@ -1006,7 +1072,7 @@ const Print = {
     return idx;
   },
   teacher(s, who) {
-    const page = h('div', { class: 'pr-page' }, this.head(s, 'Teacher page · ' + s.title, 'Listening script (read each one twice) and speaking questions', true));
+    const page = h('div', { class: 'pr-page' }, this.head(s, 'Teacher page · ' + s.title, s.questions.some(q => q.type === 'listen') ? 'Listening script (read each one twice) and topic card questions' : 'Topic card questions and example answers', true));
     (who.length ? who : [null]).forEach(st => {
       const qs = s.questions.filter(q => (st ? q.student === st.name : true) && (q.type === 'listen' || q.type === 'speak'));
       if (!qs.length) return;
@@ -1015,7 +1081,7 @@ const Print = {
         if (q.type === 'listen') page.append(h('div', { class: 'pr-script' }, h('b', null, 'Listening No.' + (this.numberOn(s, st, q)) + '  '),
           q.say.map(l => h('div', null, l)), q.mode === 'reply' ? q.options.map((o, i) => h('div', null, (i + 1) + '. ' + o)) : h('div', null, h('b', null, 'Question: '), q.question),
           h('div', null, h('b', null, 'Answer: ' + q.answer))));
-        else page.append(h('div', { class: 'pr-script' }, h('b', null, 'Speaking: ' + (q.title || '')),
+        else page.append(h('div', { class: 'pr-script' }, h('b', null, 'Topic card: ' + (q.title || '')),
           q.questions.map((x, i) => h('div', null, 'No.' + (i + 1) + '  ' + x.q, h('br'), h('i', null, '  e.g. ' + x.model)))));
       });
     });
@@ -1056,14 +1122,11 @@ function SAMPLE() {
       { id: 'a1', student: 'Student A', type: 'gap', text: 'A: Do you like ( ), Ken?\nB: Yes. I play it every Sunday.', options: ['milk', 'tennis', 'pencils', 'lunch'], answer: 2, note: 'play + sport: play tennis' },
       { id: 'a2', student: 'Student A', type: 'gap', text: 'My sister ( ) the piano every day.', options: ['play', 'plays', 'playing', 'to play'], answer: 2, note: 'she → plays (add -s)' },
       { id: 'a3', student: 'Student A', type: 'order', ja: 'あなたは日曜日に何をしますか。', before: '', after: 'Sundays?', chunks: ['What', 'do you', 'do', 'on'] },
-      { id: 'a4', student: 'Student A', type: 'listen', mode: 'reply', say: ['A: What time do you get up on Saturdays?'], options: ['At seven.', 'On Sunday.', 'Yes, I do.'], answer: 1 },
       { id: 'b1', student: 'Student B', type: 'gap', text: 'A: What did you do last weekend?\nB: I ( ) to the zoo with my family.', options: ['go', 'went', 'going', 'goes'], answer: 2, note: 'last weekend → past: go → went' },
       { id: 'b2', student: 'Student B', type: 'gap', text: 'Kenta likes making food. He wants to be a ( ) in the future.', options: ['cook', 'nurse', 'pilot', 'singer'], answer: 1, note: 'cook = a person who makes food' },
       { id: 'b3', student: 'Student B', type: 'order', ja: '私は明日、友だちとサッカーをするつもりです。', before: "I'm", after: 'my friends tomorrow.', chunks: ['going', 'to play', 'soccer', 'with'] },
-      { id: 'b4', student: 'Student B', type: 'listen', mode: 'question', say: ['A: Mom, can I go to the park after lunch?', 'B: Yes, but finish your homework first.', "A: OK. I'll do it now."], question: 'What will the boy do now?', options: ['Eat lunch.', 'Go to the park.', 'Do his homework.', 'Play soccer.'], answer: 3 },
       { id: 'c1', student: 'Student C', type: 'gap', text: 'Emi has ( ) to Kyoto three times. She loves the old temples there.', options: ['be', 'been', 'being', 'was'], answer: 2, note: 'has + been = present perfect' },
       { id: 'c2', student: 'Student C', type: 'gap', text: 'A: How was the concert?\nB: Great! I was very ( ) when my favourite singer came on stage.', options: ['excited', 'hungry', 'sleepy', 'careful'], answer: 1 },
-      { id: 'c3', student: 'Student C', type: 'listen', mode: 'reply', say: ['A: Excuse me. Could you tell me the way to the station?'], options: ['Sure. Go straight and turn left.', 'Yes, I took the train.', "No, it isn't mine."], answer: 1 },
       { id: 'c4', student: 'Student C', type: 'speak', title: 'Weekends in the Park', passage: 'Many people in Japan enjoy going to the park on weekends. Some people go there to play sports, and others go there to relax with their families. Parks are good places for people of all ages.',
         questions: [{ q: 'Please look at the passage. Why do some people go to the park?', model: 'They go there to play sports.' }, { q: 'What do you usually do on weekends?', model: 'I usually play soccer with my friends.' }, { q: 'Do you like going to the park? Please tell me more.', model: 'Yes. I like playing with my dog there.' }] }
     ]
