@@ -956,12 +956,8 @@ const QTypes = {
     const rows = q.questions.map((x, i) => {
       const qt = h('div', { class: 'sp-qt' }, x.q);
       const model = h('div', { class: 'sp-m', hidden: true }, '💡 ' + x.model);
-      const txt = h('div', { class: 'sp-t', hidden: true }, qt, model);
-      let step = 0;
-      const btn = h('button', { class: 'play-sm sp-show', onclick: () => {
-        if (step === 0) { txt.hidden = false; step = 1; if (x.model) btn.textContent = '💡 Answer'; else btn.style.visibility = 'hidden'; }
-        else { model.hidden = false; btn.style.visibility = 'hidden'; }
-      } }, '👀 Question');
+      const txt = h('div', { class: 'sp-t' }, qt, model);
+      const btn = h('button', { class: 'play-sm sp-show', style: x.model ? null : 'visibility:hidden', onclick: () => { model.hidden = false; btn.style.visibility = 'hidden'; } }, '💡 Answer');
       const row = h('div', { class: 'sp-q' },
         h('b', null, 'No.' + (i + 1)), btn, h('span'),
         h('button', { class: 'mk y', onclick: () => mark(row, true) }, '✓'),
