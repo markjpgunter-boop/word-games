@@ -106,7 +106,25 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 .card-n{color:var(--muted);font-size:.95rem}
 .card-acts{display:flex;flex-wrap:wrap;gap:.4rem;padding:.5rem .9rem .9rem}
 
+
+/* ---------- 4b. TODAY'S LESSON ---------- */
+.ls-group{margin-top:1.1rem}
+.ls-gh{display:flex;align-items:center;gap:.8rem}
+.ls-gh h2{margin:0;font-size:1.3rem;flex:1}
+.ls-sets{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.6rem;margin-top:.6rem}
+.ls-set{display:flex;align-items:center;gap:.7rem;text-align:left;padding:.55rem .7rem;border:2px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);min-height:64px}
+.ls-set.on{border-color:var(--primary);background:var(--panel2);box-shadow:0 0 0 2px var(--primary)}
+.ls-tick{flex:none;width:30px;height:30px;border-radius:8px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.2rem;background:#fff;color:#1b2a4e}
+.ls-set.on .ls-tick{background:var(--primary);border-color:var(--primary);color:#fff}
+.ls-pic{flex:none;width:48px;height:48px;border-radius:8px;background:#fff;border:1px solid var(--line)}
+.ls-name{display:flex;flex-direction:column;min-width:0}
+.ls-name b{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
+.ls-name small{color:var(--muted)}
+.ls-foot{flex:none;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;border-top:2px solid var(--line);background:var(--panel)}
+.ls-foot #ls-sum{flex:1;font-weight:800}
+
 /* ---------- 5. EDITOR ---------- */
+.ed-group{width:100%;font-size:max(16px,.9rem)}
 .ed-title{flex:1;min-width:10em;width:auto;font-weight:800;font-size:max(16px,1.15rem)}
 .ed-row{display:flex;align-items:center;gap:.6rem;background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:.5rem .6rem;margin-bottom:.6rem}
 .ed-row.drop,#ed-scroll.drop{outline:4px dashed var(--primary);outline-offset:-4px}
@@ -534,6 +552,123 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
   .pr-jp .pr-sm{font:700 10pt/1.2 var(--font-word);overflow-wrap:anywhere}
   .pr-jp .pr-task{font-size:8pt}
 }
+
+/* ---------- 12k–m. WHAT'S MISSING, QUICK FLASH, MEMORY PAIRS ---------- */
+.wc-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.15);padding:calc(var(--su)*.22)}
+.wc-wrap.in-tm{position:relative;flex:1;min-height:0}
+.wc-area{flex:1;min-height:0;width:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.wc-area[hidden]{display:none}
+.wc-grid{display:grid;justify-content:center;align-content:center}
+.wc-btns{flex:none;display:flex;gap:calc(var(--su)*.3);justify-content:center;min-height:calc(var(--su)*1.05)}
+.wc{position:relative;width:var(--cs);height:var(--cs);background:#fff;color:#1b2a4e;border-radius:calc(var(--cs)*.1);box-shadow:0 calc(var(--su)*.08) 0 rgba(0,0,0,.25);overflow:hidden}
+.wc-pic{position:absolute;top:5%;left:5%;right:5%;bottom:5%}
+.wc.lab .wc-pic{bottom:23%}
+.wc-lab{position:absolute;left:3%;right:3%;bottom:3%;height:18%;display:flex;align-items:center;justify-content:center;font:700 calc(var(--cs)*.12)/1 var(--font-word);white-space:nowrap;overflow:hidden}
+.wc.txt{display:flex;align-items:center;justify-content:center;padding:6%}
+.wc-word{font:700 calc(var(--cs)*.17)/1.1 var(--font-word);text-align:center;overflow-wrap:anywhere}
+.wc.fade{opacity:.35;transform:scale(.92)}
+.wm-gap{background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 calc(var(--su)*.08) var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:calc(var(--cs)*.5);font-weight:900}
+.wm-found{box-shadow:0 0 0 calc(var(--su)*.14) var(--good);animation:popin .45s}
+.wm-eyes{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.wm-eyes[hidden]{display:none}
+.wm-emoji{font-size:calc(var(--su)*3.4);line-height:1;animation:pulse 1s infinite}
+.wm-count{font-size:calc(var(--su)*1.6);font-weight:900}
+.qf-area{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.qf-box{flex:none}
+.qf-box{position:relative;border-radius:calc(var(--su)*.4);background:#fff;color:#1b2a4e;box-shadow:0 0 0 calc(var(--su)*.08) var(--ink);overflow:hidden}
+.qf-face{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4%;gap:2%}
+.qf-pic{flex:1;width:100%}
+.qf-word{font:700 calc(var(--su)*1.9)/1.1 var(--font-word);text-align:center;overflow-wrap:anywhere}
+.qf-word.small{font-size:calc(var(--su)*.95);flex:none}
+.qf-cover{position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(45deg,var(--accent) 0 calc(var(--su)*.5),var(--primary) calc(var(--su)*.5) calc(var(--su)*1));display:flex;align-items:center;justify-content:center}
+.qf-cover span{background:#fff;color:#1b2a4e;border-radius:50%;width:calc(var(--su)*2.4);height:calc(var(--su)*2.4);display:flex;align-items:center;justify-content:center;font-size:calc(var(--su)*1.7);font-weight:900}
+.qf-cover.off{display:none}
+.mp-card{position:relative;width:var(--cs);height:var(--cs);border:0;padding:0;background:transparent;-webkit-perspective:800px;perspective:800px;touch-action:manipulation}
+.mp-in{position:absolute;top:0;left:0;right:0;bottom:0;transition:transform .35s;-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
+.mp-card.up .mp-in{transform:rotateY(180deg)}
+.mp-back,.mp-face{position:absolute!important;top:0;left:0;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.mp-back{width:100%;height:100%;border-radius:calc(var(--cs)*.1);background:var(--bc);box-shadow:0 calc(var(--su)*.08) 0 rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.mp-back span{background:#fff;color:#1b2a4e;border-radius:50%;width:38%;height:38%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:calc(var(--cs)*.17)}
+.mp-face{transform:rotateY(180deg)}
+.mp-card.done .mp-face{box-shadow:0 0 0 calc(var(--su)*.1) var(--good)}
+
+/* ---------- 12n–q. PEEK-A-BOO, MYSTERY BOX, SHADOW MATCH, LUCKY DIP ---------- */
+.bc-area{flex:1;min-height:0;width:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.bc-card{position:absolute;top:0;left:0;right:0;bottom:0;background:#fff;color:#1b2a4e;border-radius:calc(var(--su)*.4);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4%;gap:2%;overflow:hidden}
+.bc-pic{flex:1;width:100%}
+.bc-word{flex:none;font:700 calc(var(--su)*.95)/1.1 var(--font-word);text-align:center;overflow-wrap:anywhere}
+.bc-word.solo{flex:1;display:flex;align-items:center;font-size:calc(var(--su)*1.8)}
+.pk-box{position:relative;flex:none;-webkit-perspective:1400px;perspective:1400px;border-radius:calc(var(--su)*.4);box-shadow:0 0 0 calc(var(--su)*.18) #8a5a2b,0 0 0 calc(var(--su)*.26) #5d3a17}
+.pk-inside{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:calc(var(--su)*.4);overflow:hidden;background:#fff}
+.pk-door{pointer-events:none;position:absolute;top:0;left:0;right:0;bottom:0;border-radius:calc(var(--su)*.3);background:linear-gradient(90deg,#b8763c,#a3652f);transform-origin:0 50%;transition:transform .55s cubic-bezier(.3,1.4,.5,1),opacity .4s .3s;box-shadow:inset 0 0 0 calc(var(--su)*.08) #7a4a1f}
+.pk-door.gone{opacity:0}
+.pk-panel{position:absolute;left:14%;right:14%;border:calc(var(--su)*.07) solid #7a4a1f;border-radius:calc(var(--su)*.12)}
+.pk-panel.a{top:8%;height:36%}.pk-panel.b{top:52%;height:40%}
+.pk-knob{position:absolute;right:7%;top:48%;width:calc(var(--su)*.55);height:calc(var(--su)*.55);border-radius:50%;background:#ffd23f;box-shadow:0 0 0 calc(var(--su)*.06) #7a4a1f}
+.mb-area{overflow:hidden}
+.mb-box{position:relative;width:min(60%,calc(var(--su)*7));aspect-ratio:1.1;align-self:flex-end;margin-bottom:4%}
+.mb-body{position:absolute;left:0;right:0;bottom:0;height:78%;background:var(--bc);border-radius:calc(var(--su)*.25);box-shadow:inset 0 calc(var(--su)*-.2) 0 rgba(0,0,0,.15),0 calc(var(--su)*.1) 0 rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.mb-body::after{content:"";position:absolute;top:0;bottom:0;left:44%;width:12%;background:rgba(255,255,255,.5)}
+.mb-body span{position:relative;z-index:1;background:#fff;color:#1b2a4e;border-radius:50%;width:calc(var(--su)*1.6);height:calc(var(--su)*1.6);display:flex;align-items:center;justify-content:center;font-size:calc(var(--su)*1.1);font-weight:900}
+.mb-lid{position:absolute;left:-5%;right:-5%;top:0;height:26%;background:var(--bc);filter:brightness(.88);border-radius:calc(var(--su)*.2);box-shadow:0 calc(var(--su)*.08) 0 rgba(0,0,0,.25);transition:transform .5s cubic-bezier(.3,1.5,.5,1)}
+.mb-lid::after{content:"";position:absolute;top:0;bottom:0;left:44%;width:12%;background:rgba(255,255,255,.5)}
+.mb-box.shake{animation:shake .45s 2}
+.mb-box.open .mb-lid{transform:translate(70%,-120%) rotate(35deg)}
+.bc-card.mb-out{z-index:5;top:4%;bottom:auto;left:50%;right:auto;width:min(64%,calc(var(--su)*8));height:84%;transform:translateX(-50%);box-shadow:0 0 0 calc(var(--su)*.1) var(--ink);animation:mbup .55s cubic-bezier(.3,1.4,.5,1)}
+@keyframes mbup{0%{transform:translate(-50%,70%) scale(.2);opacity:0}100%{transform:translate(-50%,0) scale(1);opacity:1}}
+.sm-box{position:relative;flex:none;background:#fff;border-radius:calc(var(--su)*.4);box-shadow:0 0 0 calc(var(--su)*.08) var(--ink)}
+.sm-box .pic{position:absolute;top:5%;left:5%;right:5%;bottom:5%}
+.sm-colour{opacity:0;transition:opacity 1.2s}
+.sm-shadow{transition:opacity 1.2s}
+.sm-shadow.emoji{filter:brightness(0)}
+.sm-box.lit .sm-colour{opacity:1}.sm-box.lit .sm-shadow{opacity:0}
+.sm-opt{min-width:calc(var(--su)*2.6)}
+.sm-opt.good{background:var(--good);color:var(--on-good)}
+.sm-opt.bad{background:var(--bad);color:#fff;opacity:.7}
+.ld-win{position:relative;flex:none;border-radius:calc(var(--su)*.45);box-shadow:0 0 0 calc(var(--su)*.16) var(--accent),0 0 0 calc(var(--su)*.26) var(--primary)}
+.ld-win .bc-card{border-radius:calc(var(--su)*.45)}
+.ld-win.spinning .bc-card{filter:blur(1px)}
+.ld-win.landed{animation:pulse .6s}
+.ld-num{font:900 calc(var(--su)*4)/1 var(--font-word)}
+
+/* ---------- 12r–s. HIDE AND SEEK, LISTEN AND TAP ---------- */
+.hs-card{position:relative;width:var(--cs);height:var(--cs);border:0;padding:0;background:transparent;touch-action:manipulation}
+.hs-card>.wc{position:absolute;top:0;left:0}
+.hs-card:active>.wc{transform:scale(.95)}
+.hs-card.empty>.wc{opacity:.35;filter:grayscale(1)}
+.hs-card.found>.wc{box-shadow:0 0 0 calc(var(--su)*.14) var(--good)}
+.hs-card.found>.wc .wc-pic{opacity:.3}
+.hs-card.nope{animation:shake .4s}
+.hs-over{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.hs-no{transform:rotate(-10deg);background:var(--bad);color:#fff;font-weight:900;font-size:calc(var(--cs)*.2);padding:.1em .45em;border-radius:.4em;animation:popin .3s}
+.hs-pet{font-size:calc(var(--cs)*.75);line-height:1;animation:popin .5s,pulse 1s .5s infinite;filter:drop-shadow(0 calc(var(--su)*.08) 0 rgba(0,0,0,.25))}
+.lt-card{max-width:calc(var(--su)*8)}
+.lt-peek[hidden],.lt-tip[hidden]{display:none}
+.lt-peek{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.lt-tip{align-self:center;background:var(--ink);color:var(--panel);font-weight:900;font-size:calc(var(--su)*.45);padding:.25em .7em;border-radius:.5em}
+
+/* ---------- 12t–v. SORTING, ODD ONE OUT, FIRST NEXT LAST ---------- */
+.gr-need{margin:auto;max-width:calc(var(--su)*12);background:var(--panel);color:var(--ink);border-radius:calc(var(--su)*.4);padding:calc(var(--su)*.5);text-align:center;font-size:calc(var(--su)*.38)}
+.gr-need h2{font-size:calc(var(--su)*.55);margin:.2em 0}
+.gr-need-i{font-size:calc(var(--su)*1.6)}
+.gr-top{flex:1;min-height:0;width:100%;position:relative;display:flex;justify-content:center}
+.gr-card{position:relative;height:100%;aspect-ratio:1.05;max-width:100%}
+.gr-card.in{animation:popin .35s}
+.gr-card.fly{transition:transform .5s,opacity .5s;transform:translateY(60%) scale(.3);opacity:0}
+.gr-bins{flex:none;height:38%;width:100%;display:flex;gap:calc(var(--su)*.3)}
+.gr-bin{flex:1;min-width:0;position:relative;border:0;border-radius:calc(var(--su)*.35);background:var(--bc);color:#1b2a4e;box-shadow:inset 0 calc(var(--su)*-.15) 0 rgba(0,0,0,.15),0 calc(var(--su)*.1) 0 rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;padding:calc(var(--su)*.15);overflow:hidden}
+.gr-name{font:900 calc(var(--su)*.55)/1.1 var(--font-word);text-align:center;flex:none}
+.gr-shelf{flex:1;min-height:0;width:100%;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:calc(var(--su)*.08);margin-top:calc(var(--su)*.1);overflow:hidden}
+.gr-mini{width:calc(var(--su)*.95);height:calc(var(--su)*.95);background:#fff;border-radius:calc(var(--su)*.15);animation:popin .3s}
+.gr-count{position:absolute;right:calc(var(--su)*.15);bottom:calc(var(--su)*.1);background:#fff;border-radius:1em;padding:0 .45em;font-size:calc(var(--su)*.45)}
+.gr-bin.nope{animation:shake .4s}
+.gr-bin.yes{animation:pulse .5s}
+.hs-card.same>.wc{opacity:.55}
+.hs-card.used{visibility:hidden}
+.fn-bottom{flex:none;height:34%}
+.fn-slot{position:relative;width:var(--cs);height:var(--cs);border-radius:calc(var(--cs)*.1);box-shadow:inset 0 0 0 calc(var(--su)*.07) var(--accent);background:rgba(255,255,255,.25);display:flex;align-items:flex-start;justify-content:center}
+.fn-slot>span{position:absolute;top:-.1em;left:50%;transform:translate(-50%,-50%);background:var(--accent);color:#1b1300;font-weight:900;font-size:calc(var(--su)*.36);padding:.05em .5em;border-radius:1em;z-index:2;white-space:nowrap}
+.fn-slot>.wc{position:absolute;top:0;left:0;animation:popin .3s}
 </style>
 </head>
 <body data-theme="classroom">
@@ -546,16 +681,35 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
       <select id="theme-sel" class="sel" aria-label="Theme">
         <option value="classroom">🍎 Classroom</option><option value="space">🚀 Space</option><option value="jungle">🌴 Jungle</option>
       </select>
-      <a class="btn" href="eiken.html" style="text-decoration:none">🎓 Eiken</a>
+      <button class="btn primary" id="btn-lesson">📋 Today's lesson</button>
       <button class="btn" id="btn-import">⬆ Import</button>
       <button class="btn" id="btn-export-all">⬇ Export all</button>
-      <button class="btn primary" id="btn-new">＋ New set</button>
+      <button class="btn" id="btn-new">＋ New set</button>
     </header>
     <div class="scroll">
       <input id="lib-search" class="inp" type="search" placeholder="Search word sets…" autocomplete="off">
       <div id="lib-crumb" class="lib-crumb"></div>
       <div id="lib-grid" class="lib-grid"></div>
       <p class="foot" id="lib-foot"></p>
+    </div>
+  </section>
+
+  <!-- TODAY'S LESSON: tick several sets and play them together -->
+  <section id="scr-lesson" class="screen">
+    <header class="bar">
+      <button class="btn" id="ls-back">← Word sets</button>
+      <h1>📋 Today's lesson</h1>
+      <button class="btn" id="ls-clear">Untick all</button>
+    </header>
+    <div class="scroll">
+      <p class="hint">Tick the sets you are using today – for example a song, a story and a poem – then tap Play. All their words go into one deck for every game. A word that is in more than one set is only used once.</p>
+      <input id="ls-search" class="inp" type="search" placeholder="Search sets…" autocomplete="off">
+      <div id="ls-list"></div>
+    </div>
+    <div class="ls-foot">
+      <span id="ls-sum"></span>
+      <button class="btn" id="ls-save">💾 Save as set</button>
+      <button class="btn primary big" id="ls-play">▶ Play</button>
     </div>
   </section>
 
@@ -858,7 +1012,7 @@ function cleanSet(r) {
     created: +r.created || Date.now(), updated: +r.updated || Date.now(),
     items: r.items.filter(i => i && typeof i === 'object').slice(0, 500).map(i => ({
       id: typeof i.id === 'string' && i.id ? i.id.slice(0, 40) : uid(),
-      word: str(i.word, 200), clue: str(i.clue, 400), emoji: str(i.emoji, 16),
+      word: str(i.word, 200), clue: str(i.clue, 400), emoji: str(i.emoji, 16), group: norm(str(i.group, 40)),
       image: typeof i.image === 'string' && /^data:image\/(jpeg|png|gif|webp);base64,/.test(i.image) ? i.image : ''
     }))
   };
@@ -1053,6 +1207,8 @@ const Editor = {
       h('div', { class: 'ed-side' },
         h('input', { class: 'inp ed-emoji', type: 'text', placeholder: 'emoji 🙂', title: 'Use an emoji instead of a picture', value: it.emoji || '', maxlength: '16', autocomplete: 'off',
           oninput: e => { it.emoji = e.target.value.trim(); this.touch(); if (!it.image) drawPic(); } }),
+        h('input', { class: 'inp ed-group', type: 'text', placeholder: 'group', title: 'Optional group, for the Sorting and Odd one out games', value: it.group || '', maxlength: '40', autocomplete: 'off',
+          oninput: e => { it.group = e.target.value; this.touch(); } }),
         it.image && h('button', { class: 'btn sm', onclick: () => { it.image = ''; this.touch(); this.render(); } }, 'Remove pic')),
       h('div', { class: 'ed-move' },
         h('button', { class: 'btn sm', disabled: i === 0, 'aria-label': 'Move up', onclick: () => move(-1) }, '▲'),
@@ -1126,6 +1282,8 @@ const Hub = {
   render() {
     const set = this.set, valid = validItems(set);
     $('#hub-title').textContent = set.title;
+    $('#hub-back').textContent = set.temp ? "← Today's lesson" : '← Word sets';
+    $('#hub-edit').textContent = set.temp ? '💾 Save as set' : '✏️ Edit set';
     const games = $('#hub-games'); games.innerHTML = '';
     Games.list.forEach(g => {
       const usable = valid.filter(i => !g.usable || g.usable(i)).length, go = gopt(g);
@@ -1690,6 +1848,80 @@ Games.register((() => {
   };
 })());
 
+/* ===================== 6b. TODAY'S LESSON (mix several sets) =====================
+   Tick the sets for today (e.g. a song, a story and a poem) and play them as one deck.
+   The deck is a temporary set ({temp:true}); it is never stored unless the teacher taps
+   "Save as set". Words that appear in more than one ticked set are only used once
+   (the copy with a picture wins). The ticks are remembered on this device. */
+const Lesson = {
+  picked: new Set(LS.get('wg.lesson', [])),
+  show() { show('lesson'); this.render(); $('#scr-lesson .scroll').scrollTop = 0; },
+  keep() { LS.set('wg.lesson', [...this.picked]); },
+  chosen() { return APP.sets.filter(s => this.picked.has(s.id)); },
+  /** One item per distinct word, in the order the sets were ticked on the screen. */
+  items() {
+    const out = [], at = new Map();
+    this.order().forEach(s => validItems(s).forEach(it => {
+      const k = norm(it.word).toLowerCase();
+      const copy = Object.assign({}, it, { id: s.id + ':' + it.id, src: shortTitle(s) });
+      if (!at.has(k)) { at.set(k, out.length); out.push(copy); }
+      else if (!hasPic(out[at.get(k)]) && hasPic(it)) out[at.get(k)] = copy;
+    }));
+    return out;
+  },
+  order() { return this.groups().flatMap(g => g.sets).filter(s => this.picked.has(s.id)); },
+  groups() {
+    const folders = new Map(), loose = [];
+    APP.sets.forEach(s => { const f = folderOf(s); if (f) { if (!folders.has(f)) folders.set(f, []); folders.get(f).push(s); } else loose.push(s); });
+    const g = [...folders.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      .map(f => ({ name: f, sets: folders.get(f).sort((a, b) => a.created - b.created) }));
+    if (loose.length) g.push({ name: 'Other sets', sets: loose.sort((a, b) => a.created - b.created) });
+    return g;
+  },
+  title() {
+    const names = this.order().map(shortTitle);
+    return names.length ? 'Today: ' + (names.length <= 3 ? names.join(' + ') : names.slice(0, 2).join(' + ') + ' + ' + (names.length - 2) + ' more') : "Today's lesson";
+  },
+  render() {
+    // forget ticks for sets that have been deleted
+    [...this.picked].forEach(id => { if (!APP.sets.some(s => s.id === id)) this.picked.delete(id); });
+    const box = $('#ls-list'); box.innerHTML = '';
+    const q = $('#ls-search').value.trim().toLowerCase();
+    let shown = 0;
+    this.groups().forEach(g => {
+      const sets = q ? g.sets.filter(s => s.title.toLowerCase().includes(q)) : g.sets;
+      if (!sets.length) return;
+      shown += sets.length;
+      const all = sets.every(s => this.picked.has(s.id));
+      box.append(h('div', { class: 'ls-group' },
+        h('div', { class: 'ls-gh' }, h('h2', null, '📁 ' + g.name),
+          h('button', { class: 'btn sm', onclick: () => { sets.forEach(s => all ? this.picked.delete(s.id) : this.picked.add(s.id)); this.keep(); this.render(); } }, all ? 'Untick all' : 'Tick all')),
+        h('div', { class: 'ls-sets' }, sets.map(s => {
+          const on = this.picked.has(s.id), p = s.items.find(hasPic);
+          return h('button', { class: 'ls-set' + (on ? ' on' : ''), 'aria-pressed': on ? 'true' : 'false',
+            onclick: () => { on ? this.picked.delete(s.id) : this.picked.add(s.id); this.keep(); this.render(); } },
+            h('span', { class: 'ls-tick' }, on ? '✓' : ''), p ? pic(p, 'ls-pic') : h('span', { class: 'ls-pic' }),
+            h('span', { class: 'ls-name' }, h('b', null, g.name === 'Other sets' ? s.title : shortTitle(s)), h('small', null, plural(validItems(s).length, 'word'))));
+        }))));
+    });
+    if (!shown) box.append(h('p', { class: 'empty' }, APP.sets.length ? 'No sets match your search.' : 'No word sets yet.'));
+    const n = this.picked.size, w = this.items().length;
+    $('#ls-sum').textContent = n ? plural(n, 'set') + ' ticked · ' + plural(w, 'word') : 'Tick the sets you are using today.';
+    $('#ls-play').disabled = !w; $('#ls-save').disabled = !w; $('#ls-clear').disabled = !n;
+  },
+  deck() { const now = Date.now(); return { id: 'lesson-mix', temp: true, title: this.title(), created: now, updated: now, items: this.items() }; },
+  play() { const d = this.deck(); if (d.items.length) Hub.show(d); },
+  /** Store a copy of the mix as an ordinary set in the "Lessons" folder. */
+  async save(deck) {
+    deck = deck || this.deck(); if (!deck.items.length) return;
+    const d = new Date(), def = 'Lessons' + FOLDER_SEP + d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    const t = await askText('Save this lesson as a set', def, 'Save'); if (!t) return;
+    const s = newSet(uniqueTitle(norm(t)));
+    s.items = deck.items.map(it => { const x = Object.assign({}, it, { id: uid() }); if (!x.group && x.src) x.group = x.src; delete x.src; return x; });
+    await saveSet(s); toast('Saved “' + s.title + '”');
+    if (deck.temp && Hub.set === deck) Hub.show(s);
+  }
+};
 /* ===================== 12d. SHARED HELPERS FOR TEAM AND QUIZ GAMES =====================
    Used by: Game show quiz, Open the box, Tug of war, Jeopardy board, Watch and memorise.
    - makeTeams()      one team system for every team game (names, colours, scoreboard,
@@ -2426,6 +2658,841 @@ Games.register((() => {
     destroy() { c = null; st = null; }
   };
 })());
+/* ===================== 12k–12m. GAMES FOR THE YOUNGEST (4–6) =====================
+   What's missing?, Quick flash and Memory pairs. All three are teacher-paced:
+   the children shout the answer and the teacher taps to reveal, so there is no
+   star score (noScore). They draw square cards sized to fit the stage. */
+
+/** Lay n square cards out in the grid at the biggest size that fits in area. */
+function fitCards(grid, area, n, gapSu) {
+  const su = parseFloat(getComputedStyle(grid).getPropertyValue('--su')) || 40, gap = su * (gapSu == null ? 0.22 : gapSu);
+  const W = area.clientWidth - gap * 2, H = area.clientHeight - gap * 2;
+  let best = 1, cs = 0;
+  for (let cols = 1; cols <= n; cols++) {
+    const rows = Math.ceil(n / cols), s = Math.min((W - gap * (cols - 1)) / cols, (H - gap * (rows - 1)) / rows);
+    if (s > cs) { cs = s; best = cols; }
+  }
+  cs = Math.max(30, Math.floor(cs));
+  grid.style.gridTemplateColumns = 'repeat(' + best + ',' + cs + 'px)'; grid.style.gap = gap + 'px'; grid.style.setProperty('--cs', cs + 'px');
+}
+/** A white picture card (picture + optional word underneath). */
+function wordCard(it, word, label, cls) {
+  const p = hasPic(it);
+  return h('div', { class: 'wc ' + (cls || '') + (p ? '' : ' txt') + (p && label ? ' lab' : '') },
+    p ? pic(it, 'pfill wc-pic') : h('span', { class: 'wc-word' }, word), p && label && h('span', { class: 'wc-lab' }, word));
+}
+
+/* ---------- 12k. WHAT'S MISSING? ---------- */
+/* Look at the pictures, close your eyes, one disappears. What's missing?
+   "Leave a gap" keeps the other pictures in place; "Shuffle" moves them too (harder). */
+Games.register((() => {
+  let c = null, st = null;
+  function layout() { if (st && st.cards) fitCards(st.grid, st.area, st.cards.length); }
+  function draw(list, gapAt) {
+    st.grid.innerHTML = ''; st.cards = [];
+    list.forEach((it, i) => {
+      const el = i === gapAt ? h('div', { class: 'wc wm-gap' }, '?') : wordCard(it, c.word(it), c.g.labels !== 'off');
+      st.cards.push(el); st.grid.append(el);
+    });
+    layout();
+  }
+  function round() {
+    if (st.r >= st.rounds) return c.finish();
+    c.progress(st.r + 1, st.rounds);
+    const k = clamp(+c.g.count || 6, 3, Math.min(12, c.items.length));
+    // a word that has not been the missing one yet goes missing this time
+    const fresh = shuffle(c.items.filter(it => !st.gone.has(it.id))), pool = fresh.length ? fresh : shuffle(c.items.slice());
+    const miss = pool[0]; st.gone.add(miss.id);
+    const shown = shuffle([miss, ...shuffle(c.items.filter(it => it !== miss)).slice(0, k - 1)]);
+    st.cur = { miss, shown, at: shown.indexOf(miss) };
+    st.msg.textContent = 'Look carefully! Remember the ' + k + ' pictures.';
+    st.area.hidden = false; st.eyes.hidden = true; draw(shown, -1);
+    setBtns(h('button', { class: 'g-btn pri', onclick: closeEyes }, '🙈 Close your eyes!'));
+  }
+  function closeEyes() {
+    st.area.hidden = true; st.eyes.hidden = false; setBtns();
+    st.msg.textContent = 'Close your eyes!'; c.sfx('open');
+    let left = 3; const tick = () => {
+      st.count.textContent = left; c.sfx('tick');
+      if (left-- > 0) return c.later(tick, 900);
+      openEyes();
+    };
+    tick();
+  }
+  function openEyes() {
+    const cur = st.cur, rest = cur.shown.filter(it => it !== cur.miss);
+    st.eyes.hidden = true; st.area.hidden = false; c.sfx('place');
+    st.msg.textContent = "Open your eyes! What's missing?";
+    if (c.g.mode === 'shuffle') { cur.after = shuffle(rest); draw(cur.after, -1); }
+    else { cur.after = cur.shown; draw(cur.shown, cur.at); }
+    setBtns(h('button', { class: 'g-btn pri', onclick: reveal }, '👀 Show the answer'));
+  }
+  function reveal() {
+    const cur = st.cur, card = wordCard(cur.miss, c.word(cur.miss), true, 'wm-found');
+    if (c.g.mode === 'shuffle') { st.cards.forEach(el => el.classList.add('fade')); st.grid.append(card); st.cards.push(card); layout(); }
+    else { st.cards[cur.at].replaceWith(card); st.cards[cur.at] = card; }
+    st.msg.textContent = 'It was… ' + c.word(cur.miss) + '!';
+    c.sfx('correct'); c.say(cur.miss); c.record(cur.miss, true);
+    st.r++;
+    setBtns(h('button', { class: 'g-btn pri', onclick: round }, st.r >= st.rounds ? 'Finish ✓' : 'Next round ▶'));
+  }
+  function setBtns(...b) { st.btns.innerHTML = ''; st.btns.append(...b); }
+  return {
+    id: 'missing', name: "What's missing?", icon: '🙈', minItems: 4, allItems: true, noScore: true, listAnswered: true,
+    blurb: 'Look at the pictures, close your eyes… one has gone! Shout out what is missing.',
+    options: [
+      { key: 'count', label: 'Pictures', choices: [[4, '4'], [5, '5'], [6, '6'], [8, '8'], [10, '10']], def: 6 },
+      { key: 'mode', label: 'After', choices: [['gap', 'Leave a gap'], ['shuffle', 'Shuffle (harder)']], def: 'gap' },
+      { key: 'labels', label: 'Words', choices: [['on', 'Show words'], ['off', 'Pictures only']], def: 'on' },
+      { key: 'rounds', label: 'Rounds', choices: [[3, '3'], [5, '5'], [8, '8'], [10, '10']], def: 5 }
+    ],
+    init(ctx) {
+      c = ctx; st = { r: 0, rounds: +c.g.rounds || 5, gone: new Set(), cards: [] };
+      st.msg = h('div', { class: 'mm-msg' });
+      st.grid = h('div', { class: 'wc-grid' }); st.area = h('div', { class: 'wc-area' }, st.grid);
+      st.count = h('div', { class: 'wm-count' });
+      st.eyes = h('div', { class: 'wm-eyes', hidden: true }, h('div', { class: 'wm-emoji' }, '🙈'), st.count);
+      st.btns = h('div', { class: 'wc-btns' });
+      c.stage.append(h('div', { class: 'wc-wrap' }, st.msg, st.area, st.eyes, st.btns));
+      c.onResize(layout);
+    },
+    start() { round(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12l. QUICK FLASH ---------- */
+/* A picture (or word) flashes up for a moment and is covered again. The class shouts
+   what it was; the teacher can flash it again or show it. */
+Games.register((() => {
+  let c = null, st = null;
+  function layout() { if (st && st.box) { st.box.style.width = st.box.style.height = '0px'; fitBox(st.box, st.area, 1.25); } }
+  function kind(it) {
+    const s = c.g.show; if (!hasPic(it)) return 'word';
+    return s === 'mix' ? (Math.random() < 0.5 ? 'pic' : 'word') : s;
+  }
+  function next() {
+    if (st.i >= c.items.length) return c.finish();
+    const it = c.items[st.i]; st.cur = { it, k: kind(it), flashes: 0 };
+    c.progress(st.i + 1, c.items.length);
+    st.face.innerHTML = '';
+    st.face.append(st.cur.k === 'pic' ? pic(it, 'pfill qf-pic') : h('div', { class: 'qf-word' }, c.word(it)));
+    cover(true); st.msg.textContent = 'Get ready… watch carefully!'; layout();
+    setBtns(h('button', { class: 'g-btn pri', onclick: flash }, '⚡ Flash!'));
+  }
+  function cover(on) { st.cover.classList.toggle('off', !on); }
+  function flash() {
+    const cur = st.cur; if (!cur || st.busy) return;
+    st.busy = true; cur.flashes++; setBtns(); c.sfx('place'); cover(false);
+    c.later(() => {
+      cover(true); st.busy = false;
+      st.msg.textContent = 'What was it?';
+      setBtns(h('button', { class: 'g-btn', onclick: flash }, '⚡ Again'), h('button', { class: 'g-btn pri', onclick: reveal }, '👀 Show'));
+    }, +c.g.speed || 600);
+  }
+  function reveal() {
+    const cur = st.cur; st.face.innerHTML = '';
+    if (hasPic(cur.it)) st.face.append(pic(cur.it, 'pfill qf-pic'));
+    st.face.append(h('div', { class: 'qf-word' + (hasPic(cur.it) ? ' small' : '') }, c.word(cur.it)));
+    cover(false); c.sfx('correct'); c.say(cur.it);
+    c.record(cur.it, true, cur.flashes > 1 ? 'flashed ' + cur.flashes + ' times' : '');
+    st.msg.textContent = c.word(cur.it) + '!'; st.i++;
+    setBtns(h('button', { class: 'g-btn pri', onclick: next }, st.i >= c.items.length ? 'Finish ✓' : 'Next ▶'));
+  }
+  function setBtns(...b) { st.btns.innerHTML = ''; st.btns.append(...b); }
+  return {
+    id: 'flash', name: 'Quick flash', icon: '⚡', minItems: 1, noScore: true, listAnswered: true,
+    blurb: 'A picture flashes up for a moment. What was it? Shout it out!',
+    options: [
+      { key: 'speed', label: 'Flash for', choices: [[300, 'Very fast'], [600, 'Fast'], [1000, 'Normal'], [2000, 'Slow']], def: 600 },
+      { key: 'show', label: 'Show', choices: [['pic', 'Pictures'], ['word', 'Words (reading)'], ['mix', 'Mix']], def: 'pic' }
+    ],
+    init(ctx) {
+      c = ctx; st = { i: 0, busy: false };
+      st.msg = h('div', { class: 'mm-msg' });
+      st.face = h('div', { class: 'qf-face' });
+      st.cover = h('div', { class: 'qf-cover' }, h('span', null, '?'));
+      st.box = h('div', { class: 'qf-box' }, st.face, st.cover);
+      st.area = h('div', { class: 'qf-area' }, st.box);
+      st.btns = h('div', { class: 'wc-btns' });
+      c.stage.append(h('div', { class: 'wc-wrap' }, st.msg, st.area, st.btns));
+      c.onResize(layout); layout();
+    },
+    start() { next(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12m. MEMORY PAIRS ---------- */
+/* Pelmanism. Cards face down; turn two over. A pair stays up. With teams, a team
+   that finds a pair gets a point and goes again; otherwise the turn passes on. */
+Games.register((() => {
+  let c = null, st = null, T = null;
+  function layout() { if (st) fitCards(st.grid, st.area, st.cards.length, 0.16); }
+  function flip(card) {
+    if (!st || st.busy || card.up || card.done) return;
+    card.up = true; card.el.classList.add('up'); c.sfx('place');
+    st.open.push(card);
+    if (st.open.length < 2) return;
+    const [a, b] = st.open; st.open = []; st.busy = true; st.moves++;
+    if (a.it === b.it) {
+      c.later(() => {
+        a.done = b.done = true; a.el.classList.add('done'); b.el.classList.add('done');
+        c.sfx('correct'); c.say(a.it); c.record(a.it, true);
+        if (T) T.add(T.turn, 1);
+        st.found++; c.progress(st.found, st.pairs); st.busy = false;
+        st.msg.textContent = 'A pair! ' + c.word(a.it) + (T ? ' – ' + T.names[T.turn] + ' goes again.' : '');
+        if (st.found >= st.pairs) c.later(() => c.finish(), 1400);
+      }, 500);
+    } else {
+      c.later(() => {
+        c.sfx('wrong');
+        a.up = b.up = false; a.el.classList.remove('up'); b.el.classList.remove('up');
+        st.busy = false;
+        if (T) { T.nextTurn(); st.msg.textContent = T.names[T.turn] + ', your turn!'; }
+        else st.msg.textContent = 'Not a pair. Try again!';
+      }, 1300);
+    }
+  }
+  return {
+    id: 'pairs', name: 'Memory pairs', icon: '🃏', minItems: 3, allItems: true, noScore: true, listAnswered: true,
+    usable: hasPic,
+    blurb: 'Turn over two cards. Find the pairs! Play as a class or in teams.',
+    options: [
+      { key: 'pairs', label: 'Pairs', choices: [[3, '3'], [4, '4'], [6, '6'], [8, '8'], [10, '10']], def: 6 },
+      { key: 'match', label: 'Match', choices: [['same', 'Picture + picture'], ['word', 'Picture + word']], def: 'same' },
+      { key: 'teams', label: 'Teams', choices: [['off', 'Whole class'], ['on', 'Teams']], def: 'off' }
+    ],
+    init(ctx) {
+      c = ctx; T = c.g.teams === 'on' ? c.teams() : null;
+      const seen = new Set(), chosen = [];
+      for (const it of shuffle(c.items.slice())) {
+        const k = c.word(it).toLowerCase(); if (seen.has(k)) continue;
+        seen.add(k); chosen.push(it); if (chosen.length >= (+c.g.pairs || 6)) break;
+      }
+      st = { pairs: chosen.length, found: 0, moves: 0, open: [], busy: false, cards: [] };
+      st.grid = h('div', { class: 'wc-grid' }); st.area = h('div', { class: 'wc-area' }, st.grid);
+      const deck = shuffle(chosen.flatMap(it => [{ it, side: 'pic' }, { it, side: c.g.match === 'word' ? 'word' : 'pic' }]));
+      deck.forEach((d, i) => {
+        const face = d.side === 'pic' ? wordCard(d.it, c.word(d.it), false, 'mp-face') : h('div', { class: 'wc txt mp-face' }, h('span', { class: 'wc-word' }, c.word(d.it)));
+        const card = { it: d.it, up: false, done: false };
+        card.el = h('button', { class: 'mp-card', 'aria-label': 'Card ' + (i + 1), onclick: () => flip(card) },
+          h('div', { class: 'mp-in' }, h('div', { class: 'mp-back', style: '--bc:' + BRIGHT[i % BRIGHT.length] }, h('span', null, i + 1)), face));
+        st.cards.push(card); st.grid.append(card.el);
+      });
+      st.msg = h('div', { class: 'mm-msg' }, T ? T.names[0] + ', your turn!' : 'Find the pairs!');
+      c.stage.append(h('div', { class: 'tm-wrap' }, T && T.el, h('div', { class: 'wc-wrap in-tm' }, st.msg, st.area)));
+      if (T) T.setTurn(0);
+      c.onResize(layout); layout(); c.progress(0, st.pairs);
+    },
+    start() {},
+    destroy() { c = null; st = null; T = null; }
+  };
+})());
+/* ===================== 12n–12q. MORE GAMES FOR THE YOUNGEST (4–6) =====================
+   Peek-a-boo door, Mystery box, Shadow match and Lucky dip. Teacher-paced like
+   batch 1 (the class shouts, the teacher taps to reveal), so no star score. */
+
+/** One big picture card that fills its area (used by all four games). */
+function bigCard(it, word, showWord) {
+  const p = hasPic(it);
+  return h('div', { class: 'bc-card' }, p ? pic(it, 'pfill bc-pic') : h('div', { class: 'bc-word solo' }, word), p && showWord && h('div', { class: 'bc-word' }, word));
+}
+/** Shared shell: message, square-ish stage area, button row. */
+function shell(c, cls) {
+  const s = { msg: h('div', { class: 'mm-msg' }), area: h('div', { class: 'bc-area ' + (cls || '') }), btns: h('div', { class: 'wc-btns' }) };
+  s.set = (...b) => { s.btns.innerHTML = ''; s.btns.append(...b.filter(Boolean)); };
+  c.stage.append(h('div', { class: 'wc-wrap' }, s.msg, s.area, s.btns));
+  return s;
+}
+const gbtn = (label, fn, pri) => h('button', { class: 'g-btn' + (pri ? ' pri' : ''), onclick: fn }, label);
+
+/* ---------- 12n. PEEK-A-BOO DOOR ---------- */
+/* A picture hides behind a door. Each tap opens the door a little more. */
+Games.register((() => {
+  let c = null, st = null;
+  const STEPS = [0, 14, 30, 50, 75];
+  function layout() {
+    if (!st || !st.box) return;
+    st.box.style.width = st.box.style.height = '0px'; fitBox(st.box, st.ui.area, 1.15);
+    const ring = c.size().su * 0.6;   // room for the door frame
+    st.box.style.width = Math.max(40, parseFloat(st.box.style.width) - ring) + 'px'; st.box.style.height = Math.max(40, parseFloat(st.box.style.height) - ring / 1.15) + 'px';
+  }
+  function next() {
+    if (st.i >= c.items.length) return c.finish();
+    const it = c.items[st.i]; st.step = 0; st.it = it;
+    c.progress(st.i + 1, c.items.length);
+    st.inside.innerHTML = ''; st.inside.append(bigCard(it, c.word(it), false));
+    st.door.style.transform = 'rotateY(0deg)'; st.door.classList.remove('gone');
+    st.ui.msg.textContent = 'Knock, knock! Who is behind the door?';
+    st.ui.set(gbtn('🚪 Peek', peek, true)); layout();
+  }
+  function peek() {
+    st.step = Math.min(st.step + 1, STEPS.length - 1);
+    st.door.style.transform = 'rotateY(' + STEPS[st.step] + 'deg)'; c.sfx('place');
+    st.ui.msg.textContent = st.step === 1 ? 'What can you see?' : 'A little more…';
+    st.ui.set(st.step < STEPS.length - 1 && gbtn('🚪 Peek more', peek), gbtn('👀 Open the door', reveal, true));
+  }
+  function reveal() {
+    st.door.style.transform = 'rotateY(105deg)'; st.door.classList.add('gone');
+    st.inside.innerHTML = ''; st.inside.append(bigCard(st.it, c.word(st.it), true));
+    c.sfx('correct'); c.say(st.it); c.record(st.it, true, st.step <= 1 ? 'first peek' : '');
+    st.ui.msg.textContent = 'It’s ' + c.word(st.it) + '!'; st.i++;
+    st.ui.set(gbtn(st.i >= c.items.length ? 'Finish ✓' : 'Next door ▶', next, true));
+  }
+  return {
+    id: 'peek', name: 'Peek-a-boo door', icon: '🚪', minItems: 1, noScore: true, listAnswered: true, usable: hasPic,
+    blurb: 'A picture hides behind a door. Peek a little… what is it? Open the door to see!',
+    options: [],
+    init(ctx) {
+      c = ctx; st = { i: 0, step: 0 };
+      st.ui = shell(c, 'pk-area');
+      st.inside = h('div', { class: 'pk-inside' });
+      st.door = h('div', { class: 'pk-door' }, h('i', { class: 'pk-knob' }), h('i', { class: 'pk-panel a' }), h('i', { class: 'pk-panel b' }));
+      st.box = h('div', { class: 'pk-box' }, st.inside, st.door);
+      st.ui.area.append(st.box); c.onResize(layout); layout();
+    },
+    start() { next(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12o. MYSTERY BOX ---------- */
+/* "What's in the box? Something new today!" The box shakes, the lid pops off and
+   the picture jumps out. Optional clue first. */
+Games.register((() => {
+  let c = null, st = null;
+  function next() {
+    if (st.i >= c.items.length) return c.finish();
+    const it = c.items[st.i]; st.it = it;
+    c.progress(st.i + 1, c.items.length);
+    st.ui.area.innerHTML = '';
+    st.box = h('div', { class: 'mb-box', style: '--bc:' + BRIGHT[st.i % BRIGHT.length] }, h('div', { class: 'mb-lid' }), h('div', { class: 'mb-body' }, h('span', null, '?')));
+    st.ui.area.append(st.box);
+    const clue = c.g.hint === 'clue' && clueText(it);
+    st.ui.msg.textContent = clue ? 'Clue: ' + clue : "What's in the box? Something new today!";
+    st.ui.set(gbtn('🫨 Shake', shake), gbtn('🎁 Open!', open, true));
+  }
+  function shake() {
+    st.box.classList.remove('shake'); void st.box.offsetWidth; st.box.classList.add('shake'); c.sfx('tile');
+    c.later(() => c.sfx('tile'), 150); c.later(() => c.sfx('tile'), 300);
+  }
+  function open() {
+    st.ui.set(); shake();
+    c.later(() => {
+      st.box.classList.add('open'); c.sfx('pop');
+      const card = bigCard(st.it, c.word(st.it), c.g.word !== 'off'); card.classList.add('mb-out');
+      st.ui.area.append(card);
+      c.sfx('correct'); c.say(st.it); c.record(st.it, true);
+      st.ui.msg.textContent = c.g.word !== 'off' ? 'It’s ' + c.word(st.it) + '!' : 'What is it?'; st.i++;
+      st.ui.set(c.g.word === 'off' && gbtn('🔤 Show the word', e => { card.append(h('div', { class: 'bc-word' }, c.word(st.ci))); st.ui.msg.textContent = 'It’s ' + c.word(st.ci) + '!'; e.currentTarget.remove(); }),
+        gbtn(st.i >= c.items.length ? 'Finish ✓' : 'Next box ▶', next, true));
+      st.ci = st.it;
+    }, 700);
+  }
+  return {
+    id: 'mystery', name: 'Mystery box', icon: '🎁', minItems: 1, noScore: true, listAnswered: true,
+    blurb: 'What’s in the box? Shake it, guess, then open it and the picture jumps out!',
+    options: [
+      { key: 'hint', label: 'Before opening', choices: [['none', 'Just guess'], ['clue', 'Read the clue']], def: 'none' },
+      { key: 'word', label: 'Word', choices: [['on', 'Show the word'], ['off', 'Picture first']], def: 'on' }
+    ],
+    init(ctx) { c = ctx; st = { i: 0 }; st.ui = shell(c, 'mb-area'); },
+    start() { next(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12p. SHADOW MATCH ---------- */
+/* The picture is shown as a black shadow. Guess, then the colour fills in.
+   The shadow is made in a canvas: the white background (only the part joined to
+   the edges, so white inside a drawing stays) becomes see-through and the rest black. */
+const shadowCache = new Map();
+function shadowOf(it) {
+  if (!it.image) return Promise.resolve(null);
+  if (shadowCache.has(it.image)) return Promise.resolve(shadowCache.get(it.image));
+  return new Promise(res => {
+    const im = new Image();
+    im.onload = () => {
+      try {
+        const S = 320, k = S / Math.max(im.naturalWidth, im.naturalHeight), w = Math.max(1, Math.round(im.naturalWidth * k)), hh = Math.max(1, Math.round(im.naturalHeight * k));
+        const cv = document.createElement('canvas'); cv.width = w; cv.height = hh;
+        const x = cv.getContext('2d'); x.drawImage(im, 0, 0, w, hh);
+        const d = x.getImageData(0, 0, w, hh), p = d.data, bg = new Uint8Array(w * hh), q = [];
+        const light = i => p[i * 4] > 225 && p[i * 4 + 1] > 225 && p[i * 4 + 2] > 225;
+        const push = i => { if (!bg[i] && light(i)) { bg[i] = 1; q.push(i); } };
+        for (let i = 0; i < w; i++) { push(i); push((hh - 1) * w + i); }
+        for (let j = 0; j < hh; j++) { push(j * w); push(j * w + w - 1); }
+        while (q.length) {
+          const i = q.pop(), a = i % w, b = (i - a) / w;
+          if (a > 0) push(i - 1); if (a < w - 1) push(i + 1); if (b > 0) push(i - w); if (b < hh - 1) push(i + w);
+        }
+        for (let i = 0; i < w * hh; i++) { p[i * 4] = p[i * 4 + 1] = p[i * 4 + 2] = 25; p[i * 4 + 3] = bg[i] ? 0 : 255; }
+        x.putImageData(d, 0, 0);
+        const url = cv.toDataURL('image/png'); shadowCache.set(it.image, url); res(url);
+      } catch (e) { res(null); }
+    };
+    im.onerror = () => res(null);
+    im.src = it.image;
+  });
+}
+Games.register((() => {
+  let c = null, st = null;
+  function layout() { if (st && st.box) { st.box.style.width = st.box.style.height = '0px'; fitBox(st.box, st.ui.area, 1); } }
+  async function next() {
+    if (st.i >= c.items.length) return c.finish();
+    const it = c.items[st.i], my = ++st.token; st.it = it; st.done = false;
+    c.progress(st.i + 1, c.items.length);
+    st.box.innerHTML = ''; st.ui.set(); st.ui.msg.textContent = 'Whose shadow is this?';
+    const url = await shadowOf(it); if (!st || my !== st.token) return;
+    const sh = url ? h('div', { class: 'pic pfill sm-shadow' }, h('img', { src: url, alt: '' })) : pic(it, 'pfill sm-shadow emoji');
+    st.colour = pic(it, 'pfill sm-colour');
+    st.box.append(st.colour, sh); layout();
+    const n = +c.g.choices || 0;
+    if (n) {
+      const opts = shuffle([it, ...pickItems(it, c.pool, n - 1, c.word)]);
+      st.ui.set(...opts.map(o => h('button', { class: 'g-btn sm-opt', onclick: e => choose(o, e.currentTarget) }, c.word(o))));
+    } else st.ui.set(gbtn('🌈 Show the colours', reveal, true));
+  }
+  function choose(o, el) {
+    if (st.done) return;
+    if (o !== st.it) { el.classList.add('bad'); el.disabled = true; c.sfx('wrong'); st.miss = true; return; }
+    el.classList.add('good'); reveal();
+  }
+  function reveal() {
+    if (st.done) return; st.done = true;
+    st.box.classList.add('lit'); c.sfx('correct'); c.say(st.it); c.record(st.it, !st.miss, st.miss ? 'not first try' : '');
+    st.miss = false;
+    st.ui.msg.textContent = 'It’s ' + c.word(st.it) + '!'; st.i++;
+    c.later(() => { if (st) st.ui.set(gbtn(st.i >= c.items.length ? 'Finish ✓' : 'Next shadow ▶', () => { st.box.classList.remove('lit'); next(); }, true)); }, 500);
+  }
+  return {
+    id: 'shadow', name: 'Shadow match', icon: '🌑', minItems: 1, noScore: true, listAnswered: true, usable: hasPic,
+    blurb: 'A black shadow appears. Whose shadow is it? Then the colours fill in!',
+    options: [
+      { key: 'choices', label: 'Answers', choices: [[0, 'Shout it out'], [3, '3 to choose'], [4, '4 to choose']], def: 0 }
+    ],
+    init(ctx) {
+      c = ctx; st = { i: 0, token: 0, miss: false };
+      st.ui = shell(c, 'sm-area'); st.box = h('div', { class: 'sm-box' }); st.ui.area.append(st.box);
+      c.onResize(layout); layout();
+      c.items.forEach(it => shadowOf(it));   // make the shadows early so each one appears at once
+    },
+    start() { next(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12q. LUCKY DIP ---------- */
+/* Pictures flick past in a window, slow down and stop on one. Use it to choose the
+   next word to practise, or switch to numbers to choose a child (1 to class size). */
+Games.register((() => {
+  let c = null, st = null;
+  function layout() {
+    if (!st || !st.win) return;
+    st.win.style.width = st.win.style.height = '0px'; fitBox(st.win, st.ui.area, 1.1);
+    const ring = c.size().su * 1.1;   // leave room for the coloured frame round the window (and its pulse)
+    st.win.style.width = Math.max(40, parseFloat(st.win.style.width) - ring) + 'px'; st.win.style.height = Math.max(40, parseFloat(st.win.style.height) - ring / 1.1) + 'px';
+  }
+  function show(x) {
+    st.win.innerHTML = '';
+    st.win.append(st.nums ? h('div', { class: 'bc-card' }, h('div', { class: 'ld-num' }, x)) : bigCard(x, c.word(x), c.g.show !== 'pictures'));
+  }
+  function ready() {
+    if (!st.left.length) { st.ui.msg.textContent = st.nums ? 'Everyone has had a turn!' : 'All done!'; st.ui.set(gbtn('↺ Start again', () => { reset(); ready(); }), gbtn('Finish ✓', () => c.finish(), true)); return; }
+    st.ui.msg.textContent = st.nums ? 'Red, yellow, blue… now it’s YOU!' : 'Lucky dip! What will it be?';
+    st.ui.set(gbtn('🎲 Dip!', spin, true));
+    c.progress(st.all.length - st.left.length, st.all.length);
+  }
+  function spin() {
+    if (st.busy) return; st.busy = true; st.ui.set(); st.win.classList.add('spinning');
+    const pick = st.left[rnd(st.left.length)], seq = st.left.length > 1 ? st.left : st.all;
+    let t = 0, gap = 60, k = rnd(seq.length);
+    const step = () => {
+      t += gap; k = (k + 1) % seq.length; show(seq[k]); c.sfx('tile');
+      if (t < 2600) { gap = Math.min(380, gap * 1.09); c.later(step, gap); }
+      else c.later(land, gap);
+    };
+    const land = () => {
+      st.win.classList.remove('spinning'); show(pick); st.win.classList.add('landed');
+      c.later(() => st && st.win.classList.remove('landed'), 600);
+      c.sfx('correct');
+      if (!st.nums) { c.say(pick); c.record(pick, true); }
+      st.ui.msg.textContent = st.nums ? 'Number ' + pick + '!' : c.word(pick) + '!';
+      if (c.g.remove !== 'off') st.left = st.left.filter(x => x !== pick);
+      st.busy = false;
+      st.ui.set(gbtn('🎲 Dip again', spin, true), st.nums ? null : gbtn('Finish ✓', () => c.finish()));
+      if (!st.left.length) c.later(ready, 1200);
+      c.progress(st.all.length - st.left.length, st.all.length);
+    };
+    step();
+  }
+  function reset() { st.left = st.all.slice(); }
+  return {
+    id: 'dip', name: 'Lucky dip', icon: '🎲', minItems: 2, allItems: true, noTimer: true, noScore: true, listAnswered: true,
+    blurb: 'The pictures flick past and stop on one. Choose a word – or switch to numbers to choose a child.',
+    options: [
+      { key: 'pick', label: 'Pick from', choices: [['words', 'This set'], [10, 'Numbers 1–10'], [15, '1–15'], [20, '1–20'], [30, '1–30']], def: 'words' },
+      { key: 'show', label: 'Show', choices: [['both', 'Picture + word'], ['pictures', 'Pictures']], def: 'both' },
+      { key: 'remove', label: 'After a dip', choices: [['on', 'Take it out'], ['off', 'Put it back']], def: 'on' }
+    ],
+    init(ctx) {
+      c = ctx; st = { busy: false, nums: c.g.pick !== 'words' && +c.g.pick > 0 };
+      st.all = st.nums ? Array.from({ length: +c.g.pick }, (_, i) => i + 1) : c.items.slice();
+      reset();
+      st.ui = shell(c, 'ld-area'); st.win = h('div', { class: 'ld-win' }); st.ui.area.append(st.win);
+      show(st.all[0]); c.onResize(layout); layout();
+    },
+    start() { ready(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+/* ===================== 12r–12s. HIDE AND SEEK, LISTEN AND TAP =====================
+   Neither game uses the iPad's voice: the teacher says the words. */
+
+/* ---------- 12r. HIDE AND SEEK ---------- */
+/* A little animal hides behind one of the pictures. The class asks
+   "Is it behind the ___?" and a child taps that picture to look. */
+Games.register((() => {
+  let c = null, st = null, T = null;
+  function layout() { if (st && st.cards.length) fitCards(st.grid, st.area, st.cards.length); }
+  function round() {
+    if (st.r >= st.rounds) return c.finish();
+    c.progress(st.r + 1, st.rounds);
+    const k = clamp(+c.g.count || 6, 3, Math.min(12, c.items.length));
+    const shown = shuffle(c.items.slice()).slice(0, k);
+    st.at = rnd(k); st.busy = false; st.tries = 0;
+    st.grid.innerHTML = ''; st.cards = shown.map((it, i) => {
+      const el = h('button', { class: 'hs-card', onclick: () => look(i) }, wordCard(it, c.word(it), c.g.labels !== 'off'));
+      st.grid.append(el); return { it, el, done: false };
+    });
+    st.msg.textContent = 'Where is ' + st.who + '? Ask: “Is it behind the …?”';
+    layout();
+  }
+  function look(i) {
+    const card = st.cards[i]; if (st.busy || card.done) return;
+    card.done = true; st.tries++;
+    if (i === st.at) {
+      st.busy = true;
+      card.el.classList.add('found'); card.el.append(h('span', { class: 'hs-over' }, h('span', { class: 'hs-pet' }, st.pet)));
+      c.sfx('correct'); c.record(card.it, true);
+      st.msg.textContent = 'Yes! ' + st.Who + ' is behind the ' + c.word(card.it) + '!';
+      if (T) T.add(T.turn, 1);
+      st.r++;
+      c.later(() => { if (!st) return; if (T) T.nextTurn(); round(); }, 2600);
+    } else {
+      card.el.classList.add('empty'); card.el.append(h('span', { class: 'hs-over' }, h('span', { class: 'hs-no' }, 'No!')));
+      c.sfx('wrong');
+      st.msg.textContent = 'No! ' + st.Who + ' is not there. Try again!';
+      if (T) T.nextTurn();
+    }
+  }
+  const PETS = { monkey: ['🐵', 'the monkey'], bear: ['🧸', 'the teddy bear'], cat: ['🐱', 'the cat'], frog: ['🐸', 'the frog'], ghost: ['👻', 'the ghost'] };
+  return {
+    id: 'hide', name: 'Hide and seek', icon: '🫣', minItems: 3, allItems: true, noScore: true,
+    blurb: 'Something is hiding behind a picture! “Is it behind the teddy bear?” Tap to look.',
+    options: [
+      { key: 'count', label: 'Pictures', choices: [[4, '4'], [6, '6'], [8, '8'], [9, '9'], [12, '12']], def: 6 },
+      { key: 'pet', label: 'Who hides', choices: [['monkey', '🐵'], ['bear', '🧸'], ['cat', '🐱'], ['frog', '🐸'], ['ghost', '👻']], def: 'monkey' },
+      { key: 'labels', label: 'Words', choices: [['on', 'Show words'], ['off', 'Pictures only']], def: 'on' },
+      { key: 'rounds', label: 'Rounds', choices: [[3, '3'], [5, '5'], [8, '8']], def: 5 },
+      { key: 'teams', label: 'Teams', choices: [['off', 'Whole class'], ['on', 'Teams']], def: 'off' }
+    ],
+    init(ctx) {
+      c = ctx; T = c.g.teams === 'on' ? c.teams() : null;
+      const pet = PETS[c.g.pet] || PETS.monkey;
+      st = { r: 0, rounds: +c.g.rounds || 5, cards: [], pet: pet[0], who: pet[1], Who: pet[1][0].toUpperCase() + pet[1].slice(1) };
+      st.msg = h('div', { class: 'mm-msg' });
+      st.grid = h('div', { class: 'wc-grid' }); st.area = h('div', { class: 'wc-area' }, st.grid);
+      c.stage.append(h('div', { class: 'tm-wrap' }, T && T.el, h('div', { class: 'wc-wrap in-tm' }, st.msg, st.area)));
+      if (T) T.setTurn(0);
+      c.onResize(layout);
+    },
+    start() { round(); },
+    destroy() { c = null; st = null; T = null; }
+  };
+})());
+
+/* ---------- 12s. LISTEN AND TAP ---------- */
+/* The teacher says a word; a child taps the picture.
+   "You choose": the teacher says any word, the picture zooms up and the teacher
+   taps ✓ or Try again. "Game chooses": the game picks the word and the teacher
+   holds the 🤫 button to see it secretly; the game checks the tap. */
+Games.register((() => {
+  let c = null, st = null, T = null;
+  function layout() { if (st && st.cards.length) fitCards(st.grid, st.area, st.cards.length); }
+  function setup() {
+    const k = clamp(+c.g.count || 6, 2, Math.min(12, c.items.length));
+    const shown = shuffle(c.items.slice()).slice(0, k);
+    st.grid.innerHTML = '';
+    st.cards = shown.map(it => {
+      const card = { it, done: false };
+      card.el = h('button', { class: 'hs-card', onclick: () => tap(card) }, wordCard(it, c.word(it), c.g.labels === 'on'));
+      st.grid.append(card.el); return card;
+    });
+    st.order = shuffle(st.cards.slice()); layout(); next();
+  }
+  const left = () => st.cards.filter(x => !x.done);
+  function next() {
+    st.busy = false;
+    const n = st.cards.length - left().length; c.progress(n, st.cards.length);
+    if (!left().length) return c.later(() => c.finish(), 900);
+    if (st.secret) {
+      st.target = st.order.find(x => !x.done);
+      st.msg.textContent = 'Listen to your teacher… then tap the picture!';
+      st.peek.hidden = false;
+    } else st.msg.textContent = 'Teacher: say a word. Who can tap it?';
+    if (T) st.msg.textContent = T.names[T.turn] + ': ' + st.msg.textContent;
+  }
+  function tap(card) {
+    if (st.busy || card.done) return;
+    if (st.secret) {
+      if (card === st.target) {
+        st.busy = true; card.done = true; card.el.classList.add('found'); c.sfx('correct'); c.record(card.it, !st.miss);
+        st.msg.textContent = 'Yes! ' + c.word(card.it) + '!';
+        if (T) { if (!st.miss) T.add(T.turn, 1); T.nextTurn(); }
+        st.miss = false; c.later(next, 1500);
+      } else {
+        st.miss = true; c.sfx('wrong');
+        card.el.classList.remove('nope'); void card.el.offsetWidth; card.el.classList.add('nope');
+        if (T) { T.nextTurn(); st.msg.textContent = 'Not that one. ' + T.names[T.turn] + ', your turn!'; }
+        else st.msg.textContent = 'Not that one. Listen again!';
+      }
+      return;
+    }
+    // You choose: show the tapped picture big; the teacher says if it was right
+    st.busy = true; c.sfx('place');
+    const over = h('div', { class: 'ob-over' }, h('div', { class: 'ob-card lt-card' },
+      h('div', { class: 'ob-body' }, pic(card.it, 'pfill ob-pic'), h('div', { class: 'ob-word small' }, c.word(card.it))),
+      h('div', { class: 'ob-foot' },
+        h('button', { class: 'g-btn', onclick: () => { over.remove(); c.sfx('back'); if (T) T.nextTurn(); next(); } }, '↺ Try again'),
+        h('button', { class: 'g-btn pri', onclick: () => {
+          over.remove(); card.done = true; card.el.classList.add('found'); c.sfx('correct'); c.record(card.it, true);
+          if (T) { T.add(T.turn, 1); T.nextTurn(); } next();
+        } }, '✓ Right!'))));
+    st.area.append(over);
+  }
+  return {
+    id: 'listen', name: 'Listen and tap', icon: '👂', minItems: 2, allItems: true, noScore: true, listAnswered: true, usable: hasPic,
+    blurb: 'The teacher says a word. Who can find it? Tap the picture! (No iPad voice – you say the words.)',
+    options: [
+      { key: 'count', label: 'Pictures', choices: [[3, '3'], [4, '4'], [6, '6'], [8, '8'], [9, '9'], [12, '12']], def: 6 },
+      { key: 'who', label: 'The word', choices: [['teacher', 'You choose'], ['game', 'Game chooses (secret)']], def: 'teacher' },
+      { key: 'labels', label: 'Words', choices: [['off', 'Pictures only'], ['on', 'Show words']], def: 'off' },
+      { key: 'teams', label: 'Teams', choices: [['off', 'Whole class'], ['on', 'Teams']], def: 'off' }
+    ],
+    init(ctx) {
+      c = ctx; T = c.g.teams === 'on' ? c.teams() : null;
+      st = { cards: [], busy: false, miss: false, secret: c.g.who === 'game' };
+      st.msg = h('div', { class: 'mm-msg' });
+      st.grid = h('div', { class: 'wc-grid' }); st.area = h('div', { class: 'wc-area' }, st.grid);
+      // the secret word shows only while the teacher holds the button down
+      st.tip = h('div', { class: 'lt-tip', hidden: true });
+      const showTip = e => { e.preventDefault(); if (st.target) { st.tip.textContent = c.word(st.target.it); st.tip.hidden = false; } };
+      const hideTip = () => { st.tip.hidden = true; };
+      st.peek = h('button', { class: 'g-btn sm lt-peek', hidden: true, onpointerdown: showTip, onpointerup: hideTip, onpointerleave: hideTip, onpointercancel: hideTip }, '🤫 Hold: teacher’s word');
+      c.stage.append(h('div', { class: 'tm-wrap' }, T && T.el, h('div', { class: 'wc-wrap in-tm' }, st.msg, st.area, h('div', { class: 'wc-btns' }, st.peek, st.tip))));
+      if (T) T.setTurn(0);
+      c.onResize(layout);
+    },
+    start() { setup(); },
+    destroy() { c = null; st = null; T = null; }
+  };
+})());
+/* ===================== 12t–12v. SORTING, ODD ONE OUT, FIRST NEXT LAST =====================
+   Groups come from the optional "group" box in the editor, or – in a Today's
+   lesson mix – from the set each word came from. First, next, last uses the order
+   of the words in the set (change it with ▲▼ in the editor). */
+
+const groupOf = it => norm(it.group) || it.src || '';
+/** Tidy a group name for a label: drop a leading emoji and a trailing "(song)". */
+const groupLabel = g => g.replace(/^[^\p{L}\p{N}]+/u, '').replace(/\s*\([^)]*\)\s*$/, '') || g;
+/** Map of group -> items (only words that have a group). */
+function groupsIn(items) {
+  const m = new Map();
+  items.forEach(it => { const g = groupOf(it); if (!g) return; if (!m.has(g)) m.set(g, []); m.get(g).push(it); });
+  return m;
+}
+/** Explain on the stage why a group game cannot start. */
+function needGroups(c) {
+  c.stage.append(h('div', { class: 'wc-wrap' }, h('div', { class: 'gr-need' },
+    h('div', { class: 'gr-need-i' }, '🗂'),
+    h('h2', null, 'This game needs two groups of words'),
+    h('p', null, 'Either: tap 📋 Today’s lesson, tick two or three sets (for example Toys and Weather) and play this game – each set is a group.'),
+    h('p', null, 'Or: open this set in the editor and type a group next to each word (for example “v” and “no v”).'))));
+}
+
+/* ---------- 12t. SORTING ---------- */
+Games.register((() => {
+  let c = null, st = null;
+  function next() {
+    if (st.i >= st.deck.length) return c.later(() => c.finish(), 700);
+    const it = st.deck[st.i]; st.it = it; st.miss = false;
+    c.progress(st.i + 1, st.deck.length);
+    st.card.innerHTML = ''; st.card.append(bigCard(it, c.word(it), c.g.labels !== 'off'));
+    st.card.classList.remove('fly'); void st.card.offsetWidth; st.card.classList.add('in');
+    st.msg.textContent = 'Where does it go?';
+    st.busy = false;
+  }
+  function drop(bin) {
+    if (st.busy || !st.it) return;
+    if (groupOf(st.it) !== bin.g) {
+      st.miss = true; c.sfx('wrong'); bin.el.classList.remove('nope'); void bin.el.offsetWidth; bin.el.classList.add('nope');
+      st.msg.textContent = 'Not there. Try again!'; return;
+    }
+    st.busy = true; c.sfx('correct'); c.say(st.it); c.record(st.it, !st.miss, st.miss ? 'not first try' : '');
+    if (!st.miss) c.addScore(10);
+    bin.n++; bin.count.textContent = bin.n;
+    bin.shelf.append(pic(st.it, 'gr-mini'));
+    bin.el.classList.remove('yes'); void bin.el.offsetWidth; bin.el.classList.add('yes');
+    st.msg.textContent = 'Yes! ' + c.word(st.it) + ' → ' + bin.label;
+    st.card.classList.add('fly'); st.i++; c.later(next, 900);
+  }
+  return {
+    id: 'sort', name: 'Sorting', icon: '🗂', minItems: 2, allItems: true,
+    blurb: 'Sort the pictures into groups. Use Today’s lesson (each set is a group) or type groups in the editor.',
+    options: [
+      { key: 'groups', label: 'Groups', choices: [[2, '2'], [3, '3']], def: 2 },
+      { key: 'count', label: 'Pictures', choices: [[6, '6'], [8, '8'], [10, '10'], [12, '12'], ['all', 'All']], def: 8 },
+      { key: 'labels', label: 'Words', choices: [['on', 'Show words'], ['off', 'Pictures only']], def: 'on' }
+    ],
+    init(ctx) {
+      c = ctx;
+      const m = groupsIn(c.pool), names = [...m.keys()].filter(g => m.get(g).length);
+      if (names.length < 2) { st = null; return needGroups(c); }
+      const pickG = shuffle(names.slice()).slice(0, clamp(+c.g.groups || 2, 2, 3)).sort((a, b) => names.indexOf(a) - names.indexOf(b));
+      let deck = shuffle(pickG.flatMap(g => m.get(g)));
+      if (c.g.count !== 'all') {   // keep every group in the deck when it is cut down
+        const n = +c.g.count || 8, per = Math.ceil(n / pickG.length);
+        deck = shuffle(pickG.flatMap(g => shuffle(m.get(g).slice()).slice(0, per))).slice(0, n);
+      }
+      st = { i: 0, deck, busy: false };
+      st.msg = h('div', { class: 'mm-msg' });
+      st.card = h('div', { class: 'gr-card' });
+      st.bins = pickG.map((g, i) => {
+        const b = { g, label: groupLabel(g), n: 0 };
+        b.count = h('b', { class: 'gr-count' }, '0'); b.shelf = h('div', { class: 'gr-shelf' });
+        b.el = h('button', { class: 'gr-bin', style: '--bc:' + BRIGHT[(i * 3) % BRIGHT.length], onclick: () => drop(b) }, h('span', { class: 'gr-name' }, b.label), b.shelf, b.count);
+        return b;
+      });
+      c.stage.append(h('div', { class: 'wc-wrap gr-wrap' }, st.msg, h('div', { class: 'gr-top' }, st.card), h('div', { class: 'gr-bins' }, st.bins.map(b => b.el))));
+    },
+    start() { if (st) next(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12u. ODD ONE OUT ---------- */
+Games.register((() => {
+  let c = null, st = null;
+  function layout() { if (st && st.cards) fitCards(st.grid, st.area, st.cards.length); }
+  function round() {
+    if (st.r >= st.rounds) return c.finish();
+    c.progress(st.r + 1, st.rounds);
+    const k = +c.g.size || 4, big = st.names.filter(g => st.m.get(g).length >= k - 1);
+    const A = big[rnd(big.length)], others = st.names.filter(g => g !== A), B = others[rnd(others.length)];
+    const same = shuffle(st.m.get(A).slice()).slice(0, k - 1), odd = st.m.get(B)[rnd(st.m.get(B).length)];
+    st.cur = { A, B, odd, done: false, miss: false };
+    st.grid.innerHTML = '';
+    st.cards = shuffle([...same, odd]).map(it => {
+      const el = h('button', { class: 'hs-card', onclick: () => tap(it, el) }, wordCard(it, c.word(it), c.g.labels !== 'off'));
+      st.grid.append(el); return el;
+    });
+    st.msg.textContent = 'Which one is different?';
+    st.set(); layout();
+  }
+  function tap(it, el) {
+    const cur = st.cur; if (cur.done) return;
+    if (it !== cur.odd) { cur.miss = true; c.sfx('wrong'); el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); st.msg.textContent = 'Look again! Which one is different?'; return; }
+    cur.done = true; el.classList.add('found'); c.sfx('correct'); c.say(it); c.record(it, !cur.miss);
+    if (!cur.miss) c.addScore(10);
+    st.cards.forEach(x => { if (x !== el) x.classList.add('same'); });
+    st.msg.textContent = c.word(it) + ' is ' + groupLabel(cur.B) + '. The others are ' + groupLabel(cur.A) + '.';
+    st.r++; st.set(h('button', { class: 'g-btn pri', onclick: round }, st.r >= st.rounds ? 'Finish ✓' : 'Next ▶'));
+  }
+  return {
+    id: 'odd', name: 'Odd one out', icon: '🔍', minItems: 4, allItems: true, listAnswered: true,
+    blurb: 'Which picture does not belong? Uses groups: Today’s lesson sets or groups typed in the editor.',
+    options: [
+      { key: 'size', label: 'Pictures', choices: [[3, '3'], [4, '4'], [5, '5']], def: 4 },
+      { key: 'rounds', label: 'Rounds', choices: [[5, '5'], [8, '8'], [10, '10']], def: 5 },
+      { key: 'labels', label: 'Words', choices: [['on', 'Show words'], ['off', 'Pictures only']], def: 'on' }
+    ],
+    init(ctx) {
+      c = ctx;
+      const m = groupsIn(c.pool), names = [...m.keys()], k = +c.g.size || 4;
+      if (names.length < 2 || !names.some(g => m.get(g).length >= k - 1)) { st = null; return needGroups(c); }
+      st = { r: 0, rounds: +c.g.rounds || 5, m, names, cards: [] };
+      st.msg = h('div', { class: 'mm-msg' });
+      st.grid = h('div', { class: 'wc-grid' }); st.area = h('div', { class: 'wc-area' }, st.grid);
+      const btns = h('div', { class: 'wc-btns' }); st.set = (...b) => { btns.innerHTML = ''; btns.append(...b.filter(Boolean)); };
+      c.stage.append(h('div', { class: 'wc-wrap' }, st.msg, st.area, btns));
+      c.onResize(layout);
+    },
+    start() { if (st) round(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12v. FIRST, NEXT, LAST ---------- */
+/* A few words from the set, in the set's own order, appear mixed up.
+   Tap them in order: first, next … last (story order, song order, a routine). */
+Games.register((() => {
+  let c = null, st = null;
+  function layout() { if (st && st.cards) { fitCards(st.grid, st.area, st.cards.length); fitCards(st.row, st.slotArea, st.slots.length, 0.15); } }
+  const slotName = (i, n) => i === 0 ? 'First' : i === n - 1 ? 'Last' : 'Next';
+  function round() {
+    if (st.r >= st.rounds) return c.finish();
+    c.progress(st.r + 1, st.rounds);
+    const n = Math.min(+c.g.len || 3, st.all.length), start = st.starts[st.r % st.starts.length];
+    const run = st.all.slice(start, start + n);
+    st.cur = { run, at: 0, miss: false };
+    st.grid.innerHTML = ''; st.row.innerHTML = '';
+    st.cards = shuffle(run.slice()).map(it => {
+      const el = h('button', { class: 'hs-card', onclick: () => tap(it, el) }, wordCard(it, c.word(it), c.g.labels !== 'off'));
+      st.grid.append(el); return el;
+    });
+    st.slots = run.map((_, i) => { const el = h('div', { class: 'fn-slot' }, h('span', null, slotName(i, n))); st.row.append(el); return el; });
+    st.msg.textContent = 'What comes first?'; st.set(); layout();
+  }
+  function tap(it, el) {
+    const cur = st.cur; if (cur.at >= cur.run.length || el.classList.contains('used')) return;
+    if (it !== cur.run[cur.at]) { cur.miss = true; c.sfx('wrong'); el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); return; }
+    el.classList.add('used'); c.sfx('place');
+    const slot = st.slots[cur.at]; slot.classList.add('full'); slot.append(wordCard(it, c.word(it), true));
+    cur.at++;
+    if (cur.at < cur.run.length) { st.msg.textContent = cur.at === cur.run.length - 1 ? 'What comes last?' : 'What comes next?'; return; }
+    c.sfx('correct'); cur.run.forEach(x => c.record(x, !cur.miss)); if (!cur.miss) c.addScore(10 * cur.run.length);
+    st.msg.textContent = cur.miss ? 'Well done! Now say them in order.' : 'Perfect! Say them in order: first, next… last!';
+    st.r++; st.set(h('button', { class: 'g-btn pri', onclick: round }, st.r >= st.rounds ? 'Finish ✓' : 'Next ▶'));
+  }
+  return {
+    id: 'order', name: 'First, next, last', icon: '🔢', minItems: 3, allItems: true, listAnswered: true,
+    blurb: 'Put the pictures in order – first, next, last. Uses the order of the words in the set (▲▼ in the editor).',
+    options: [
+      { key: 'len', label: 'How many', choices: [[3, '3'], [4, '4'], [5, '5']], def: 3 },
+      { key: 'rounds', label: 'Rounds', choices: [[3, '3'], [5, '5'], [8, '8']], def: 5 },
+      { key: 'labels', label: 'Words', choices: [['on', 'Show words'], ['off', 'Pictures only']], def: 'on' }
+    ],
+    init(ctx) {
+      c = ctx;
+      // the set's own order (a Today's lesson mix keeps the order of the ticked sets)
+      const all = validItems(c.set).filter(it => !c.game || !c.game.usable || c.game.usable(it));
+      const n = Math.min(+c.g.len || 3, all.length), starts = [];
+      for (let s = 0; s + n <= all.length; s += n) starts.push(s);
+      if (!starts.length) starts.push(0);
+      st = { r: 0, rounds: +c.g.rounds || 5, all, starts: shuffle(starts), cards: [], slots: [] };
+      st.msg = h('div', { class: 'mm-msg' });
+      st.grid = h('div', { class: 'wc-grid' }); st.area = h('div', { class: 'wc-area fn-top' }, st.grid);
+      st.row = h('div', { class: 'wc-grid' }); st.slotArea = h('div', { class: 'wc-area fn-bottom' }, st.row);
+      const btns = h('div', { class: 'wc-btns' }); st.set = (...b) => { btns.innerHTML = ''; btns.append(...b.filter(Boolean)); };
+      c.stage.append(h('div', { class: 'wc-wrap' }, st.msg, st.area, st.slotArea, btns));
+      c.onResize(layout);
+    },
+    start() { round(); },
+    destroy() { c = null; st = null; }
+  };
+})());
 /* ===================== 13. BOOT ===================== */
 (function wire() {
   // library
@@ -2449,8 +3516,15 @@ Games.register((() => {
   window.addEventListener('dragover', e => e.preventDefault());
   window.addEventListener('drop', e => e.preventDefault());
   // hub
-  $('#hub-back').onclick = () => Library.show();
-  $('#hub-edit').onclick = () => Editor.open(Hub.set, 'hub');
+  $('#hub-back').onclick = () => Hub.set && Hub.set.temp ? Lesson.show() : Library.show();
+  $('#hub-edit').onclick = () => Hub.set.temp ? Lesson.save(Hub.set) : Editor.open(Hub.set, 'hub');
+  // today's lesson
+  $('#btn-lesson').onclick = () => Lesson.show();
+  $('#ls-back').onclick = () => Library.show();
+  $('#ls-clear').onclick = () => { Lesson.picked.clear(); Lesson.keep(); Lesson.render(); };
+  $('#ls-search').oninput = () => Lesson.render();
+  $('#ls-play').onclick = () => Lesson.play();
+  $('#ls-save').onclick = () => Lesson.save();
   // game bar
   $('#g-exit').onclick = () => { const s = Runner.set || Hub.set; Runner.stop(); if (s) Hub.show(s); else Library.show(); };
   $('#g-sound').onclick = e => { O.sound = !O.sound; saveOpts(); e.currentTarget.textContent = O.sound ? '🔊' : '🔇'; };
