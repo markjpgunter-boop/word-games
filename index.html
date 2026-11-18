@@ -1244,6 +1244,15 @@ function folderOf(s) {
   return m ? 'Unit ' + m[1] : k;
 }
 const shortTitle = s => folderOf(s) ? s.title.slice(s.title.indexOf(FOLDER_SEP) + FOLDER_SEP.length) : s.title;
+/** Order sets inside a folder: Starter first, then Unit 1, 2, 3 ... (numbers in order), "All words" last in each unit. */
+function setOrderKey(s) {
+  const t = shortTitle(s), m = t.match(/unit\s*(\d+)/i);
+  return [/starter/i.test(t) ? 0 : m ? +m[1] : 999, /all words/i.test(t) ? 1 : 0];
+}
+function bySetOrder(a, b) {
+  const x = setOrderKey(a), y = setOrderKey(b);
+  return x[0] - y[0] || x[1] - y[1] || (a.created - b.created) || shortTitle(a).localeCompare(shortTitle(b), undefined, { numeric: true });
+}
 const Library = {
   folder: '',
   show() { show('library'); this.render(); },
@@ -1258,7 +1267,7 @@ const Library = {
       if (!list.length) grid.append(h('p', { class: 'empty' }, 'No sets match your search.'));
       list.forEach(s => grid.append(this.card(s, true)));
     } else if (this.folder) {   // inside a folder
-      const list = APP.sets.filter(s => folderOf(s) === this.folder).sort((a, b) => a.created - b.created || byNewest(a, b));
+      const list = APP.sets.filter(s => folderOf(s) === this.folder).sort(bySetOrder);
       crumb.append(h('button', { class: 'btn', onclick: () => this.open('') }, '← All folders'), h('h2', { class: 'lib-fold-h' }, art('folder', 'bi'), this.folder),
         h('button', { class: 'btn sm', onclick: () => exportSets(list, this.folder) }, art('export', 'bi'), 'Export this folder'));
       list.forEach(s => grid.append(this.card(s, false)));
@@ -2068,7 +2077,7 @@ const Lesson = {
     const folders = new Map(), loose = [];
     APP.sets.forEach(s => { const f = folderOf(s); if (f) { if (!folders.has(f)) folders.set(f, []); folders.get(f).push(s); } else loose.push(s); });
     const g = [...folders.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-      .map(f => ({ name: f, sets: folders.get(f).sort((a, b) => a.created - b.created) }));
+      .map(f => ({ name: f, sets: folders.get(f).sort(bySetOrder) }));
     if (loose.length) g.push({ name: 'Other sets', sets: loose.sort((a, b) => a.created - b.created) });
     return g;
   },
