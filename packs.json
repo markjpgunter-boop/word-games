@@ -1,4 +1,19 @@
-{"packs":[
- {"file":"grapeseed.json","name":"GrapeSEED","version":"2026-11-18"},
- {"file":"shine-on-3.json","name":"Shine On 3","version":"2026-11-18"}
-]}
+{
+ "packs": [
+  {
+   "file": "grapeseed.json",
+   "name": "GrapeSEED",
+   "version": "2026-11-18"
+  },
+  {
+   "file": "shine-on-3.json",
+   "name": "Shine On 3",
+   "version": "2026-11-18"
+  },
+  {
+   "file": "shine-on-4.json",
+   "name": "Shine On 4",
+   "version": "2026-11-18"
+  }
+ ]
+}
