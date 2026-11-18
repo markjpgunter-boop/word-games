@@ -511,6 +511,9 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .jp-pic{flex:1 1 0;align-self:stretch;background:#fff;border-radius:calc(var(--su)*.3)}
 .jp-opts{flex:0 0 42%;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--su)*.18)}
 .jp-opt{border:0;border-radius:calc(var(--su)*.25);padding:.3em .5em;background:var(--tile);color:var(--tile-ink);font:700 calc(var(--su)*.62)/1.15 var(--font-word);box-shadow:0 calc(var(--su)*.1) 0 var(--tile-edge);overflow-wrap:anywhere;flex:1 1 0;min-height:0;max-height:calc(var(--su)*1.5)}
+.jp-opt{display:flex;align-items:center;gap:.4em;text-align:left}
+.jp-l{flex:none;display:grid;place-items:center;width:1.45em;height:1.45em;border-radius:50%;background:var(--ink,#223);color:#fff;font-size:.8em}
+.jp-w{flex:1;min-width:0;text-align:center}
 .jp-opt.good{background:var(--good);color:var(--on-good);box-shadow:0 0 0 calc(var(--su)*.07) #fff}
 .jp-opt.bad{background:var(--bad);color:var(--on-bad);box-shadow:none;opacity:.6}
 .jp-opt.dim{opacity:.4;box-shadow:none}
@@ -2713,9 +2716,9 @@ Games.register((() => {
       c.sfx('done'); c.say(it);
     };
     if (k === 'choose3' || k === 'choose4') {
-      task = 'What is it? Choose the word.';
-      optBtns = shuffle([it, ...pickItems(it, t.pool, k === 'choose3' ? 2 : 3, c.word)]).map(o => {
-        const b = h('button', { class: 'jp-opt', onclick: () => { if (t.revealed) return; if (b._ok) reveal(); else { b.classList.add('bad'); b.disabled = true; c.sfx('wrong'); } } }, c.word(o));
+      task = 'What is it? Say the letter and the word!';
+      optBtns = shuffle([it, ...pickItems(it, t.pool, k === 'choose3' ? 2 : 3, c.word)]).map((o, i) => {
+        const b = h('button', { class: 'jp-opt', onclick: () => { if (t.revealed) return; if (b._ok) reveal(); else { b.classList.add('bad'); b.disabled = true; c.sfx('wrong'); } } }, h('span', { class: 'jp-l' }, 'ABCD'[i]), h('span', { class: 'jp-w' }, c.word(o)));
         b._ok = same(o, it); return b;
       });
       add(body, visual(), h('div', { class: 'jp-opts' }, optBtns));
