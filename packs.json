@@ -14,6 +14,11 @@
    "file": "shine-on-4.json",
    "name": "Shine On 4",
    "version": "2026-11-18"
+  },
+  {
+   "file": "english-time-2.json",
+   "name": "English Time 2",
+   "version": "2026-11-18"
   }
  ]
 }
