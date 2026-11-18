@@ -3624,6 +3624,34 @@ Games.register((() => {
   };
 })());
 /* ===================== 13. BOOT ===================== */
+/* CLASS SETS ON THE WEBSITE. Word files uploaded to the website next to index.html are
+   listed in packs.json: {"packs":[{"file":"grapeseed.json","name":"GrapeSEED","version":"2026-11-18"}]}.
+   Every device that opens the site loads a pack the first time, and again whenever its
+   version changes. Sets with the same id are replaced; the teacher's own sets are never touched.
+   Nothing happens when the page is opened as a file or offline. */
+const ClassSets = {
+  async sync() {
+    if (!/^https?:$/.test(location.protocol)) return;
+    let list;
+    try { const r = await fetch('packs.json', { cache: 'no-store' }); if (!r.ok) return; list = (await r.json()).packs || []; } catch (e) { return; }
+    const done = [];
+    for (const p of list) {
+      if (!p || !p.file || LS.get('wg.pack.' + p.file) === String(p.version)) continue;
+      try {
+        const r = await fetch(p.file, { cache: 'no-store' }); if (!r.ok) continue;
+        const data = await r.json(), sets = (Array.isArray(data.sets) ? data.sets : []).map(cleanSet).filter(Boolean);
+        for (const s of sets) {
+          const i = APP.sets.findIndex(x => x.id === s.id);
+          if (i >= 0) APP.sets[i] = s;
+          await storeSet(s);
+        }
+        LS.set('wg.pack.' + p.file, String(p.version)); done.push((p.name || p.file) + ' (' + plural(sets.length, 'set') + ')');
+      } catch (e) { /* try again next time */ }
+    }
+    if (done.length) { Library.render(); toast('Class sets loaded: ' + done.join(', ')); }
+  }
+};
+
 // show the games everywhere (top bar, end screen) in the same easy-to-hard order as the menu
 (function orderGames() {
   const ids = HUB_GROUPS.flatMap(g => g[2]), at = id => { const i = ids.indexOf(id); return i < 0 ? 999 : i; };
@@ -3697,6 +3725,7 @@ Games.register((() => {
   }
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* ignore */ }
   Library.show();
+  ClassSets.sync();
 })();
 </script>
 </body>
