@@ -602,6 +602,7 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 .pk-inside{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:calc(var(--su)*.4);overflow:hidden;background:#fff}
 .pk-door{pointer-events:none;position:absolute;top:0;left:0;right:0;bottom:0;border-radius:calc(var(--su)*.3);background:linear-gradient(90deg,#b8763c,#a3652f);transform-origin:0 50%;transition:transform .55s cubic-bezier(.3,1.4,.5,1),opacity .4s .3s;box-shadow:inset 0 0 0 calc(var(--su)*.08) #7a4a1f}
 .pk-door.gone{opacity:0}
+.pk-door.snap{transition:none!important}
 .pk-panel{position:absolute;left:14%;right:14%;border:calc(var(--su)*.07) solid #7a4a1f;border-radius:calc(var(--su)*.12)}
 .pk-panel.a{top:8%;height:36%}.pk-panel.b{top:52%;height:40%}
 .pk-knob{position:absolute;right:7%;top:48%;width:calc(var(--su)*.55);height:calc(var(--su)*.55);border-radius:50%;background:#ffd23f;box-shadow:0 0 0 calc(var(--su)*.06) #7a4a1f}
@@ -1086,27 +1087,44 @@ async function exportSets(sets, name) {
   }
   download(full, text); toast('Saved ' + full);
 }
-/** Import a file. Never overwrites silently: asks Replace / Keep both / Skip. */
-async function importFile(file) {
-  let data;
-  try { data = JSON.parse(await new Response(file).text()); } catch (e) { return toast('That file is not a Word Games export.'); }
-  const raw = Array.isArray(data) ? data : (data && Array.isArray(data.sets)) ? data.sets : [data];
-  const sets = raw.map(cleanSet).filter(Boolean);
-  if (!sets.length) return toast('No word sets were found in that file.');
-  let n = 0;
+/** Import one or more files. Never overwrites silently: asks Replace / Keep both / Skip,
+    with "… all" choices when several sets are already on this device. */
+async function importFile(file) { return importFiles([file]); }
+async function importFiles(files) {
+  const sets = [], bad = [];
+  for (const file of files) {
+    let data;
+    try { data = JSON.parse(await new Response(file).text()); } catch (e) { bad.push(file.name); continue; }
+    const raw = Array.isArray(data) ? data : (data && Array.isArray(data.sets)) ? data.sets : [data];
+    const got = raw.map(cleanSet).filter(Boolean);
+    if (!got.length) bad.push(file.name);
+    got.forEach(s => { if (!sets.some(x => x.id === s.id)) sets.push(s); });   // the same set in two files: import it once
+  }
+  if (!sets.length) return toast(bad.length ? 'That file is not a Word Games export.' : 'No word sets were found in that file.');
+  const existing = s => APP.sets.find(x => x.id === s.id) || APP.sets.find(x => x.title.trim().toLowerCase() === s.title.toLowerCase());
+  let n = 0, all = null, dupsLeft = sets.filter(existing).length;
   for (const s of sets) {
-    const ex = APP.sets.find(x => x.id === s.id) || APP.sets.find(x => x.title.trim().toLowerCase() === s.title.toLowerCase());
+    const ex = existing(s);
     if (ex) {
-      const r = await modal({
-        title: '“' + s.title + '” is already here',
-        body: 'This device already has a set with this name (' + plural(validItems(ex).length, 'word') + '). The imported one has ' + plural(validItems(s).length, 'word') + '. What would you like to do?',
-        buttons: [{ label: 'Skip', value: null }, { label: 'Keep both', value: 'both', kind: 'primary' }, { label: 'Replace', value: 'replace', kind: 'danger' }]
-      });
+      let r = all;
+      if (!r) {
+        const many = dupsLeft > 1;
+        r = await modal({
+          title: '“' + s.title + '” is already here',
+          body: 'This device already has a set with this name (' + plural(validItems(ex).length, 'word') + '). The imported one has ' + plural(validItems(s).length, 'word') + '. What would you like to do?' +
+            (many ? ' (' + dupsLeft + ' sets in this import are already here.)' : ''),
+          buttons: [{ label: 'Skip', value: 'skip' }, { label: 'Keep both', value: 'both' }, { label: 'Replace', value: 'replace', kind: 'danger' }]
+            .concat(many ? [{ label: 'Skip all ' + dupsLeft, value: 'skip*' }, { label: 'Replace all ' + dupsLeft, value: 'replace*', kind: 'primary' }] : [])
+        });
+        if (r && r.slice(-1) === '*') { r = r.slice(0, -1); all = r; }
+      }
+      dupsLeft--;
       if (r === 'replace') { s.id = ex.id; APP.sets[APP.sets.indexOf(ex)] = s; await storeSet(s); n++; }
       else if (r === 'both') { s.id = uid(); s.title = uniqueTitle(s.title); await storeSet(s); n++; }
     } else { await storeSet(s); n++; }
   }
-  Library.render(); toast(n ? plural(n, 'set') + ' imported' : 'Nothing was imported');
+  Library.render();
+  toast((n ? plural(n, 'set') + ' imported' : 'Nothing was imported') + (bad.length ? ' · ' + plural(bad.length, 'file') + ' could not be read' : ''));
 }
 
 /* ===================== 6. LIBRARY ===================== */
@@ -2922,8 +2940,11 @@ Games.register((() => {
     if (st.i >= c.items.length) return c.finish();
     const it = c.items[st.i]; st.step = 0; st.it = it;
     c.progress(st.i + 1, c.items.length);
+    // shut the door instantly (no swing) BEFORE the new picture goes behind it,
+    // so the answer is never seen while the door closes
+    st.door.classList.add('snap'); st.door.style.transform = 'rotateY(0deg)'; st.door.classList.remove('gone');
+    void st.door.offsetWidth; st.door.classList.remove('snap');
     st.inside.innerHTML = ''; st.inside.append(bigCard(it, c.word(it), false));
-    st.door.style.transform = 'rotateY(0deg)'; st.door.classList.remove('gone');
     st.ui.msg.textContent = 'Knock, knock! Who is behind the door?';
     st.ui.set(gbtn('🚪 Peek', peek, true)); layout();
   }
@@ -3497,7 +3518,7 @@ Games.register((() => {
 (function wire() {
   // library
   $('#btn-new').onclick = async () => { const f = Library.folder, pre = f ? (/^Unit (\d+)$/.exec(f) ? 'U' + /^Unit (\d+)$/.exec(f)[1] : f) + FOLDER_SEP : ''; const s = newSet(pre + 'New set'); await saveSet(s); Editor.open(s, 'library'); const t = $('#ed-title'); t.focus(); t.select(); };
-  $('#btn-import').onclick = async () => { const [f] = await pickFiles($('#file-import'), false); if (f) importFile(f); };
+  $('#btn-import').onclick = async () => { const fs = await pickFiles($('#file-import'), true); if (fs.length) importFiles(fs); };
   $('#btn-export-all').onclick = () => exportSets(APP.sets, 'all-word-sets');
   $('#lib-search').oninput = () => Library.render();
   $('#theme-sel').onchange = e => { O.theme = e.target.value; saveOpts(); applyTheme(); };
