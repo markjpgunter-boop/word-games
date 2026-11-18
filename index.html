@@ -705,6 +705,14 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 .hs-run[hidden]{display:none}
 .hs-face{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 calc(var(--su)*.1) 0 rgba(0,0,0,.3));animation:hshop .5s ease-in-out infinite alternate}
 .hs-run.wave .hs-face{animation:hswave .35s ease-in-out infinite alternate}
+.hs-run.spin .hs-face{animation:hsspin .42s linear infinite}
+@keyframes hsspin{from{transform:rotate(0) scale(.95)}to{transform:rotate(360deg) scale(.95)}}
+.hs-run.poofed .hs-face{animation:none;transition:transform .25s ease-in,opacity .25s;transform:scale(.1) rotate(200deg);opacity:0}
+.hs-poof{position:absolute;width:0;height:0;z-index:25;pointer-events:none}
+.hs-poof i{position:absolute;left:0;top:0;width:var(--pz);height:var(--pz);margin:calc(var(--pz)/-2) 0 0 calc(var(--pz)/-2);border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#e4e6ee 60%,#c7cbd8);animation:hspuff 1.1s ease-out forwards}
+@keyframes hspuff{0%{transform:rotate(var(--a)) translateX(0) scale(.2);opacity:1}45%{opacity:1}100%{transform:rotate(var(--a)) translateX(calc(var(--pz)*var(--d))) scale(1.15);opacity:0}}
+.hs-poof b{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font-size:calc(var(--pz)*.3);font-weight:900;color:#1b2a4e;white-space:nowrap;text-shadow:0 0 .2em #fff,0 0 .3em #fff;animation:hspoofw 1.1s ease-out forwards}
+@keyframes hspoofw{0%{transform:translate(-50%,-50%) scale(.3)}30%{transform:translate(-50%,-50%) scale(1.15)}70%{opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
 .hs-run.zoom .hs-face{animation:none;filter:blur(3px) drop-shadow(0 0 0 transparent);opacity:.75}
 .hs-run.dive .hs-face{animation:none;transition:transform .45s ease-in,opacity .45s;transform:translateY(40%) scale(.25);opacity:0}
 @keyframes hshop{from{transform:translateY(0)}to{transform:translateY(-12%)}}
@@ -3383,23 +3391,27 @@ Games.register((() => {
         await swap(ms); if (!alive()) return;
       }
     } else {
-      // 2a. close your eyes: the cards dim and the animal zooms around behind them
-      st.grid.classList.add('dim'); st.msg.textContent = '🙈 Close your eyes!';
-      st.count.hidden = false;
-      for (let n = 3; n >= 1; n--) {
-        st.count.textContent = n; c.sfx('tick');
-        st.run.classList.add('zoom');
-        const any = st.cards[rnd(st.cards.length)], [x, y] = spot(any.el);
-        moveRunner(x, y, 450);
-        await wait(950); if (!alive()) return;
+      // 2a. spin, fly about all over the screen, then POOF in the middle – the hiding place is never shown
+      st.msg.textContent = 'Where will ' + st.who + ' hide?';
+      st.run.classList.add('spin'); c.sfx('bounce');
+      const hops = 5, ms = 420;
+      for (let n = 0; n < hops; n++) {
+        const x = W * (0.15 + Math.random() * 0.7), y = H * (0.15 + Math.random() * 0.7);
+        moveRunner(x, y, ms); c.sfx(n % 2 ? 'tile' : 'place');
+        await wait(ms); if (!alive()) return;
       }
-      st.count.hidden = true;
-      const [tx, ty] = spot(target.el); moveRunner(tx, ty, 300);
-      await wait(350); if (!alive()) return;
-      st.run.hidden = true; st.run.classList.remove('zoom'); st.grid.classList.remove('dim'); c.sfx('pop');
+      moveRunner(W / 2, H / 2, ms); await wait(ms); if (!alive()) return;
+      // poof!
+      st.run.classList.remove('spin'); st.run.classList.add('poofed');
+      const puff = h('div', { class: 'hs-poof', style: 'left:' + W / 2 + 'px;top:' + H / 2 + 'px;--pz:' + st.cs * 1.6 + 'px' },
+        [0, 1, 2, 3, 4, 5, 6, 7].map(i => h('i', { style: '--a:' + i * 45 + 'deg;--d:' + (0.5 + Math.random() * 0.4) })), h('b', null, 'POOF!'));
+      st.area.append(puff); c.sfx('pop'); c.later(() => c.sfx('pop'), 90);
+      await wait(250); if (!alive()) return;
+      st.run.hidden = true; st.run.classList.remove('poofed');
+      await wait(900); puff.remove(); if (!alive()) return;
     }
     // 3. the search
-    st.msg.textContent = 'Ready or not… where’s ' + st.who + '?';
+    st.msg.textContent = c.g.how === 'watch' ? 'Where’s ' + st.who + '?' : 'Where am I? Find ' + st.who + '!';
     st.busy = false; st.tries = 0;
     if (c.g.hints === 'on') st.hintIv = setInterval(() => peek(target), 7000);
   }
@@ -3455,7 +3467,7 @@ Games.register((() => {
     id: 'hide', name: 'Hide and seek', icon: '🫣', minItems: 3, allItems: true, noScore: true,
     blurb: 'The monkey hides behind a picture! “Is it behind the teddy bear?” Tap to look.',
     options: [
-      { key: 'how', label: 'Hiding', choices: [['eyes', '🙈 Close your eyes'], ['watch', '👀 Watch carefully (shuffle)']], def: 'eyes' },
+      { key: 'how', label: 'Hiding', choices: [['eyes', '💨 Spin and POOF!'], ['watch', '👀 Watch carefully (shuffle)']], def: 'eyes' },
       { key: 'speed', label: 'Shuffle', choices: [['slow', 'Slow'], ['medium', 'Medium'], ['fast', 'Fast']], def: 'medium' },
       { key: 'hints', label: 'Hints', choices: [['on', 'Tail peeks out'], ['off', 'No hints']], def: 'on' },
       { key: 'count', label: 'Pictures', choices: [[4, '4'], [6, '6'], [8, '8'], [9, '9'], [12, '12']], def: 6 },
