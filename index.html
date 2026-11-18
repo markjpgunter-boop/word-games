@@ -696,10 +696,34 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 .gr-bin.yes{animation:pulse .5s}
 .hs-card.same>.wc{opacity:.55}
 .hs-card.used{visibility:hidden}
-.fn-bottom{flex:none;height:34%}
-.fn-slot{position:relative;width:var(--cs);height:var(--cs);border-radius:calc(var(--cs)*.1);box-shadow:inset 0 0 0 calc(var(--su)*.07) var(--accent);background:rgba(255,255,255,.25);display:flex;align-items:flex-start;justify-content:center}
-.fn-slot>span{position:absolute;top:-.1em;left:50%;transform:translate(-50%,-50%);background:var(--accent);color:#1b1300;font-weight:900;font-size:calc(var(--su)*.36);padding:.05em .5em;border-radius:1em;z-index:2;white-space:nowrap}
-.fn-slot>.wc{position:absolute;top:0;left:0;animation:popin .3s}
+
+/* hide and seek: the animal's show */
+.hs-area{overflow:visible}
+.hs-grid{transition:filter .4s,opacity .4s}
+.hs-grid.dim{filter:brightness(.35) blur(1px)}
+.hs-run{position:absolute;left:0;top:0;width:var(--rs,90px);height:var(--rs,90px);margin:calc(var(--rs,90px)/-2) 0 0 calc(var(--rs,90px)/-2);z-index:20;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.hs-run[hidden]{display:none}
+.hs-face{font-size:calc(var(--rs,90px)*.85);line-height:1;filter:drop-shadow(0 calc(var(--su)*.1) 0 rgba(0,0,0,.3));animation:hshop .5s ease-in-out infinite alternate}
+.hs-run.wave .hs-face{animation:hswave .35s ease-in-out infinite alternate}
+.hs-run.zoom .hs-face{animation:none;filter:blur(3px) drop-shadow(0 0 0 transparent);opacity:.75}
+.hs-run.dive .hs-face{animation:none;transition:transform .45s ease-in,opacity .45s;transform:translateY(40%) scale(.25);opacity:0}
+@keyframes hshop{from{transform:translateY(0)}to{transform:translateY(-12%)}}
+@keyframes hswave{from{transform:rotate(-14deg) scale(1.05)}to{transform:rotate(14deg) scale(1.05)}}
+.hs-bub{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:calc(var(--su)*.2);white-space:nowrap;background:#fff;color:#1b2a4e;font-weight:900;font-size:calc(var(--su)*.55);padding:.3em .7em;border-radius:1em;box-shadow:0 calc(var(--su)*.08) 0 rgba(0,0,0,.25);animation:popin .3s}
+.hs-bub::after{content:"";position:absolute;top:100%;left:50%;margin-left:-.4em;border:.4em solid transparent;border-top-color:#fff}
+.hs-bub[hidden]{display:none}
+.hs-count{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;font-size:calc(var(--su)*3.2);font-weight:900;color:#fff;text-shadow:0 calc(var(--su)*.1) 0 rgba(0,0,0,.4);pointer-events:none}
+.hs-count[hidden]{display:none}
+.hs-card.wobble{animation:shake .4s}
+.hs-peek{position:absolute;z-index:4;font-size:calc(var(--cs)*.3);line-height:1;pointer-events:none;animation:hspeek 1.5s ease-in-out forwards}
+.hs-peek.top{top:0;left:60%;--px:0;--py:-55%}
+.hs-peek.right{top:35%;right:0;--px:55%;--py:0}
+.hs-peek.left{top:35%;left:0;--px:-55%;--py:0}
+@keyframes hspeek{0%{transform:translate(0,0) scale(.4);opacity:0}25%,70%{transform:translate(var(--px),var(--py)) scale(1);opacity:1}100%{transform:translate(0,0) scale(.4);opacity:0}}
+.hs-over{flex-direction:column}
+.hs-pet.dance{animation:popin .4s,hsdance .45s .4s ease-in-out infinite alternate}
+@keyframes hsdance{from{transform:rotate(-12deg) translateY(0)}to{transform:rotate(12deg) translateY(-14%)}}
+.hs-yay{margin-top:.2em;background:var(--good);color:var(--on-good);font-weight:900;font-size:calc(var(--cs)*.12);padding:.15em .6em;border-radius:1em;white-space:nowrap;animation:popin .4s .2s both}
 </style>
 </head>
 <body data-theme="classroom">
@@ -765,6 +789,7 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
     <header class="bar">
       <button class="btn" id="hub-back">← Word sets</button>
       <h1 id="hub-title"></h1>
+      <button class="btn" id="hub-settings">⚙️ Settings</button>
       <button class="btn" id="hub-edit">✏️ Edit set</button>
     </header>
     <div class="scroll">
@@ -1351,7 +1376,7 @@ function seg(label, choices, value, onpick) {
 /* Games are shown easiest first, in three groups. A game not listed here goes in the last group. */
 const HUB_GROUPS = [
   ['⭐ Youngest (4–6)', 'Look, listen, shout it out.', ['flash', 'peek', 'mystery', 'shadow', 'missing', 'hide', 'listen', 'pairs', 'boxes', 'dip', 'wheel']],
-  ['⭐⭐ Next step', 'Sort, order, remember and choose.', ['sort', 'odd', 'order', 'memory', 'imagequiz', 'balloon', 'tug']],
+  ['⭐⭐ Next step', 'Sort, order, remember and choose.', ['sort', 'odd', 'memory', 'imagequiz', 'balloon', 'tug']],
   ['⭐⭐⭐ Older (reading & quizzes)', 'Spelling, reading and team quizzes.', ['anagram', 'gameshow', 'jeopardy']]
 ];
 const Hub = {
@@ -1409,8 +1434,22 @@ const Hub = {
     $('#scr-hub').append(this.panel);
   },
   closePanel() { if (this.panel) { this.panel.remove(); this.panel = null; } },
-  settings() {
-    const set1 = (k, rerender) => v => { O[k] = v; saveOpts(); if (rerender) this.render(); };
+  /** Settings for every game in a pop-up (from the ⚙️ Settings button in the top bar). */
+  openSettings() {
+    this.closePanel();
+    const box = h('div', { class: 'hub-pan' });
+    const draw = () => {
+      box.innerHTML = '';
+      box.append(h('div', null, h('div', { class: 'hub-pan-h' }, h('span', { class: 'gtile-i' }, '⚙️'), h('h2', null, 'Settings for every game'),
+        h('button', { class: 'btn sm', 'aria-label': 'Close', onclick: () => this.closePanel() }, '✕')),
+        this.settings(draw), h('div', { class: 'hub-pan-btns' }, h('button', { class: 'btn primary', onclick: () => this.closePanel() }, 'Done'))));
+    };
+    draw();
+    this.panel = h('div', { class: 'hub-pan-back', onpointerdown: e => { if (e.target === this.panel) this.closePanel(); } }, box);
+    $('#scr-hub').append(this.panel);
+  },
+  settings(redraw) {
+    const set1 = (k, rerender) => v => { O[k] = v; saveOpts(); if (rerender) (redraw || (() => this.render()))(); };
     const o = h('div', { class: 'panel hub-set-body' });
     o.append(...[
       seg('Timer', [['none', 'None'], ['up', 'Count up'], ['down', 'Count down']], O.timer, set1('timer', true)),
@@ -3281,35 +3320,118 @@ Games.register((() => {
    Neither game uses the iPad's voice: the teacher says the words. */
 
 /* ---------- 12r. HIDE AND SEEK ---------- */
-/* A little animal hides behind one of the pictures. The class asks
-   "Is it behind the ___?" and a child taps that picture to look. */
+/* A little animal hides behind one of the pictures; the class asks "Is it behind the ___?"
+   and a child taps that picture to look.
+   Each round starts with a short show: the animal waves "I'm going to hide!", then either
+   "Close your eyes!" (it zooms about behind the dimmed cards while the class counts 3-2-1) or
+   "Watch carefully!" (it hops behind a card in full view and the cards shuffle, like the cup game).
+   With hints on, its tail or ear peeks out now and then. Finding it gets a little dance. */
 Games.register((() => {
   let c = null, st = null, T = null;
-  function layout() { if (st && st.cards.length) fitCards(st.grid, st.area, st.cards.length); }
-  function round() {
-    if (st.r >= st.rounds) return c.finish();
-    c.progress(st.r + 1, st.rounds);
-    const k = clamp(+c.g.count || 6, 3, Math.min(12, c.items.length));
-    const shown = shuffle(c.items.slice()).slice(0, k);
-    st.at = rnd(k); st.busy = false; st.tries = 0;
-    st.grid.innerHTML = ''; st.cards = shown.map((it, i) => {
-      const el = h('button', { class: 'hs-card', onclick: () => look(i) }, wordCard(it, c.word(it), c.g.labels !== 'off'));
-      st.grid.append(el); return { it, el, done: false };
-    });
-    st.msg.textContent = 'Where is ' + st.who + '? Ask: “Is it behind the …?”';
-    layout();
+  function layout() { if (st && st.cards.length) { fitCards(st.grid, st.area, st.cards.length); } }
+  const wait = ms => new Promise(r => c.later(r, ms));
+  /** Centre of a card, relative to the play area (for moving the animal). */
+  function spot(el) {
+    const a = st.area.getBoundingClientRect(), r = el.getBoundingClientRect();
+    return [r.left - a.left + r.width / 2, r.top - a.top + r.height / 2];
   }
-  function look(i) {
-    const card = st.cards[i]; if (st.busy || card.done) return;
+  function moveRunner(x, y, ms) { st.run.style.transition = 'left ' + ms + 'ms ease-in-out, top ' + ms + 'ms ease-in-out, transform .25s'; st.run.style.left = x + 'px'; st.run.style.top = y + 'px'; }
+  function say(text) { st.bub.textContent = text; st.bub.hidden = !text; }
+  async function round() {
+    if (st.r >= st.rounds) return c.finish();
+    const my = ++st.token, alive = () => st && st.token === my;
+    clearInterval(st.hintIv); c.progress(st.r + 1, st.rounds);
+    const k = clamp(+c.g.count || 6, 3, Math.min(12, c.items.length));
+    const shown = shuffle(c.items.slice()).slice(0, k), hideAt = rnd(k);
+    st.busy = true; st.grid.innerHTML = '';
+    st.cards = shown.map((it, i) => {
+      const card = { it, done: false, hide: i === hideAt };
+      card.el = h('button', { class: 'hs-card', onclick: () => look(card) }, wordCard(it, c.word(it), c.g.labels !== 'off'));
+      st.grid.append(card.el); return card;
+    });
+    layout(); st.grid.classList.remove('dim');
+    st.cs = parseFloat(st.grid.style.getPropertyValue('--cs')) || 100; st.run.style.setProperty('--rs', Math.round(st.cs * 1.1) + 'px');
+    // 1. the animal arrives in the middle and waves
+    const W = st.area.clientWidth, H = st.area.clientHeight;
+    st.run.className = 'hs-run'; st.run.hidden = false;
+    st.run.style.transition = 'none'; st.run.style.left = -80 + 'px'; st.run.style.top = H / 2 + 'px'; void st.run.offsetWidth;
+    moveRunner(W / 2, H / 2, 700); c.sfx('bounce');
+    st.msg.textContent = 'Hello! I’m ' + st.who + '.';
+    await wait(750); if (!alive()) return;
+    st.run.classList.add('wave'); say('I’m going to hide!'); c.sfx('pop');
+    await wait(1500); if (!alive()) return;
+    say(''); st.run.classList.remove('wave');
+    const target = st.cards.find(x => x.hide);
+    if (c.g.how === 'watch') {
+      // 2b. hop behind a card in full view, then shuffle the cards
+      st.msg.textContent = 'Watch carefully! Where does ' + st.who + ' go?';
+      const [tx, ty] = spot(target.el);
+      moveRunner(tx, ty - st.cs * 0.55, 600); c.sfx('bounce');
+      await wait(700); if (!alive()) return;
+      st.run.classList.add('dive'); c.sfx('pop'); target.el.classList.add('wobble');
+      await wait(500); if (!alive()) return;
+      st.run.hidden = true; target.el.classList.remove('wobble');
+      const swaps = { slow: 3, medium: 5, fast: 7 }[c.g.speed] || 5, ms = { slow: 700, medium: 480, fast: 330 }[c.g.speed] || 480;
+      st.msg.textContent = 'Keep watching…';
+      for (let n = 0; n < swaps; n++) {
+        await swap(ms); if (!alive()) return;
+      }
+    } else {
+      // 2a. close your eyes: the cards dim and the animal zooms around behind them
+      st.grid.classList.add('dim'); st.msg.textContent = '🙈 Close your eyes!';
+      st.count.hidden = false;
+      for (let n = 3; n >= 1; n--) {
+        st.count.textContent = n; c.sfx('tick');
+        st.run.classList.add('zoom');
+        const any = st.cards[rnd(st.cards.length)], [x, y] = spot(any.el);
+        moveRunner(x, y, 450);
+        await wait(950); if (!alive()) return;
+      }
+      st.count.hidden = true;
+      const [tx, ty] = spot(target.el); moveRunner(tx, ty, 300);
+      await wait(350); if (!alive()) return;
+      st.run.hidden = true; st.run.classList.remove('zoom'); st.grid.classList.remove('dim'); c.sfx('pop');
+    }
+    // 3. the search
+    st.msg.textContent = 'Ready or not… where’s ' + st.who + '?';
+    st.busy = false; st.tries = 0;
+    if (c.g.hints === 'on') st.hintIv = setInterval(() => peek(target), 7000);
+  }
+  /** Swap two cards on screen with a smooth slide (the hidden animal moves with its card). */
+  function swap(ms) {
+    return new Promise(res => {
+      const n = st.cards.length; let i = rnd(n), j = rnd(n - 1); if (j >= i) j++;
+      const A = st.cards[i].el, B = st.cards[j].el, ra = A.getBoundingClientRect(), rb = B.getBoundingClientRect();
+      const ph = h('i'); A.replaceWith(ph); B.replaceWith(A); ph.replaceWith(B);           // swap places in the grid
+      [st.cards[i], st.cards[j]] = [st.cards[j], st.cards[i]];
+      [[A, ra], [B, rb]].forEach(([el, r0]) => {                                          // slide from the old place
+        const r1 = el.getBoundingClientRect();
+        el.style.transition = 'none'; el.style.transform = 'translate(' + (r0.left - r1.left) + 'px,' + (r0.top - r1.top) + 'px)'; el.style.zIndex = 3;
+      });
+      void A.offsetWidth; c.sfx('tile');
+      [A, B].forEach(el => { el.style.transition = 'transform ' + ms + 'ms ease-in-out'; el.style.transform = ''; });
+      c.later(() => { [A, B].forEach(el => { el.style.transition = el.style.zIndex = ''; }); res(); }, ms + 60);
+    });
+  }
+  /** Hint: a tail or an ear pokes out from behind the right card for a moment. */
+  function peek(target) {
+    if (!st || target.done) return clearInterval(st && st.hintIv);
+    const side = ['top', 'right', 'left'][rnd(3)];
+    const el = h('span', { class: 'hs-peek ' + side }, st.pet);
+    target.el.append(el); c.sfx('place');
+    c.later(() => el.remove(), 1500);
+  }
+  function look(card) {
+    if (st.busy || card.done) return;
     card.done = true; st.tries++;
-    if (i === st.at) {
-      st.busy = true;
-      card.el.classList.add('found'); card.el.append(h('span', { class: 'hs-over' }, h('span', { class: 'hs-pet' }, st.pet)));
-      c.sfx('correct'); c.record(card.it, true);
-      st.msg.textContent = 'Yes! ' + st.Who + ' is behind the ' + c.word(card.it) + '!';
+    if (card.hide) {
+      st.busy = true; clearInterval(st.hintIv);
+      card.el.classList.add('found'); card.el.append(h('span', { class: 'hs-over' }, h('span', { class: 'hs-pet dance' }, st.pet), h('span', { class: 'hs-yay' }, 'You found me!')));
+      c.sfx('correct'); c.later(() => c.sfx('win'), 250); c.record(card.it, true);
+      st.msg.textContent = 'Yes! ' + st.Who + ' was behind the ' + c.word(card.it) + '!';
       if (T) T.add(T.turn, 1);
       st.r++;
-      c.later(() => { if (!st) return; if (T) T.nextTurn(); round(); }, 2600);
+      c.later(() => { if (!st) return; if (T) T.nextTurn(); round(); }, 3200);
     } else {
       card.el.classList.add('empty'); card.el.append(h('span', { class: 'hs-over' }, h('span', { class: 'hs-no' }, 'No!')));
       c.sfx('wrong');
@@ -3320,8 +3442,11 @@ Games.register((() => {
   const PETS = { monkey: ['🐵', 'the monkey'], bear: ['🧸', 'the teddy bear'], cat: ['🐱', 'the cat'], frog: ['🐸', 'the frog'], ghost: ['👻', 'the ghost'] };
   return {
     id: 'hide', name: 'Hide and seek', icon: '🫣', minItems: 3, allItems: true, noScore: true,
-    blurb: 'Something is hiding behind a picture! “Is it behind the teddy bear?” Tap to look.',
+    blurb: 'The monkey hides behind a picture! “Is it behind the teddy bear?” Tap to look.',
     options: [
+      { key: 'how', label: 'Hiding', choices: [['eyes', '🙈 Close your eyes'], ['watch', '👀 Watch carefully (shuffle)']], def: 'eyes' },
+      { key: 'speed', label: 'Shuffle', choices: [['slow', 'Slow'], ['medium', 'Medium'], ['fast', 'Fast']], def: 'medium' },
+      { key: 'hints', label: 'Hints', choices: [['on', 'Tail peeks out'], ['off', 'No hints']], def: 'on' },
       { key: 'count', label: 'Pictures', choices: [[4, '4'], [6, '6'], [8, '8'], [9, '9'], [12, '12']], def: 6 },
       { key: 'pet', label: 'Who hides', choices: [['monkey', '🐵'], ['bear', '🧸'], ['cat', '🐱'], ['frog', '🐸'], ['ghost', '👻']], def: 'monkey' },
       { key: 'labels', label: 'Words', choices: [['on', 'Show words'], ['off', 'Pictures only']], def: 'on' },
@@ -3331,15 +3456,19 @@ Games.register((() => {
     init(ctx) {
       c = ctx; T = c.g.teams === 'on' ? c.teams() : null;
       const pet = PETS[c.g.pet] || PETS.monkey;
-      st = { r: 0, rounds: +c.g.rounds || 5, cards: [], pet: pet[0], who: pet[1], Who: pet[1][0].toUpperCase() + pet[1].slice(1) };
+      st = { r: 0, rounds: +c.g.rounds || 5, cards: [], pet: pet[0], who: pet[1], Who: pet[1][0].toUpperCase() + pet[1].slice(1), token: 0, busy: true, cs: 100 };
       st.msg = h('div', { class: 'mm-msg' });
-      st.grid = h('div', { class: 'wc-grid' }); st.area = h('div', { class: 'wc-area' }, st.grid);
+      st.grid = h('div', { class: 'wc-grid hs-grid' });
+      st.bub = h('div', { class: 'hs-bub', hidden: true });
+      st.run = h('div', { class: 'hs-run', hidden: true }, h('span', { class: 'hs-face' }, pet[0]), st.bub);
+      st.count = h('div', { class: 'hs-count', hidden: true });
+      st.area = h('div', { class: 'wc-area hs-area' }, st.grid, st.run, st.count);
       c.stage.append(h('div', { class: 'tm-wrap' }, T && T.el, h('div', { class: 'wc-wrap in-tm' }, st.msg, st.area)));
       if (T) T.setTurn(0);
-      c.onResize(layout);
+      c.onResize(() => { layout(); st.cs = parseFloat(getComputedStyle(st.grid).getPropertyValue('--cs')) || 100; st.run.style.setProperty('--rs', st.cs * 0.9 + 'px'); });
     },
-    start() { round(); },
-    destroy() { c = null; st = null; T = null; }
+    start() { st.cs = parseFloat(getComputedStyle(st.grid).getPropertyValue('--cs')) || 100; st.run.style.setProperty('--rs', st.cs * 0.9 + 'px'); round(); },
+    destroy() { if (st) clearInterval(st.hintIv); c = null; st = null; T = null; }
   };
 })());
 
@@ -3429,10 +3558,9 @@ Games.register((() => {
     destroy() { c = null; st = null; T = null; }
   };
 })());
-/* ===================== 12t–12v. SORTING, ODD ONE OUT, FIRST NEXT LAST =====================
+/* ===================== 12t–12u. SORTING, ODD ONE OUT =====================
    Groups come from the optional "group" box in the editor, or – in a Today's
-   lesson mix – from the set each word came from. First, next, last uses the order
-   of the words in the set (change it with ▲▼ in the editor). */
+   lesson mix – from the set each word came from. */
 
 const groupOf = it => norm(it.group) || it.src || '';
 /** Tidy a group name for a label: drop a leading emoji and a trailing "(song)". */
@@ -3564,65 +3692,6 @@ Games.register((() => {
   };
 })());
 
-/* ---------- 12v. FIRST, NEXT, LAST ---------- */
-/* A few words from the set, in the set's own order, appear mixed up.
-   Tap them in order: first, next … last (story order, song order, a routine). */
-Games.register((() => {
-  let c = null, st = null;
-  function layout() { if (st && st.cards) { fitCards(st.grid, st.area, st.cards.length); fitCards(st.row, st.slotArea, st.slots.length, 0.15); } }
-  const slotName = (i, n) => i === 0 ? 'First' : i === n - 1 ? 'Last' : 'Next';
-  function round() {
-    if (st.r >= st.rounds) return c.finish();
-    c.progress(st.r + 1, st.rounds);
-    const n = Math.min(+c.g.len || 3, st.all.length), start = st.starts[st.r % st.starts.length];
-    const run = st.all.slice(start, start + n);
-    st.cur = { run, at: 0, miss: false };
-    st.grid.innerHTML = ''; st.row.innerHTML = '';
-    st.cards = shuffle(run.slice()).map(it => {
-      const el = h('button', { class: 'hs-card', onclick: () => tap(it, el) }, wordCard(it, c.word(it), c.g.labels !== 'off'));
-      st.grid.append(el); return el;
-    });
-    st.slots = run.map((_, i) => { const el = h('div', { class: 'fn-slot' }, h('span', null, slotName(i, n))); st.row.append(el); return el; });
-    st.msg.textContent = 'What comes first?'; st.set(); layout();
-  }
-  function tap(it, el) {
-    const cur = st.cur; if (cur.at >= cur.run.length || el.classList.contains('used')) return;
-    if (it !== cur.run[cur.at]) { cur.miss = true; c.sfx('wrong'); el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); return; }
-    el.classList.add('used'); c.sfx('place');
-    const slot = st.slots[cur.at]; slot.classList.add('full'); slot.append(wordCard(it, c.word(it), true));
-    cur.at++;
-    if (cur.at < cur.run.length) { st.msg.textContent = cur.at === cur.run.length - 1 ? 'What comes last?' : 'What comes next?'; return; }
-    c.sfx('correct'); cur.run.forEach(x => c.record(x, !cur.miss)); if (!cur.miss) c.addScore(10 * cur.run.length);
-    st.msg.textContent = cur.miss ? 'Well done! Now say them in order.' : 'Perfect! Say them in order: first, next… last!';
-    st.r++; st.set(h('button', { class: 'g-btn pri', onclick: round }, st.r >= st.rounds ? 'Finish ✓' : 'Next ▶'));
-  }
-  return {
-    id: 'order', name: 'First, next, last', icon: '🔢', minItems: 3, allItems: true, listAnswered: true,
-    blurb: 'Put the pictures in order – first, next, last. Uses the order of the words in the set (▲▼ in the editor).',
-    options: [
-      { key: 'len', label: 'How many', choices: [[3, '3'], [4, '4'], [5, '5']], def: 3 },
-      { key: 'rounds', label: 'Rounds', choices: [[3, '3'], [5, '5'], [8, '8']], def: 5 },
-      { key: 'labels', label: 'Words', choices: [['on', 'Show words'], ['off', 'Pictures only']], def: 'on' }
-    ],
-    init(ctx) {
-      c = ctx;
-      // the set's own order (a Today's lesson mix keeps the order of the ticked sets)
-      const all = validItems(c.set).filter(it => !c.game || !c.game.usable || c.game.usable(it));
-      const n = Math.min(+c.g.len || 3, all.length), starts = [];
-      for (let s = 0; s + n <= all.length; s += n) starts.push(s);
-      if (!starts.length) starts.push(0);
-      st = { r: 0, rounds: +c.g.rounds || 5, all, starts: shuffle(starts), cards: [], slots: [] };
-      st.msg = h('div', { class: 'mm-msg' });
-      st.grid = h('div', { class: 'wc-grid' }); st.area = h('div', { class: 'wc-area fn-top' }, st.grid);
-      st.row = h('div', { class: 'wc-grid' }); st.slotArea = h('div', { class: 'wc-area fn-bottom' }, st.row);
-      const btns = h('div', { class: 'wc-btns' }); st.set = (...b) => { btns.innerHTML = ''; btns.append(...b.filter(Boolean)); };
-      c.stage.append(h('div', { class: 'wc-wrap' }, st.msg, st.area, st.slotArea, btns));
-      c.onResize(layout);
-    },
-    start() { round(); },
-    destroy() { c = null; st = null; }
-  };
-})());
 /* ===================== 13. BOOT ===================== */
 /* CLASS SETS ON THE WEBSITE. Word files uploaded to the website next to index.html are
    listed in packs.json: {"packs":[{"file":"grapeseed.json","name":"GrapeSEED","version":"2026-11-18"}]}.
@@ -3680,6 +3749,7 @@ const ClassSets = {
   window.addEventListener('drop', e => e.preventDefault());
   // hub
   $('#hub-back').onclick = () => Hub.set && Hub.set.temp ? Lesson.show() : Library.show();
+  $('#hub-settings').onclick = () => Hub.openSettings();
   $('#hub-edit').onclick = () => Hub.set.temp ? Lesson.save(Hub.set) : Editor.open(Hub.set, 'hub');
   // today's lesson
   $('#btn-lesson').onclick = () => Lesson.show();
