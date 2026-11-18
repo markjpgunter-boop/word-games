@@ -140,7 +140,27 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 @media (max-width:700px){.ed-row{flex-wrap:wrap}}
 
 /* ---------- 6. HUB AND OPTIONS ---------- */
-.hub-games{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1rem;margin-bottom:1rem}
+.hub-games{margin-bottom:1rem}
+.hub-sec{margin-bottom:1.3rem}
+.hub-sec h2{margin:.2rem 0 .7rem;font-size:1.35rem;display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
+.hub-sec h2 small{font-size:.95rem;font-weight:600;color:var(--muted)}
+.hub-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.8rem}
+.gtile{background:var(--panel);border:2px solid var(--line);border-radius:18px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 4px 0 var(--line)}
+.gtile-play{flex:1;border:0;background:transparent;color:var(--ink);padding:.8rem .6rem .55rem;display:flex;flex-direction:column;align-items:center;gap:.15rem;text-align:center}
+.gtile-play:active{transform:scale(.97)}
+.gtile-i{font-size:2.5rem;line-height:1.1}
+.gtile-n{font-weight:800;font-size:1.12rem;line-height:1.2}
+.gtile-b{font-size:.8rem;color:var(--muted);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gtile-opt{border:0;border-top:2px solid var(--line);background:var(--panel2);color:var(--ink);padding:.45rem;font-weight:700;font-size:.85rem;min-height:40px}
+.gtile.off .gtile-play{opacity:.45}
+.hub-set-btn{width:100%;justify-content:center}
+.hub-set-body{margin-top:.8rem}
+.hub-pan-back{position:absolute;top:0;left:0;right:0;bottom:0;z-index:40;background:rgba(10,14,40,.5);display:flex;align-items:center;justify-content:center;padding:1rem}
+.hub-pan{background:var(--panel);color:var(--ink);border-radius:22px;width:100%;max-width:640px;max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1rem 1.2rem 1.2rem;box-shadow:0 10px 40px rgba(0,0,0,.35);animation:popin .25s}
+.hub-pan-h{display:flex;align-items:center;gap:.7rem}
+.hub-pan-h h2{flex:1;margin:0;font-size:1.5rem}
+.hub-pan-b{color:var(--muted);margin:.4rem 0 .8rem}
+.hub-pan-btns{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1rem;flex-wrap:wrap}
 .gcard{background:var(--panel);border:2px solid var(--line);border-radius:20px;padding:.8rem;display:flex;flex-direction:column;gap:.5rem}
 .gcard-play{border:0;border-radius:16px;background:var(--primary);color:var(--on-primary);padding:1rem .8rem;display:flex;flex-direction:column;align-items:center;gap:.2rem;box-shadow:0 5px 0 rgba(0,0,0,.28)}
 .gcard-play:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.28)}
@@ -169,12 +189,22 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
 .gstat:empty{display:none}
 .gstat.bump{animation:pulse .35s}
 .gswitch{display:flex;gap:.14em}
-.gswitch .gbtn{width:1.95em}
+.gswitch .gbtn{width:2.3em}
+.gsw-menu{position:absolute;top:0;left:0;right:0;bottom:0;z-index:60;background:rgba(10,14,40,.45);display:flex;align-items:flex-start;justify-content:flex-end;padding:3.4em .6em .6em}
+.gsw-box{background:var(--panel);color:var(--ink);border-radius:18px;padding:.8rem 1rem 1rem;width:min(560px,100%);max-height:100%;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.35);animation:popin .2s}
+.gsw-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem}
+.gsw-h b{font-size:1.2rem}.gsw-h small{flex:1;color:var(--muted)}
+.gsw-sec{margin-top:.6rem}
+.gsw-t{font-weight:800;font-size:.9rem;color:var(--muted);margin-bottom:.35rem}
+.gsw-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.4rem}
+.gsw-g{display:flex;align-items:center;gap:.45rem;border:2px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:12px;padding:.4rem .55rem;font-weight:700;font-size:.92rem;text-align:left;min-height:44px}
+.gsw-g span{font-size:1.4rem}
+.gsw-g.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
 #stage{flex:1;min-height:0;position:relative;overflow:hidden;touch-action:none;--su:40px}
 .next-btn{position:absolute;right:calc(var(--su)*.3);bottom:calc(var(--su)*.3);z-index:30;border:0;border-radius:calc(var(--su)*.3);
   background:var(--accent);color:#1b1300;font-weight:900;font-size:calc(var(--su)*.6);padding:.3em .8em;box-shadow:0 calc(var(--su)*.1) 0 rgba(0,0,0,.3);animation:popin .3s}
 @media (max-width:1180px){.gtitle{visibility:hidden}.gtitle b,.gtitle small{display:none}}
-@media (max-width:560px){.gswitch{display:none}}
+
 
 /* ---------- 8. IMAGE QUIZ ---------- */
 .iq-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:calc(var(--su)*.55);padding:calc(var(--su)*.35)}
@@ -739,7 +769,7 @@ textarea.inp{min-height:11em;resize:vertical;line-height:1.4}
     </header>
     <div class="scroll">
       <div id="hub-games" class="hub-games"></div>
-      <div id="hub-opts" class="panel"></div>
+      <div id="hub-opts"></div>
     </div>
   </section>
 
@@ -890,28 +920,52 @@ function applyTheme() { document.body.setAttribute('data-theme', O.theme); $('#t
 /* All sounds are generated with the Web Audio API. iOS only allows audio after
    a tap, so the AudioContext is created/resumed on the first pointerdown. */
 const Sfx = {
-  ac: null,
+  ac: null, out: null, silent: null,
+  /* iPad Safari only starts sound inside a real tap (touchend / click, not touchstart) and mutes
+     Web Audio when the iPad is on silent. So on every tap: resume the audio, play a tiny silent
+     buffer, ask for the "playback" audio session (Safari 16.4+), and keep a silent <audio> loop
+     playing, which also makes older iPads treat the sound as media rather than ringer sound. */
   unlock() {
     try {
-      if (!this.ac) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) this.ac = new AC(); }
-      if (this.ac && this.ac.state === 'suspended') this.ac.resume();
+      if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback';
+    } catch (e) { /* not supported */ }
+    try {
+      if (!this.ac) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) { this.ac = new AC(); this.out = this.ac.createGain(); this.out.gain.value = 1.6; this.out.connect(this.ac.destination); }
+      }
+      if (this.ac) {
+        if (this.ac.state !== 'running') this.ac.resume();
+        const b = this.ac.createBuffer(1, 1, 22050), src = this.ac.createBufferSource(); src.buffer = b; src.connect(this.ac.destination); src.start(0);
+      }
     } catch (e) { /* no audio */ }
+    try {
+      if (!this.silent) {
+        // 0.1 s of silence as a WAV file
+        const n = 2205, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf), w = (o, t) => [...t].forEach((ch, i) => v.setUint8(o + i, ch.charCodeAt(0)));
+        w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+        v.setUint32(24, 22050, true); v.setUint32(28, 44100, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+        this.silent = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })));
+        this.silent.loop = true; this.silent.setAttribute('playsinline', ''); this.silent.volume = 0.01;
+      }
+      if (this.silent.paused) { const pr = this.silent.play(); if (pr && pr.catch) pr.catch(() => {}); }
+    } catch (e) { /* ignore */ }
   },
   tone(f, at, dur, type, vol, f2) {
     const a = this.ac, t = a.currentTime + at, o = a.createOscillator(), g = a.createGain();
     o.type = type || 'sine'; o.frequency.setValueAtTime(f, t);
     if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.2, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
+    o.connect(g); g.connect(this.out || a.destination); o.start(t); o.stop(t + dur + 0.05);
   },
   noise(dur, vol) {
     const a = this.ac, n = Math.floor(a.sampleRate * dur), buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
     for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
-    const s = a.createBufferSource(), g = a.createGain(); g.gain.value = vol; s.buffer = buf; s.connect(g); g.connect(a.destination); s.start();
+    const s = a.createBufferSource(), g = a.createGain(); g.gain.value = vol; s.buffer = buf; s.connect(g); g.connect(this.out || a.destination); s.start();
   },
   play(name) {
     if (!O.sound) return;
-    this.unlock(); if (!this.ac) return;
+    if (!this.ac || this.ac.state !== 'running') this.unlock(); if (!this.ac) return;
     try {
       const T = (...x) => this.tone(...x);
       switch (name) {
@@ -1294,29 +1348,71 @@ function seg(label, choices, value, onpick) {
   });
   return h('div', { class: 'opt' }, h('span', { class: 'opt-l' }, label), g);
 }
+/* Games are shown easiest first, in three groups. A game not listed here goes in the last group. */
+const HUB_GROUPS = [
+  ['⭐ Youngest (4–6)', 'Look, listen, shout it out.', ['flash', 'peek', 'mystery', 'shadow', 'missing', 'hide', 'listen', 'pairs', 'boxes', 'dip', 'wheel']],
+  ['⭐⭐ Next step', 'Sort, order, remember and choose.', ['sort', 'odd', 'order', 'memory', 'imagequiz', 'balloon', 'tug']],
+  ['⭐⭐⭐ Older (reading & quizzes)', 'Spelling, reading and team quizzes.', ['anagram', 'gameshow', 'jeopardy']]
+];
 const Hub = {
-  set: null,
-  show(set) { this.set = set; show('hub'); this.render(); },
+  set: null, showSettings: false,
+  show(set) { this.set = set; show('hub'); this.closePanel(); this.render(); },
+  why(g) {
+    const valid = validItems(this.set), usable = valid.filter(i => !g.usable || g.usable(i)).length;
+    return valid.length < (g.minItems || 1) ? 'This game needs at least ' + plural(g.minItems, 'word') + '. This set has ' + valid.length + '.' :
+      !usable ? 'This game needs words with a picture or a clue.' : '';
+  },
   render() {
-    const set = this.set, valid = validItems(set);
+    const set = this.set;
     $('#hub-title').textContent = set.title;
     $('#hub-back').textContent = set.temp ? "← Today's lesson" : '← Word sets';
     $('#hub-edit').textContent = set.temp ? '💾 Save as set' : '✏️ Edit set';
     const games = $('#hub-games'); games.innerHTML = '';
-    Games.list.forEach(g => {
-      const usable = valid.filter(i => !g.usable || g.usable(i)).length, go = gopt(g);
-      const why = valid.length < (g.minItems || 1) ? 'This game needs at least ' + plural(g.minItems, 'word') + '. This set has ' + valid.length + '.' :
-        !usable ? 'This game needs words with a picture or a clue.' : '';
-      games.append(h('div', { class: 'gcard' },
-        h('button', { class: 'gcard-play', disabled: !!why, onclick: () => Runner.start(g.id, set) },
-          h('span', { class: 'gcard-i' }, g.icon), h('span', { class: 'gcard-n' }, g.name), h('span', { class: 'gcard-b' }, why || g.blurb)),
-        (g.options || []).map(d => seg(d.label, d.choices, go[d.key], v => { (O.game[g.id] = O.game[g.id] || {})[d.key] = v; saveOpts(); })),
-        g.hubExtra && g.hubExtra(set, () => this.render()),
-        g.print && h('button', { class: 'btn sm', disabled: !!why, onclick: () => Print.open(g, set) }, '🖨 ' + (g.printLabel || 'Print worksheet'))));
+    const placed = new Set(HUB_GROUPS.flatMap(g => g[2]));
+    const groups = HUB_GROUPS.map(([t, sub, ids]) => [t, sub, ids.map(id => Games.get(id)).filter(Boolean)]);
+    groups[groups.length - 1][2].push(...Games.list.filter(g => !placed.has(g.id)));
+    groups.forEach(([t, sub, list]) => {
+      if (!list.length) return;
+      games.append(h('section', { class: 'hub-sec' }, h('h2', null, t, h('small', null, sub)),
+        h('div', { class: 'hub-tiles' }, list.map(g => {
+          const why = this.why(g);
+          return h('div', { class: 'gtile' + (why ? ' off' : '') },
+            h('button', { class: 'gtile-play', onclick: () => why ? this.openPanel(g) : Runner.start(g.id, set) },
+              h('span', { class: 'gtile-i' }, g.icon), h('span', { class: 'gtile-n' }, g.name), h('span', { class: 'gtile-b' }, why || g.blurb)),
+            h('button', { class: 'gtile-opt', onclick: () => this.openPanel(g) }, '⚙ Options' + (g.print ? ' · 🖨' : '')));
+        }))));
     });
-    const set1 = (k, rerender) => v => { O[k] = v; saveOpts(); if (rerender) this.render(); };
+    // settings for every game: hidden until the teacher asks for them
     const o = $('#hub-opts'); o.innerHTML = '';
-    o.append(...[h('h2', null, 'Options for every game'),
+    o.append(h('button', { class: 'btn hub-set-btn', onclick: () => { this.showSettings = !this.showSettings; this.render(); } },
+      (this.showSettings ? '▲ Hide settings' : '⚙️ Settings for every game') + ' – timer, questions, letters, sound, teams'));
+    if (this.showSettings) o.append(this.settings());
+  },
+  /** One game's options, print button and Play button in a pop-up panel. */
+  openPanel(g) {
+    this.closePanel();
+    const set = this.set, why = this.why(g), go = gopt(g);
+    const box = h('div', { class: 'hub-pan' });
+    const draw = () => {
+      box.innerHTML = '';
+      box.append(h('div', null, h('div', { class: 'hub-pan-h' }, h('span', { class: 'gtile-i' }, g.icon), h('h2', null, g.name),
+          h('button', { class: 'btn sm', 'aria-label': 'Close', onclick: () => this.closePanel() }, '✕')),
+        h('p', { class: 'hub-pan-b' }, why || g.blurb),
+        (g.options || []).length ? (g.options || []).map(d => seg(d.label, d.choices, go[d.key], v => { (O.game[g.id] = O.game[g.id] || {})[d.key] = v; saveOpts(); go[d.key] = v; })) : h('p', { class: 'hint' }, 'This game has no extra options.'),
+        g.hubExtra && g.hubExtra(set, draw),
+        h('div', { class: 'hub-pan-btns' },
+          g.print && h('button', { class: 'btn', disabled: !!why, onclick: () => { this.closePanel(); Print.open(g, set); } }, '🖨 ' + (g.printLabel || 'Print worksheet')),
+          h('button', { class: 'btn primary big', disabled: !!why, onclick: () => { this.closePanel(); Runner.start(g.id, set); } }, '▶ Play'))));
+    };
+    draw();
+    this.panel = h('div', { class: 'hub-pan-back', onpointerdown: e => { if (e.target === this.panel) this.closePanel(); } }, box);
+    $('#scr-hub').append(this.panel);
+  },
+  closePanel() { if (this.panel) { this.panel.remove(); this.panel = null; } },
+  settings() {
+    const set1 = (k, rerender) => v => { O[k] = v; saveOpts(); if (rerender) this.render(); };
+    const o = h('div', { class: 'panel hub-set-body' });
+    o.append(...[
       seg('Timer', [['none', 'None'], ['up', 'Count up'], ['down', 'Count down']], O.timer, set1('timer', true)),
       O.timer === 'down' && seg('Count down from', [[30, '30 s'], [60, '1 min'], [90, '1½ min'], [120, '2 min'], [180, '3 min'], [300, '5 min']], O.seconds, set1('seconds')),
       seg('Questions', [['all', 'All'], [5, '5'], [8, '8'], [10, '10'], [15, '15'], [20, '20']], O.count, set1('count')),
@@ -1324,6 +1420,9 @@ const Hub = {
       seg('Letters', [['typed', 'As typed'], ['lower', 'lowercase'], ['upper', 'UPPERCASE']], O.letterCase, set1('letterCase')),
       seg('Next question', [['auto', 'Automatic'], ['tap', 'Tap “Next”']], O.advance, set1('advance')),
       seg('Sound effects', [[true, 'On'], [false, 'Off']], O.sound, v => { O.sound = v === true || v === 'true'; saveOpts(); }),
+      h('div', { class: 'opt' }, h('span', { class: 'opt-l' }, 'Check the sound'),
+        h('button', { class: 'btn sm', onclick: () => { Sfx.unlock(); const was = O.sound; O.sound = true; Sfx.play('correct'); O.sound = was; if (Speech.ok && O.speak !== 'off') Speech.say('Hello! Can you hear me?'); } }, '🔈 Play a test sound'),
+        h('span', { class: 'hint', style: 'margin:0' }, 'No sound on the iPad? Check the volume, and that the iPad is not on silent.')),
       Speech.ok && seg('Speak the word', [['off', 'Off'], ['en-GB', 'British voice'], ['en-US', 'American voice']], O.speak, set1('speak')),
       h('h2', { style: 'margin-top:1rem' }, 'Teams (for team games)'),
       seg('Number of teams', [[2, '2'], [3, '3'], [4, '4']], O.teamCount, set1('teamCount', true)),
@@ -1331,6 +1430,7 @@ const Hub = {
         h('div', { class: 'team-names' }, TEAM_COLS.slice(0, clamp(+O.teamCount || 2, 2, 4)).map((col, i) =>
           h('input', { class: 'inp team-inp', type: 'text', value: O.teamNames[i] || '', placeholder: TEAM_DEFAULT[i], maxlength: '16', autocomplete: 'off', style: '--tc:' + col,
             oninput: e => { O.teamNames[i] = e.target.value; saveOpts(); } }))))].filter(Boolean));
+    return o;
   }
 };
 
@@ -1390,8 +1490,17 @@ const Runner = (() => {
     $('#g-score').textContent = '★ 0'; $('#g-score').hidden = !!game.noScore; $('#g-progress').textContent = '';
     const tm = $('#g-timer'); tm.hidden = !run.timed; tm.classList.remove('low'); tm.textContent = '⏱ ' + fmtTime(O.timer === 'down' ? O.seconds : 0);
     $('#g-sound').textContent = O.sound ? '🔊' : '🔇';
-    const sw = $('#g-switch'); sw.innerHTML = '';
-    Games.list.forEach(g => sw.append(h('button', { class: 'gbtn' + (g === game ? ' on' : ''), title: g.name, 'aria-label': g.name, onclick: () => { if (g !== game) start(g.id, set); } }, g.icon)));
+    const sw = $('#g-switch'); sw.innerHTML = ''; { const m = $('#gsw-menu'); if (m) m.remove(); }
+    // one "Games" button opens a menu of every game (grouped like the hub) to switch with the same words
+    sw.append(h('button', { class: 'gbtn gsw-btn', 'aria-label': 'Switch game', onclick: () => {
+      const old = $('#gsw-menu'); if (old) return old.remove();
+      const menu = h('div', { id: 'gsw-menu', class: 'gsw-menu', onpointerdown: e => { if (e.target === menu) menu.remove(); } }, h('div', { class: 'gsw-box' },
+        h('div', { class: 'gsw-h' }, h('b', null, 'Switch game'), h('small', null, 'same words'), h('button', { class: 'btn sm', onclick: () => menu.remove() }, '✕')),
+        HUB_GROUPS.map(([t, , ids]) => h('div', { class: 'gsw-sec' }, h('div', { class: 'gsw-t' }, t),
+          h('div', { class: 'gsw-list' }, ids.map(id => Games.get(id)).filter(Boolean).map(g => h('button', { class: 'gsw-g' + (g === game ? ' on' : ''), title: g.name, 'aria-label': g.name,
+            onclick: () => { menu.remove(); if (g !== game) start(g.id, set); } }, h('span', null, g.icon), g.name)))))));
+      $('#scr-game').append(menu);
+    } }, '🎮'));
     game.init(ctx); game.start();
     run.iv = setInterval(() => {
       if (!run.timed) return;
@@ -3515,6 +3624,11 @@ Games.register((() => {
   };
 })());
 /* ===================== 13. BOOT ===================== */
+// show the games everywhere (top bar, end screen) in the same easy-to-hard order as the menu
+(function orderGames() {
+  const ids = HUB_GROUPS.flatMap(g => g[2]), at = id => { const i = ids.indexOf(id); return i < 0 ? 999 : i; };
+  Games.list.sort((a, b) => at(a.id) - at(b.id));
+})();
 (function wire() {
   // library
   $('#btn-new').onclick = async () => { const f = Library.folder, pre = f ? (/^Unit (\d+)$/.exec(f) ? 'U' + /^Unit (\d+)$/.exec(f)[1] : f) + FOLDER_SEP : ''; const s = newSet(pre + 'New set'); await saveSet(s); Editor.open(s, 'library'); const t = $('#ed-title'); t.focus(); t.select(); };
@@ -3556,7 +3670,8 @@ Games.register((() => {
     };
   } else $('#g-full').hidden = true;
   // iPad: unlock audio on first touch; no pinch-zoom, double-tap zoom or page bounce during games
-  window.addEventListener('pointerdown', () => Sfx.unlock(), { passive: true });
+  ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, () => Sfx.unlock(), { passive: true, capture: true }));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && Sfx.ac && Sfx.ac.state !== 'running') Sfx.ac.resume().catch(() => {}); });
   document.addEventListener('gesturestart', e => e.preventDefault());
   document.addEventListener('dblclick', e => e.preventDefault());
   document.addEventListener('touchmove', e => { if ($('#scr-game').classList.contains('active')) e.preventDefault(); }, { passive: false });
