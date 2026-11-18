@@ -159,7 +159,7 @@ img.gi.bi.logo{width:1.9em;height:1.9em;margin:-.4em .25em -.35em 0}
 img.gi.gb-i{width:1.75em;height:1.75em;display:block;margin:auto}
 img.gi.bi.solo{margin:-.3em}
 img.gi.theme-i{width:1.9rem;height:1.9rem;vertical-align:middle;margin-right:-.3rem}
-@media (max-width:1100px){#theme-pic{display:none}}
+@media (max-width:1250px){#theme-pic{display:none} #scr-library .bar h1{min-width:2.6em} #scr-library .bar{gap:.45rem}}
 img.gi.gsw-i{width:2.4rem;height:2.4rem;flex:none}
 img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em}
 .gtile-n{font-weight:800;font-size:1.12rem;line-height:1.2}
@@ -763,6 +763,7 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
       <select id="theme-sel" class="sel" aria-label="Theme">
         <option value="classroom">Classroom</option><option value="space">Space</option><option value="jungle">Jungle</option>
       </select>
+      <a class="btn" id="btn-eiken" href="eiken.html" style="text-decoration:none">Eiken</a>
       <button class="btn primary" id="btn-lesson">📋 Today's lesson</button>
       <button class="btn" id="btn-import">⬆ Import</button>
       <button class="btn" id="btn-export-all">⬇ Export all</button>
@@ -3812,9 +3813,9 @@ const ClassSets = {
   $('#btn-lesson').onclick = () => Lesson.show();
   // picture icons on the main buttons
   artLabel($('#btn-lesson'), 'lesson', "Today's lesson"); artLabel($('#btn-import'), 'import', 'Import');
-  artLabel($('#btn-export-all'), 'export', 'Export all'); artLabel($('#hub-settings'), 'settings', 'Settings');
+  artLabel($('#btn-export-all'), 'export', 'Export'); artLabel($('#hub-settings'), 'settings', 'Settings');
   artLabel($('#scr-lesson h1'), 'lesson', "Today's lesson");
-  artLabel($('#btn-new'), 'new', 'New set'); artLabel($('#ed-add'), 'new', 'Add a word'); artLabel($('#ls-save'), 'save', 'Save as set');
+  artLabel($('#btn-new'), 'new', 'New set'); artLabel($('#btn-eiken'), 'gameshow', 'Eiken'); artLabel($('#ed-add'), 'new', 'Add a word'); artLabel($('#ls-save'), 'save', 'Save as set');
   artLabel($('#ed-paste'), 'lesson', 'Paste word list'); artLabel($('#ed-pics'), 'folder', 'Add pictures');
   $('#g-full').replaceChildren(art('full', 'gb-i', '⛶'));
   $('#theme-sel').before(h('span', { id: 'theme-pic' })); themeArt();
