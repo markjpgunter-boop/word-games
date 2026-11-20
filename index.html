@@ -443,6 +443,9 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .q-pic{background:#fff;border-radius:calc(var(--su)*.3);box-shadow:0 0 0 calc(var(--su)*.07) var(--ink);flex:none}
 .q-word{font:700 calc(var(--su)*1.3)/1.15 var(--font-word);text-align:center;overflow-wrap:anywhere}
 .q-clue{font:700 calc(var(--su)*.7)/1.25 var(--font-word);text-align:center;max-width:94%}
+.q-gap{display:flex;flex-direction:column;align-items:center;width:100%;height:100%;gap:calc(var(--su)*.15);min-height:0}
+.q-gapbox{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+.q-gap .q-clue{flex:none}
 .pfill{position:relative;min-height:0;min-width:0}
 .pfill>img,.pfill>svg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain}
 .pabs{position:absolute;top:5%;left:5%;right:5%;bottom:5%}
@@ -580,12 +583,14 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .jp-tile.used{background:var(--panel2);color:transparent;box-shadow:inset 0 0 0 2px var(--line);pointer-events:none}
 .jp-q{background:var(--cover);color:#fff;display:flex;flex-direction:column;gap:calc(var(--su)*.14);padding:calc(var(--su)*.2);animation:popin .25s}
 .jp-head{display:flex;align-items:center;gap:.8em;font-weight:900;font-size:calc(var(--su)*.45);flex:none}
-.jp-head span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jp-head span{flex:0 1 auto;max-width:22%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jp-head .jp-task{flex:1;min-width:0;font-size:1.1em}
 .jp-head b{color:#ffd23f;font-size:1.35em}
 .jp-task{font-weight:800;font-size:calc(var(--su)*.5);text-align:center;flex:none}
 .jp-body{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;gap:calc(var(--su)*.3)}
 .jp-body.col{flex-direction:column}
 .jp-pic{flex:1 1 0;align-self:stretch;background:#fff;border-radius:calc(var(--su)*.3)}
+.jp-body>.jp-pic:only-child{flex:0 1 auto;height:100%;aspect-ratio:4/3;max-width:100%}
 .jp-opts{flex:0 0 42%;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--su)*.18)}
 .jp-opt{border:0;border-radius:calc(var(--su)*.25);padding:.3em .5em;background:var(--tile);color:var(--tile-ink);font:700 calc(var(--su)*.62)/1.15 var(--font-word);box-shadow:0 calc(var(--su)*.1) 0 var(--tile-edge);overflow-wrap:anywhere;flex:1 1 0;min-height:0;max-height:calc(var(--su)*1.5)}
 .jp-opt{display:flex;align-items:center;gap:.4em;text-align:left}
@@ -598,8 +603,12 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .jp-letters span{width:calc(var(--su)*1.1);height:calc(var(--su)*1.25);background:var(--tile);color:var(--tile-ink);border-radius:calc(var(--su)*.18);font:700 calc(var(--su)*.8)/1 var(--font-word);display:flex;align-items:center;justify-content:center}
 .jp-letters span.sp{background:transparent;width:calc(var(--su)*.45)}
 .jp-letters span.fx{background:transparent;color:#fff;width:calc(var(--su)*.5)}
-.jp-answer{font:700 calc(var(--su)*1.15)/1.1 var(--font-word);text-align:center;color:#ffd23f;flex:none;overflow-wrap:anywhere;min-height:1.1em}
+.jp-answer{font:700 calc(var(--su)*.85)/1.1 var(--font-word);text-align:center;color:#ffd23f;flex:none;overflow-wrap:anywhere}
+.jp-answer:empty{display:none}
 .jp-foot{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:calc(var(--su)*.18);flex:none}
+.jp-foot,.jp-foot>*{column-gap:calc(var(--su)*.14)}
+.jp-foot button{font-size:calc(var(--su)*.36);padding:calc(var(--su)*.12) calc(var(--su)*.3)}
+.jp-foot .bi{height:1.2em;width:auto}
 
 /* ---------- 20. WATCH AND MEMORISE ---------- */
 .mm-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.18);padding:calc(var(--su)*.25)}
@@ -2709,6 +2718,9 @@ function clueText(it) {
   return c;
 }
 const hasVisual = it => hasPic(it) || !!clueText(it);
+/** The clue is an example sentence that contains the word ("He has short hair."): on its own the gap sentence
+    "He has ＿＿＿." cannot be answered, so it is only used together with the picture. */
+const gapClue = it => { const w = norm(it.word).toLowerCase(), c = norm(it.clue).toLowerCase(); return !!(w && c && c.includes(w)); };
 
 /* ===================== 2. OPTIONS ===================== */
 const O = Object.assign({
@@ -4585,10 +4597,15 @@ function pickItems(item, pool, n, word, needPic) {
 function makeQuestion(item, pool, word, type, n) {
   const can = { p2w: hasPic(item), c2w: !!clueText(item), w2p: hasPic(item) && pickItems(item, pool, 1, word, true).length > 0 };
   if (!can[type]) { const ok = ['p2w', 'w2p', 'c2w'].filter(k => can[k]); type = ok.length ? ok[rnd(ok.length)] : 'c2w'; }
+  if (type === 'c2w' && gapClue(item) && hasPic(item)) type = 'g2w';   // gap sentence + picture
   return { type, item, options: shuffle([item, ...pickItems(item, pool, n - 1, word, type === 'w2p')]) };
 }
 /** The thing the children look at: a picture, a big word or a clue. */
 function questionPrompt(q, word) {
+  if (q.type === 'g2w') {   // picture on top, gap sentence underneath; the games size the picture inside _box
+    const p = pic(q.item, 'q-pic'), box = h('div', { class: 'q-gapbox' }, p), el = h('div', { class: 'q-gap' }, box, h('div', { class: 'q-clue' }, clueText(q.item)));
+    el._pic = p; p._box = box; return el;
+  }
   return q.type === 'p2w' ? pic(q.item, 'q-pic') : q.type === 'w2p' ? h('div', { class: 'q-word' }, word(q.item)) : h('div', { class: 'q-clue' }, clueText(q.item) || '?');
 }
 /** Size el to the biggest box of the given ratio that fits inside parent. */
@@ -4773,7 +4790,7 @@ Games.register((() => {
   const LIFE = [['fifty', '50:50'], ['time', '+10 s'], ['double', '×2 points']];
   const same = (a, b) => c.word(a).toLowerCase() === c.word(b).toLowerCase();
   const who = () => T ? T.turn : 0;
-  function fit() { const q = st && st.cur; if (q && q.promptPic) fitBox(q.promptPic, q.mid, 4 / 3); }
+  function fit() { const q = st && st.cur; if (q && q.promptPic) fitBox(q.promptPic, q.promptPic._box || q.mid, 4 / 3); }
   function round() {
     if (st.i >= c.items.length) return c.finish();
     const item = c.items[st.i]; c.progress(st.i + 1, c.items.length);
@@ -4788,7 +4805,7 @@ Games.register((() => {
       const b = h('button', { class: 'gs-opt' + (pics ? ' pic' : ''), onclick: () => choose(o, b) }, h('b', null, 'ABCD'[i]), pics ? pic(o, 'pfill') : h('span', null, c.word(o)));
       b._o = o; cur.btns.push(b); opts.append(b);
     });
-    const prompt = questionPrompt(q, c.word); cur.promptPic = q.type === 'p2w' ? prompt : null;
+    const prompt = questionPrompt(q, c.word); cur.promptPic = q.type === 'p2w' ? prompt : prompt._pic || null;
     cur.mid = h('div', { class: 'gs-mid' }, prompt);
     const s = st.streak[who()];
     cur.wrap = h('div', { class: 'gs-wrap' + (pics ? ' pics' : '') },
@@ -4881,7 +4898,7 @@ Games.register((() => {
 Games.register((() => {
   let c = null, st = null, T = null;
   function kindOf(it, show) {
-    const can = ['word']; if (hasPic(it)) can.push('picture'); if (clueText(it)) can.push('clue');
+    const can = ['word']; if (hasPic(it)) can.push('picture'); if (clueText(it) && !(gapClue(it) && hasPic(it))) can.push('clue');
     if (show === 'mix') return can[rnd(can.length)];
     if (can.includes(show)) return show;
     return show === 'picture' ? (can.includes('clue') ? 'clue' : 'word') : (can.includes('picture') ? 'picture' : 'word');
@@ -4974,7 +4991,7 @@ Games.register((() => {
     st.ropeEl.style.transform = 'translateX(' + (p / st.N * st.field.clientWidth * 0.15) + 'px)';
     if (!st.over && Math.abs(p) >= st.N) win(p < 0 ? 0 : 1);
   }
-  function fit() { if (!st) return; const q = st.cur; if (q && q.promptPic) fitBox(q.promptPic, st.qbox, 4 / 3); rope(); }
+  function fit() { if (!st) return; const q = st.cur; if (q && q.promptPic) fitBox(q.promptPic, q.promptPic._box || st.qbox, 4 / 3); rope(); }
   function win(i) {
     st.over = true; T.winner = i; c.sfx('win');
     st.qbox.innerHTML = ''; st.qbox.append(h('div', { class: 'gs-banner', style: 'background:' + T.cols[i] + ';color:#fff' }, '🏆', h('small', null, 'Winner: ' + T.names[i] + '!')));
@@ -4984,7 +5001,7 @@ Games.register((() => {
     if (!st || st.over) return;
     const q = makeQuestion(nextItem(), c.pool, c.word, c.g.qtype, +c.g.choices || 3), pics = q.type === 'w2p';
     const cur = st.cur = { q, done: false, lock: [0, 0], sides: [] };
-    const prompt = questionPrompt(q, c.word); cur.promptPic = q.type === 'p2w' ? prompt : null;
+    const prompt = questionPrompt(q, c.word); cur.promptPic = q.type === 'p2w' ? prompt : prompt._pic || null;
     st.qbox.innerHTML = ''; st.qbox.append(prompt);
     // the same answers on both sides, but in a different order so nobody can copy
     const orderA = q.options.slice(); let orderB = shuffle(q.options.slice());
@@ -5127,8 +5144,8 @@ Games.register((() => {
       if (st.used >= st.total) c.later(() => c.finish(), 800);
     };
     const over = h('div', { class: 'jp-q' },
-      h('div', { class: 'jp-head' }, h('button', { class: 'g-btn sm', onclick: () => close(false) }, '↩ Back'), h('span', null, t.cat.name), h('b', null, t.value)),
-      h('div', { class: 'jp-task' }, task), body, !optBtns.length && answer,   // choose questions show the answer by turning the right button green
+      h('div', { class: 'jp-head' }, h('button', { class: 'g-btn sm', onclick: () => close(false) }, '↩ Back'), h('span', null, t.cat.name), h('div', { class: 'jp-task' }, task), h('b', null, t.value)),
+      body, !optBtns.length && answer,   // choose questions show the answer by turning the right button green
       h('div', { class: 'jp-foot' }, k === 'spell' && c.canSpeak && h('button', { class: 'g-btn', onclick: () => c.say(it) }, art('sound', 'bi'), 'Listen'), showBtn,
         T.awardRow(t.value, () => close(true))));
     st.area.append(over);
