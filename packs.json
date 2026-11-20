@@ -18,6 +18,11 @@
   {
    "file": "english-time-2.json",
    "name": "English Time 2",
+   "version": "2026-11-18"
+  },
+  {
+   "file": "english-code-2.json",
+   "name": "English Code 2",
    "version": "2026-11-20"
   }
  ]
