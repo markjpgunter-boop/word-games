@@ -293,6 +293,39 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .sb-reply{flex:none;text-align:center;font:700 calc(var(--sb)*.8)/1.2 var(--font-word);color:var(--primary);visibility:hidden}
 .sb-reply.on{visibility:visible;animation:popin .25s}
 .sb-next.go{animation:pulse .7s infinite;background:var(--primary);color:var(--on-primary)}
+
+/* grammar + phonics games (cafe, this/that, a/some, ch/sh) */
+.gm-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--su)*.3);padding:calc(var(--su)*.3);overflow:hidden;--ph:240px;--cf:48px;--bw:360px;--bh:140px;--bf:64px}
+.gm-card{display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.2);max-width:100%}
+.gm-pic{flex:none;width:var(--ph);height:var(--ph);background:#fff;border-radius:calc(var(--su)*.3);box-shadow:0 0 0 calc(var(--su)*.07) var(--ink)}
+.gm-cap{font:700 var(--cf)/1.15 var(--font-word);text-align:center;min-height:1.2em;color:var(--ink)}
+.gm-cap.ok{color:var(--good);animation:popin .25s}
+.gm-buckets{display:flex;gap:calc(var(--su)*.5);justify-content:center;max-width:100%}
+.gm-bucket{display:flex;flex-direction:column;align-items:center;justify-content:center;width:var(--bw);height:var(--bh);border:0;border-radius:calc(var(--su)*.35);color:#fff;font:700 var(--bf)/1 var(--font-word);box-shadow:0 calc(var(--su)*.1) 0 rgba(0,0,0,.28);touch-action:none}
+.gm-bucket small{font:600 calc(var(--bf)*.4)/1.1 var(--font-word);opacity:.9;margin-top:.15em}
+.gm-bk0{background:var(--primary,#2f6fe4)}
+.gm-bk1{background:#e8830f}
+.gm-bucket.ok{outline:calc(var(--su)*.1) solid var(--good);animation:pulse .5s}
+.gm-bucket.bad{animation:shake .4s}
+.gm-bucket.dim{opacity:.3}
+.gm-prompt{font:700 var(--cf)/1.15 var(--font-word);text-align:center;color:var(--ink);max-width:100%;min-height:1.2em}
+.gm-prompt .gm-dem{color:#fff;background:var(--primary,#2f6fe4);border-radius:.25em;padding:0 .25em}
+.gm-scene{display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.25);width:100%}
+.gm-row{display:flex;justify-content:center;align-items:flex-end;gap:calc(var(--su)*1.5);padding:0 calc(var(--su)*.5);border-bottom:calc(var(--su)*.2) solid #b07a3c;width:min(100%,calc(var(--su)*30))}
+.gm-row.far{border-bottom-color:#8a6a45}
+.gm-item{border:0;background:none;padding:0;border-radius:calc(var(--su)*.3);touch-action:none}
+.gm-item .pic{width:var(--is);height:var(--is);background:#fff;border-radius:calc(var(--su)*.25);box-shadow:0 0 0 calc(var(--su)*.05) var(--ink)}
+.gm-item.ok .pic{box-shadow:0 0 0 calc(var(--su)*.12) var(--good)}
+.gm-item.bad{animation:shake .4s}
+.gm-item.dim{opacity:.3}
+.gm-tag{font:700 calc(var(--cf)*.45)/1 var(--font-word);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.gm-counter{display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.2)}
+.gm-counter .gm-pic.sold{filter:grayscale(1);opacity:.5}
+.gm-bubble{font:700 var(--cf)/1.2 var(--font-word);text-align:center;border-radius:calc(var(--su)*.4);padding:.25em .6em;max-width:100%;min-height:1.5em;box-sizing:border-box}
+.gm-bubble.cust{background:var(--panel);border:calc(var(--su)*.05) solid var(--muted);color:var(--ink)}
+.gm-bubble.shop{background:var(--good);color:var(--on-good,#fff);animation:popin .25s}
+.gm-bubble.shop.no{background:var(--bad);color:var(--on-bad,#fff)}
+.gm-bubble.hide{visibility:hidden}
 .an-peek{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;background:var(--ink);color:var(--bg);font:700 calc(var(--su)*1.2)/1.2 var(--font-word);
   padding:.3em .7em;border-radius:calc(var(--su)*.3);white-space:nowrap;max-width:96%;overflow:hidden;animation:popin .2s}
 
@@ -3114,8 +3147,9 @@ function seg(label, choices, value, onpick) {
 const HUB_GROUPS = [
   ['★ Youngest (4–6)', 'Look, listen, shout it out.', ['flash', 'peek', 'mystery', 'shadow', 'missing', 'hide', 'listen', 'pairs', 'boxes', 'dip', 'wheel']],
   ['★★ Next step', 'Sort, order, remember and choose.', ['sort', 'odd', 'memory', 'imagequiz', 'balloon', 'tug']],
+  ['★★ Phonics', 'Listen to the sounds and sort the words.', ['chsh']],
   ['★★★ Older (reading & quizzes)', 'Spelling, reading and team quizzes.', ['anagram', 'spell', 'gameshow', 'jeopardy']],
-  ['★★★ Grammar', 'Build sentences. Use a grammar set (a sentence in each line).', ['sentence']]
+  ['★★★ Grammar', 'Build sentences, ask politely, this or that, a or some. Use a grammar set for Sentence builder (a sentence in each line).', ['sentence', 'cafe', 'thisthat', 'asome']]
 ];
 const Hub = {
   set: null, showSettings: false,
@@ -3910,6 +3944,205 @@ Games.register((() => {
       });
       return { sheet, key, instruction: 'Put the words in the right order. Write the sentence on the line.' };
     }
+  };
+})());
+
+/* ---------- 12b4. GRAMMAR HELPERS + GAMES (cafe counter, this/that, a/some, ch/sh) ---------- */
+const UNCOUNT = new Set(['bread', 'cheese', 'chicken', 'fish', 'juice', 'milk', 'pasta', 'rice', 'salad', 'soup', 'water', 'ice cream', 'butter', 'sugar', 'salt',
+  'tea', 'coffee', 'meat', 'jam', 'honey', 'cereal', 'yoghurt', 'yogurt', 'toast', 'spaghetti', 'vanilla', 'wheat', 'money', 'paper', 'glue', 'sand', 'snow', 'rain', 'music',
+  'lemonade', 'cola', 'chocolate', 'pizza', 'popcorn', 'porridge', 'fruit', 'cake', 'beef', 'pork', 'lamb', 'corn']);
+UNCOUNT.delete('pizza'); UNCOUNT.delete('cake');
+const gWords = it => norm(it.word).toLowerCase();
+const gPlural = w => /s$/.test(w) && !/(ss|us|is)$/.test(w) && !UNCOUNT.has(w);
+/** 'some' for plurals and uncountables, otherwise 'a'. A set item can force it: put just  a  /  an  /  some  in its clue box. */
+function gDet(it) {
+  const m = /^\s*(a|an|some)\s*$/i.exec(norm(it.clue || '')); if (m) return m[1].toLowerCase() === 'some' ? 'some' : 'a';
+  const w = gWords(it); return UNCOUNT.has(w) || gPlural(w) ? 'some' : 'a';
+}
+const gArticle = it => { const d = gDet(it), w = gWords(it); return d === 'some' ? 'some' : (/^[aeiou]/.test(w) && !/^(uni|one|eu)/.test(w) ? 'an' : 'a'); };
+const gCap = t => t.charAt(0).toUpperCase() + t.slice(1);
+const gDone = (c, st, round) => { st.i++; if (st.i >= c.items.length) c.finish(); else round(); };
+const gSay = (c, text) => { if (c.canSpeak && c.g.speak !== 'off') Speech.say(text); };
+
+/** Two big buckets: the class decides which one the word goes in. Used by "a or some?" and "ch or sh?". */
+function makeSortGame(cfg) {
+  let c = null, st = null;
+  function fit() {
+    const q = st && st.cur; if (!q) return;
+    const { W, H } = c.size(), w = q.wrap;
+    w.style.setProperty('--ph', Math.round(Math.min(W * 0.5, H * 0.36)) + 'px');
+    w.style.setProperty('--cf', Math.round(Math.min(H * 0.085, W * 0.12)) + 'px');
+    w.style.setProperty('--bh', Math.round(H * 0.2) + 'px');
+    w.style.setProperty('--bw', Math.round(Math.min(W * 0.42, H * 0.7)) + 'px');
+    w.style.setProperty('--bf', Math.round(Math.min(H * 0.1, W * 0.1)) + 'px');
+  }
+  function pick(q, key, el) {
+    if (q.busy) return;
+    if (key !== q.key) { q.mistakes++; c.sfx('wrong'); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); return; }
+    q.busy = true; el.classList.add('ok'); q.btns.forEach(b => { if (b.el !== el) b.el.classList.add('dim'); });
+    q.cap.textContent = cfg.reveal(q.item); q.cap.classList.add('ok');
+    c.sfx('correct'); gSay(c, cfg.speak(q.item, true));
+    c.addScore(Math.max(10, 100 - 30 * q.mistakes));
+    c.record(q.item, q.mistakes === 0, q.mistakes ? plural(q.mistakes, 'mistake') : '');
+    c.advance(() => gDone(c, st, round), 2200);
+  }
+  function round() {
+    const item = c.items[st.i]; c.progress(st.i + 1, c.items.length); c.stage.innerHTML = '';
+    const key = cfg.bucketOf(item), g = c.g;
+    const picEl = hasPic(item) && g.picture !== 'off' ? pic(item, 'gm-pic') : null;
+    const cap = h('div', { class: 'gm-cap' }, cfg.prompt(item, g));
+    const q = { item, key, cap, mistakes: 0, busy: false, btns: [] };
+    const bar = h('div', { class: 'gm-buckets' }, cfg.buckets.map((b, i) => {
+      const el = h('button', { class: 'gm-bucket gm-bk' + i, onpointerdown: e => { e.preventDefault(); pick(q, b.key, el); } }, b.label, b.sub && h('small', null, b.sub));
+      q.btns.push({ el, key: b.key }); return el;
+    }));
+    const listen = c.canSpeak && h('button', { class: 'an-btn', onclick: () => gSay(c, cfg.speak(item, false)) }, '🔊 Listen');
+    q.wrap = h('div', { class: 'gm-wrap' }, h('div', { class: 'gm-card' }, picEl, cap), bar, listen ? h('div', { class: 'an-ctrl' }, listen) : null);
+    st.cur = q; c.stage.append(q.wrap); fit();
+    if (cfg.autoSpeak) gSay(c, cfg.speak(item, false));
+  }
+  return {
+    id: cfg.id, name: cfg.name, icon: cfg.icon, minItems: cfg.minItems || 4, blurb: cfg.blurb, usable: cfg.usable,
+    options: [
+      { key: 'picture', label: 'Picture', choices: [['on', 'Show'], ['off', 'Hide']], def: 'on' },
+      ...(cfg.options || []),
+      { key: 'speak', label: 'Read aloud', choices: [['on', 'Yes'], ['off', 'No']], def: 'on' }
+    ],
+    init(ctx) { c = ctx; st = { i: 0, cur: null }; c.onResize(fit); },
+    start() { round(); },
+    destroy() { c = null; st = null; }
+  };
+}
+
+Games.register(makeSortGame({
+  id: 'asome', name: 'A or some?', icon: '🧺', blurb: 'Does the word go with "a / an" or with "some"?',
+  usable: it => { const w = norm(it.word); return !!w && w.split(' ').length <= 3 && !/[.?!,]/.test(w); },
+  buckets: [{ key: 'a', label: 'a / an' }, { key: 'some', label: 'some' }],
+  bucketOf: it => gDet(it),
+  prompt: it => gWords(it),
+  reveal: it => gArticle(it) + ' ' + gWords(it),
+  speak: (it, done) => done ? gArticle(it) + ' ' + gWords(it) : gWords(it)
+}));
+
+Games.register(makeSortGame({
+  id: 'chsh', name: 'ch or sh?', icon: '🔤', blurb: 'Listen. Does the word start with ch (chair) or sh (ship)?', autoSpeak: true,
+  usable: it => /^(ch|sh)/.test(gWords(it)) && !/^sch/.test(gWords(it)),
+  options: [{ key: 'word', label: 'Word', choices: [['show', 'Show it'], ['hide', 'Listen only']], def: 'show' }],
+  buckets: [{ key: 'ch', label: 'ch', sub: 'chair' }, { key: 'sh', label: 'sh', sub: 'ship' }],
+  bucketOf: it => gWords(it).slice(0, 2),
+  prompt: (it, g) => g.word === 'hide' ? '🔊 ?' : gWords(it),
+  reveal: it => gWords(it).slice(0, 2) + ' – ' + gWords(it),
+  speak: it => gWords(it)
+}));
+
+/** "Can I have this / that ...?" : near items on the table, far items on the shelf. */
+Games.register((() => {
+  let c = null, st = null;
+  function fit() {
+    const q = st && st.cur; if (!q) return;
+    const { W, H } = c.size(), w = q.wrap;
+    const near = Math.round(Math.min(H * 0.27, W * 0.22)), far = Math.round(near * 0.55);
+    w.style.setProperty('--cf', Math.round(Math.min(H * 0.07, W * 0.07)) + 'px');
+    q.nearRow.style.setProperty('--is', near + 'px'); q.farRow.style.setProperty('--is', far + 'px');
+  }
+  function tap(q, e, el) {
+    if (q.busy) return;
+    if (!(e.item === q.item && e.near === q.near)) { q.mistakes++; c.sfx('wrong'); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); return; }
+    q.busy = true; el.classList.add('ok'); q.els.forEach(x => { if (x !== el) x.classList.add('dim'); });
+    q.prompt.classList.remove('hidden'); q.prompt.style.visibility = 'visible';
+    c.sfx('correct'); gSay(c, q.text);
+    c.addScore(Math.max(10, 100 - 30 * q.mistakes));
+    c.record(q.item, q.mistakes === 0, q.mistakes ? plural(q.mistakes, 'mistake') : '');
+    c.advance(() => gDone(c, st, round), 2200);
+  }
+  function round() {
+    const item = c.items[st.i]; c.progress(st.i + 1, c.items.length); c.stage.innerHTML = '';
+    const near = st.i % 2 === 0 ? Math.random() < 0.5 : st.lastNear === false;   // mixes this / that
+    st.lastNear = near;
+    const pl = gPlural(gWords(item)) && !UNCOUNT.has(gWords(item)), dem = near ? (pl ? 'these' : 'this') : (pl ? 'those' : 'that');
+    const text = 'Can I have ' + dem + ' ' + gWords(item) + ', please?';
+    let other = null;
+    if (c.g.kinds !== '1') { const pool = c.pool.filter(x => hasPic(x) && gWords(x) !== gWords(item)); if (pool.length) other = pool[Math.floor(Math.random() * pool.length)]; }
+    const kinds = other ? shuffle([item, other]) : [item];
+    const q = { item, near, text, mistakes: 0, busy: false, els: [] };
+    const mk = isNear => kinds.map(it => {
+      const entry = { item: it, near: isNear }, el = h('button', { class: 'gm-item', 'aria-label': gWords(it), onpointerdown: ev => { ev.preventDefault(); tap(q, entry, el); } }, pic(it));
+      q.els.push(el); return el;
+    });
+    q.farRow = h('div', { class: 'gm-row far' }, mk(false)); q.nearRow = h('div', { class: 'gm-row' }, mk(true));
+    const show = c.g.cue !== 'hear';
+    q.prompt = h('div', { class: 'gm-prompt' }, h('span', null, 'Can I have '), h('span', { class: 'gm-dem' }, dem), ' ' + gWords(item) + ', please?');
+    if (!show) { q.prompt.style.visibility = 'hidden'; q.prompt.classList.add('hidden'); }
+    const listen = c.canSpeak && h('button', { class: 'an-btn', onclick: () => gSay(c, text) }, '🔊 Listen');
+    q.wrap = h('div', { class: 'gm-wrap' }, q.prompt,
+      h('div', { class: 'gm-scene' }, h('div', { class: 'gm-tag' }, 'far · on the shelf'), q.farRow, h('div', { class: 'gm-tag' }, 'near · on the table'), q.nearRow),
+      listen ? h('div', { class: 'an-ctrl' }, listen) : null);
+    st.cur = q; c.stage.append(q.wrap); fit();
+    gSay(c, text);
+  }
+  return {
+    id: 'thisthat', name: 'This one or that one?', icon: '👆', minItems: 2,
+    blurb: 'Near is "this", far is "that". Tap the right one.',
+    usable: it => hasPic(it) && gWords(it).split(' ').length <= 3 && !/[.?!,]/.test(gWords(it)),
+    options: [
+      { key: 'kinds', label: 'Things on screen', choices: [['2', 'Two different things'], ['1', 'Same thing near and far']], def: '2' },
+      { key: 'cue', label: 'Question', choices: [['both', 'Hear and read'], ['hear', 'Hear only']], def: 'both' },
+      { key: 'speak', label: 'Read aloud', choices: [['on', 'Yes'], ['off', 'No']], def: 'on' }
+    ],
+    init(ctx) { c = ctx; st = { i: 0, cur: null, lastNear: null }; c.onResize(fit); },
+    start() { round(); },
+    destroy() { c = null; st = null; }
+  };
+})());
+
+/** Cafe counter (speaking): the class asks for the food, the shopkeeper answers "Sure." or "Sorry, no.". */
+Games.register((() => {
+  let c = null, st = null;
+  const YES = ['Sure.', 'Yes, of course.', 'Here you are.'];
+  function fit() {
+    const q = st && st.cur; if (!q) return;
+    const { W, H } = c.size(), w = q.wrap;
+    w.style.setProperty('--ph', Math.round(Math.min(W * 0.45, H * 0.36)) + 'px');
+    w.style.setProperty('--cf', Math.round(Math.min(H * 0.07, W * 0.07)) + 'px');
+  }
+  function said(q) {
+    if (q.busy) return; q.busy = true;
+    const no = q.soldOut;
+    q.reply.textContent = no ? 'Sorry, no.' : YES[Math.floor(Math.random() * YES.length)];
+    q.reply.className = 'gm-bubble shop' + (no ? ' no' : '');
+    if (no) q.picEl.classList.add('sold');
+    c.sfx(no ? 'wrong' : 'correct'); gSay(c, q.reply.textContent);
+    c.addScore(10); c.record(q.item, true, no ? 'sold out' : '');
+    q.said.style.visibility = 'hidden';
+    c.advance(() => gDone(c, st, round), 2200);
+  }
+  function round() {
+    const item = c.items[st.i]; c.progress(st.i + 1, c.items.length); c.stage.innerHTML = '';
+    const text = 'Can I have ' + gArticle(item) + ' ' + gWords(item) + ', please?';
+    const q = { item, text, busy: false, soldOut: c.g.soldout !== 'off' && Math.random() < 0.25 };
+    q.picEl = pic(item, 'gm-pic');
+    q.ask = h('div', { class: 'gm-bubble cust' + (c.g.text === 'always' ? '' : ' hide') }, text);
+    q.reply = h('div', { class: 'gm-bubble shop hide' }, '…');
+    q.said = h('button', { class: 'an-btn sb-next go', onclick: () => said(q) }, '👍 We said it!');
+    const ctrl = h('div', { class: 'an-ctrl' },
+      c.canSpeak && h('button', { class: 'an-btn', onclick: () => gSay(c, text) }, '🔊 Listen'),
+      c.g.text !== 'always' && h('button', { class: 'an-btn', onclick: () => q.ask.classList.toggle('hide') }, '💬 Show sentence'),
+      q.said);
+    q.wrap = h('div', { class: 'gm-wrap' }, q.ask, h('div', { class: 'gm-counter' }, q.picEl, h('div', { class: 'gm-tag' }, 'the counter')), q.reply, ctrl);
+    st.cur = q; c.stage.append(q.wrap); fit();
+  }
+  return {
+    id: 'cafe', name: 'Café counter', icon: '🍽️', minItems: 1,
+    blurb: 'Ask for the food out loud. The shopkeeper says yes or sorry.',
+    usable: it => hasPic(it) && gWords(it).split(' ').length <= 3 && !/[.?!,]/.test(gWords(it)),
+    options: [
+      { key: 'soldout', label: 'Sometimes sold out', choices: [['on', 'Yes'], ['off', 'No']], def: 'on' },
+      { key: 'text', label: 'Sentence', choices: [['tap', 'Show on tap'], ['always', 'Always show']], def: 'tap' },
+      { key: 'speak', label: 'Read aloud', choices: [['on', 'Yes'], ['off', 'No']], def: 'on' }
+    ],
+    init(ctx) { c = ctx; st = { i: 0, cur: null }; c.onResize(fit); },
+    start() { round(); },
+    destroy() { c = null; st = null; }
   };
 })());
 
