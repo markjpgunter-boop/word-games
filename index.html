@@ -4040,6 +4040,8 @@ function gKit(c) {
   K.teamName = () => K.T ? K.T.names[K.T.turn] : 'Everyone';
   K.next = () => { if (K.T) K.T.nextTurn(); };
   K.point = (pts) => { if (K.T) K.T.add(Math.max(0, K.T.turn), pts); else c.addScore(pts * 10); };
+  K.pointTo = (i, pts) => { if (K.T) K.T.add(i, pts); else c.addScore(pts * 10); };
+  K.whoAt = i => K.T ? '<i style="color:' + K.T.cols[i] + ';background:#fff;border-radius:.3em;padding:0 .3em">' + K.esc(K.T.names[i]) + '</i> ' : '';
   K.banner = html => { if (K.ban) K.ban.remove(); K.ban = h('div', { class: 'sc-banner' }); K.ban.innerHTML = html; if (K.T) K.ban.style.setProperty('--tc', '#ffd400'); K.scene.append(K.ban); return K.ban; };
   K.ctrl = (...btns) => { if (K.ctl) K.ctl.remove(); K.ctl = h('div', { class: 'sc-ctrl' }, ...btns.filter(Boolean)); if (K.ctrlLeft) K.ctl.style.paddingLeft = K.ctrlLeft; K.scene.append(K.ctl); return K.ctl; };
   K.btn = (label, cls, fn) => { const b = h('button', { class: 'sc-btn ' + (cls || ''), onpointerdown: e => { e.preventDefault(); fn(b); } }, label); return b; };
@@ -4095,7 +4097,7 @@ Games.register((() => {
     st.last = pick;
     const text = 'Can I have ' + gPhrase(pick.item, 1) + ', please?';
     st.q = { s: pick, text, phase: 'ask' };
-    K.next();
+    if (K.T) K.T.setTurn(st.custTeam == null || st.custTeam < 0 ? 0 : (st.custTeam + 1) % K.T.n);
     st.cust = K.person(2, 22);
     st.think = h('div', { class: 'sc-bubble think' }, pic(pick.item));
     Object.assign(st.think.style, { left: '16%', top: '13%' });
@@ -4104,12 +4106,13 @@ Games.register((() => {
   }
   function askPhase() {
     const q = st.q;
-    K.banner(K.who() + 'Ask for it! 🗣️');
+    st.custTeam = K.T ? K.T.turn : -1; st.shopTeam = K.T ? (K.T.turn + 1) % K.T.n : -1;
+    K.banner(K.whoAt(st.custTeam) + 'You are the customer. Ask for it! 🗣️');
     const sentence = K.btn('💬 Sentence', 'hint', () => showSay(true));
     K.ctrl(
       c.canSpeak && K.btn('🔊', 'hint', () => gSay(c, q.text)),
       c.g.text === 'always' ? null : sentence,
-      K.btn('👍 Good asking!', 'go big', () => { K.point(1); c.sfx('correct'); showSay(false); replyPhase(); }),
+      K.btn('👍 Good asking!', 'go big', () => { K.pointTo(st.custTeam, 1); c.sfx('correct'); showSay(false); replyPhase(); }),
       K.btn('🔁 Try again', 'hint', () => { c.sfx('back'); })
     );
     if (c.g.text === 'always') showSay(true);
@@ -4122,17 +4125,20 @@ Games.register((() => {
     K.scene.append(st.say);
     if (!hint) gSay(c, st.q.text);
   }
+  /** "Sorry, we don't have any water." / "... any pears." */
+  function noLine(it) { const w = gWords(it); return "Sorry, we don't have any " + (gKind(it) === 'c' ? gPl(gSing(w)) : w) + '.'; }
   function replyPhase() {
     const q = st.q; q.phase = 'reply';
-    K.banner(K.who() + 'You are the shopkeeper. What do you say?');
-    const yes = K.btn('✅ Sure! Here you are.', 'yes big', b => answer(b, false, yes, no));
-    const no = K.btn('❌ Sorry, no.', 'no big', b => answer(b, true, yes, no));
+    if (K.T) K.T.setTurn(st.shopTeam);
+    K.banner(K.whoAt(st.shopTeam) + 'You are the shopkeeper. What do you say?');
+    const yes = K.btn('✅ Sure! Here you are.', 'yes', b => answer(b, false, yes, no));
+    const no = K.btn('❌ ' + noLine(q.s.item), 'no', b => answer(b, true, yes, no));
     K.ctrl(yes, no);
   }
   function answer(btn, saidNo, yes, no) {
     const q = st.q; if (q.phase !== 'reply') return; q.phase = 'done';
-    const right = q.s.sold === saidNo, ans = q.s.sold ? 'Sorry, no.' : 'Sure! Here you are.';
-    if (right) { K.point(1); c.sfx('correct'); c.record(q.s.item, true, ''); }
+    const right = q.s.sold === saidNo, ans = q.s.sold ? noLine(q.s.item) : 'Sure! Here you are.';
+    if (right) { K.pointTo(st.shopTeam, 1); c.sfx('correct'); c.record(q.s.item, true, ''); }
     else { K.shake(btn); c.sfx('wrong'); (q.s.sold ? no : yes).classList.add('right'); c.record(q.s.item, false, 'answer: ' + ans); }
     (saidNo ? yes : no).classList.add('dim');
     if (st.say) st.say.remove();
@@ -4151,7 +4157,7 @@ Games.register((() => {
   }
   return {
     id: 'cafe', name: 'Café counter', icon: '🍽️', minItems: 3, noTimer: true,
-    blurb: 'A customer wants some food. Ask for it, then answer as the shopkeeper: "Sure!" or "Sorry, no."',
+    blurb: 'One team is the customer and asks for the food. The next team is the shopkeeper: "Sure! Here you are." or "Sorry, we don\'t have any …"',
     usable: it => hasPic(it) && gNoun(it),
     options: [
       TEAM_OPT,
