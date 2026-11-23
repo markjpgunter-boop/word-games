@@ -3203,8 +3203,9 @@ const Hub = {
     if (set.temp) artLabel($('#hub-edit'), 'save', 'Save as set'); else artLabel($('#hub-edit'), 'edit', 'Edit set');
     const games = $('#hub-games'); games.innerHTML = '';
     const placed = new Set(HUB_GROUPS.flatMap(g => g[2]));
-    const groups = HUB_GROUPS.map(([t, sub, ids]) => [t, sub, ids.map(id => Games.get(id)).filter(Boolean)]);
-    groups[groups.length - 1][2].push(...Games.list.filter(g => !placed.has(g.id)));
+    const forSet = g => !g.onlyFor || g.onlyFor.test(set.title || '');   // some games belong to one book unit only
+    const groups = HUB_GROUPS.map(([t, sub, ids]) => [t, sub, ids.map(id => Games.get(id)).filter(g => g && forSet(g))]);
+    groups[groups.length - 1][2].push(...Games.list.filter(g => !placed.has(g.id) && forSet(g)));
     groups.forEach(([t, sub, list]) => {
       if (!list.length) return;
       games.append(h('section', { class: 'hub-sec' }, h('h2', null, t, h('small', null, sub)),
@@ -4180,7 +4181,7 @@ Games.register((() => {
     c.later(() => K.ctrl(K.btn(st.round >= st.total ? 'Finish ▶' : 'Next customer ▶', 'go big', () => round())), 900);
   }
   return {
-    id: 'cafe', name: 'Café counter', icon: '🍽️', minItems: 3, noTimer: true,
+    id: 'cafe', name: 'Café counter', icon: '🍽️', minItems: 3, noTimer: true, onlyFor: /^English Code 2 · Unit 5/,
     blurb: 'One team is the customer and asks for the food. The next team is the shopkeeper: "Sure! Here you are." or "Sorry, we don\'t have any …"',
     usable: it => hasPic(it) && gNoun(it),
     options: [
@@ -4274,7 +4275,7 @@ Games.register((() => {
   }
   function nextBtn() { c.later(() => K.ctrl(K.btn(st.round >= st.total ? 'Finish ▶' : 'Next ▶', 'go big', () => round())), 500); }
   return {
-    id: 'thisthat', name: 'This one or that one?', icon: '👆', minItems: 3, noTimer: true,
+    id: 'thisthat', name: 'This one or that one?', icon: '👆', minItems: 3, noTimer: true, onlyFor: /^English Code 2 · Unit 5/,
     blurb: 'In the toy shop: near things are "this", far things are "that". Say it, or listen and tap.',
     usable: it => hasPic(it) && gNoun(it),
     options: [
