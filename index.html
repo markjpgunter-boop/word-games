@@ -247,6 +247,7 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .iq-opt.good{background:var(--good);color:var(--on-good);box-shadow:none}
 .iq-opt.bad{background:var(--bad);color:var(--on-bad);box-shadow:none;animation:shake .4s}
 .iq-opt.dim{opacity:.4;box-shadow:none}
+.iq-opts.locked .iq-opt{opacity:.55;pointer-events:none}
 
 /* ---------- 9. ANAGRAM ---------- */
 .an-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:calc(var(--su)*.2);padding:calc(var(--su)*.25)}
@@ -3528,7 +3529,16 @@ Games.register((() => {
     q.buzz.remove(); q.worth.textContent = 'For ' + q.points + ' points';
     const opts = pickOptions(q.item, c.pool, +c.g.choices, c.word);
     const box = h('div', { class: 'iq-opts' + (Math.max(...opts.map(w => w.length)) > 13 ? ' long' : '') });
-    opts.forEach(w => { const b = h('button', { class: 'iq-opt', onclick: () => answer(w, b, box) }, w); b._w = w; box.append(b); });
+    // The buzz finger is often still on the screen when the answers appear under it: answers are locked for a
+    // moment, and a tap only counts if it both starts and ends on the same answer after they unlock.
+    let ready = false;
+    opts.forEach(w => {
+      const b = h('button', { class: 'iq-opt', onpointerdown: () => { b._down = ready; }, onpointercancel: () => { b._down = false; },
+        onclick: e => { if (!ready || (e.detail !== 0 && !b._down)) return; answer(w, b, box); } }, w);
+      b._w = w; box.append(b);
+    });
+    box.classList.add('locked');
+    c.later(() => { ready = true; box.classList.remove('locked'); }, 700);
     q.side.append(box);
   }
   function answer(w, btn, box) {
