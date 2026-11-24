@@ -904,6 +904,9 @@ body.student .end-more{display:none}
 .an-say small{font:800 clamp(1rem,4vw,1.6rem) var(--font-ui)}
 .an-say:active{transform:translateY(3px)}
 @media (max-width:600px){.end-box .end-h{font-size:2rem}.end-btns .btn.big{width:100%}}
+.upd-bar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;background:var(--primary);color:var(--on-primary);padding:10px 12px 10px 18px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.3);font-weight:800;font-size:18px;max-width:calc(100vw - 24px)}
+.upd-go{border:0;border-radius:12px;background:var(--accent);color:#1b1300;font-weight:900;font-size:18px;padding:10px 18px;min-height:44px}
+.upd-x{border:0;background:transparent;color:inherit;font-size:20px;min-width:44px;min-height:44px}
 </style>
 </head>
 <body data-theme="classroom">
@@ -6550,6 +6553,33 @@ const ClassSets = {
 })();
 
 function themeArt() { const p = $('#theme-pic'); if (p) p.replaceChildren(art(O.theme || 'classroom', 'theme-i')); }
+
+/* ===================== UPDATE CHECK =====================
+   A Home Screen shortcut on the iPad has no refresh button. When the site is opened (or you
+   come back to it), it asks version.json for the newest build. If it is newer than this page,
+   a bar offers "Update now", which loads the new version.
+   WHEN PUBLISHING A CHANGE: set BUILD below and "build" in version.json to the same new value. */
+const BUILD = '2026-11-25b';
+const Updater = {
+  shown: false,
+  check() {
+    if (Updater.shown) return;
+    fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then(v => { if (v && v.build && v.build !== BUILD) Updater.bar(v.build); })
+      .catch(() => { /* offline: ignore */ });
+  },
+  bar(build) {
+    Updater.shown = true;
+    const bar = h('div', { class: 'upd-bar', role: 'status' },
+      h('span', null, '✨ A new version of Word Games is ready.'),
+      h('button', { class: 'upd-go', onclick: () => location.replace(location.pathname + '?v=' + encodeURIComponent(build)) }, 'Update now'),
+      h('button', { class: 'upd-x', 'aria-label': 'Later', onclick: () => bar.remove() }, '✕'));
+    document.body.append(bar);
+  }
+};
+setTimeout(Updater.check, 2500);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') Updater.check(); });
 </script>
 </body>
 </html>
