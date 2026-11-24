@@ -717,6 +717,19 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .qf-cover{position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(45deg,var(--accent) 0 calc(var(--su)*.5),var(--primary) calc(var(--su)*.5) calc(var(--su)*1));display:flex;align-items:center;justify-content:center}
 .qf-cover span{background:#fff;color:#1b2a4e;border-radius:50%;width:calc(var(--su)*2.4);height:calc(var(--su)*2.4);display:flex;align-items:center;justify-content:center;font-size:calc(var(--su)*1.7);font-weight:900}
 .qf-cover.off{display:none}
+/* Speed race: a picture races across a track; replays are slower */
+.sr-track{flex:1;min-height:0;width:100%;position:relative;overflow:hidden;border-radius:calc(var(--su)*.4);background:#fff;box-shadow:0 0 0 calc(var(--su)*.08) var(--ink)}
+.sr-run{position:absolute;top:0;left:0;visibility:hidden;will-change:transform;display:flex}
+.sr-run .sr-pic{flex:1}
+.sr-reveal{position:absolute;top:0;left:0;right:0;bottom:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:2%;padding:3%;background:#fff;color:#1b2a4e}
+.sr-reveal.on{display:flex}
+.sr-reveal .sr-pic{flex:1;width:100%}
+.sr-rword{font:700 calc(var(--su)*.95)/1.1 var(--font-word);flex:none;text-align:center}
+.sr-choices{flex:none;display:flex;align-items:center;justify-content:center;gap:calc(var(--su)*.3);width:100%}
+.sr-c{min-width:calc(var(--su)*3.5);text-align:center;background:var(--panel);color:var(--ink);border-radius:calc(var(--su)*.25);padding:.12em .8em;font:700 calc(var(--su)*.7)/1.25 var(--font-word);box-shadow:0 calc(var(--su)*.08) 0 var(--line);transition:opacity .2s}
+.sr-c.ok{background:#16a34a;color:#fff}
+.sr-c.no{opacity:.35}
+.sr-or{font-weight:900;font-size:calc(var(--su)*.45)}
 .mp-card{position:relative;width:var(--cs);height:var(--cs);border:0;padding:0;background:transparent;-webkit-perspective:800px;perspective:800px;touch-action:manipulation}
 .mp-in{position:absolute;top:0;left:0;right:0;bottom:0;transition:transform .35s;-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
 .mp-card.up .mp-in{transform:rotateY(180deg)}
@@ -3182,7 +3195,7 @@ function seg(label, choices, value, onpick) {
 }
 /* Games are shown easiest first, in three groups. A game not listed here goes in the last group. */
 const HUB_GROUPS = [
-  ['★ Youngest (4–6)', 'Look, listen, shout it out.', ['flash', 'peek', 'mystery', 'shadow', 'missing', 'hide', 'listen', 'pairs', 'boxes', 'dip', 'wheel']],
+  ['★ Youngest (4–6)', 'Look, listen, shout it out.', ['flash', 'speed', 'peek', 'mystery', 'shadow', 'missing', 'hide', 'listen', 'pairs', 'boxes', 'dip', 'wheel']],
   ['★★ Next step', 'Sort, order, remember and choose.', ['sort', 'odd', 'memory', 'imagequiz', 'balloon', 'tug']],
   ['★★ Phonics', 'Listen to the sounds and sort the words.', ['chsh']],
   ['★★★ Older (reading & quizzes)', 'Spelling, reading and team quizzes.', ['anagram', 'spell', 'gameshow', 'jeopardy']],
@@ -5450,6 +5463,107 @@ Games.register((() => {
     },
     start() { next(); },
     destroy() { c = null; st = null; }
+  };
+})());
+
+/* ---------- 12l2. SPEED RACE ---------- */
+/* A picture races across the track, too fast to see. The class asks "Is it a … or a …?"
+   Each replay is slower and at a different height. Show reveals it; with teams, the
+   teacher gives points (3/2/1 by number of replays, or 1 each time). */
+Games.register((() => {
+  let c = null, st = null, T = null;
+  const dur = n => { const a = +c.g.start || 400; return c.g.slow === 'gentle' ? Math.round(a * Math.pow(1.5, n)) : Math.min(a * Math.pow(2, n), 6400); };
+  const pts = n => c.g.points === 'flat' ? 1 : n === 0 ? 3 : n === 1 ? 2 : 1;
+  const ptxt = n => n + (n === 1 ? ' point' : ' points');
+  function layout() { if (!st) return; const s = Math.floor(st.track.clientHeight * 0.45); st.runner.style.width = st.runner.style.height = s + 'px'; }
+  function stopFly() { if (st && st.raf) { cancelAnimationFrame(st.raf); st.raf = 0; } }
+  function setBtns(...b) { st.btns.innerHTML = ''; st.btns.append(...b); }
+  function playBtns() {
+    const r = st.cur.replays;
+    setBtns(h('button', { class: 'g-btn', onclick: again }, '🔁 Again, slower' + (T && c.g.points !== 'flat' ? ' (' + ptxt(pts(r + 1)) + ')' : '')),
+      h('button', { class: 'g-btn pri', onclick: reveal }, '👀 Show'));
+  }
+  function fly(ms, randomY) {
+    stopFly(); layout();
+    const W = st.track.clientWidth, H = st.track.clientHeight, sz = st.runner.offsetWidth;
+    const x0 = -sz - 20, x1 = W + 20, span = Math.max(0, H - sz);
+    let y = span / 2;
+    if (randomY && span > 10) { y = Math.random() * span; for (let k = 0; k < 8 && st.lastY != null && Math.abs(y - st.lastY) < span * 0.28; k++) y = Math.random() * span; }
+    st.lastY = y;
+    st.runner.style.transform = 'translate(' + x0 + 'px,' + y + 'px)';
+    st.runner.style.visibility = 'visible'; c.sfx('place');
+    const t0 = performance.now();
+    const step = now => {
+      if (!st) return;
+      const p = Math.min(1, (now - t0) / ms);
+      st.runner.style.transform = 'translate(' + (x0 + (x1 - x0) * p) + 'px,' + y + 'px)';
+      if (p < 1) { st.raf = requestAnimationFrame(step); return; }
+      st.raf = 0; st.runner.style.visibility = 'hidden';
+      if (!st.revealed) st.msg.textContent = c.g.choices === 'off' ? 'What was it?' : 'Is it a … or a …? Ask!';
+    };
+    st.raf = requestAnimationFrame(step);
+  }
+  function next() {
+    if (st.i >= c.items.length) return c.finish();
+    const it = c.items[st.i];
+    st.cur = { it, replays: 0 }; st.revealed = false; st.lastY = null;
+    c.progress(st.i + 1, c.items.length);
+    st.runner.innerHTML = ''; st.runner.append(pic(it, 'pfill sr-pic'));
+    st.reveal.classList.remove('on'); st.reveal.innerHTML = '';
+    const other = pickItems(it, c.pool, 1, c.word, false)[0];
+    const words = shuffle([c.word(it), other ? c.word(other) : '?']);
+    st.choices.replaceChildren(h('span', { class: 'sr-c' }, words[0]), h('span', { class: 'sr-or' }, 'or'), h('span', { class: 'sr-c' }, words[1]));
+    st.msg.textContent = 'Ready… watch!' + (T ? ' (' + ptxt(pts(0)) + ')' : '');
+    playBtns();
+    c.later(() => { if (st && !st.revealed && st.cur.it === it) fly(dur(0), false); }, 700);
+  }
+  function again() {
+    if (!st || st.revealed) return;
+    st.cur.replays++; playBtns();
+    st.msg.textContent = 'Slower…' + (T ? ' (' + ptxt(pts(st.cur.replays)) + ')' : '');
+    fly(dur(st.cur.replays), true);
+  }
+  function reveal() {
+    if (!st || st.revealed) return;
+    stopFly(); st.revealed = true; st.runner.style.visibility = 'hidden';
+    const it = st.cur.it, w = c.word(it), r = st.cur.replays;
+    st.reveal.replaceChildren(pic(it, 'pfill sr-pic'), h('div', { class: 'sr-rword' }, w)); st.reveal.classList.add('on');
+    st.choices.querySelectorAll('.sr-c').forEach(el => el.classList.add(el.textContent === w ? 'ok' : 'no'));
+    c.sfx('correct'); c.say(it); c.record(it, true, r ? 'replayed ' + r + (r === 1 ? ' time' : ' times') : '');
+    st.i++;
+    const nextBtn = () => h('button', { class: 'g-btn pri', onclick: next }, st.i >= c.items.length ? 'Finish ✓' : 'Next ▶');
+    if (T) {
+      st.msg.textContent = w + '! Who got it?';
+      setBtns(T.awardRow(pts(r), () => { st.msg.textContent = w + '!'; setBtns(nextBtn()); }));
+    } else { st.msg.textContent = w + '!'; setBtns(nextBtn()); }
+  }
+  return {
+    id: 'speed', name: 'Speed race', icon: '🏎️', minItems: 2, noScore: true, listAnswered: true,
+    usable: hasPic,
+    blurb: 'A picture races past, very fast! Ask “Is it a … or a …?” Each replay is slower.',
+    options: [
+      { key: 'start', label: 'First run', choices: [[400, 'Very fast'], [700, 'Fast'], [1000, 'Normal']], def: 400 },
+      { key: 'slow', label: 'Replays', choices: [['double', 'Much slower'], ['gentle', 'A bit slower']], def: 'double' },
+      { key: 'choices', label: 'Two words', choices: [['on', 'Show'], ['off', 'Hide']], def: 'on' },
+      { key: 'teams', label: 'Teams', choices: [['off', 'Whole class'], ['on', 'Teams']], def: 'off' },
+      { key: 'points', label: 'Points', choices: [['scaled', '3 · 2 · 1'], ['flat', '1 each time']], def: 'scaled' }
+    ],
+    init(ctx) {
+      c = ctx; T = c.g.teams === 'on' ? c.teams() : null;
+      st = { i: 0, raf: 0, lastY: null, revealed: false };
+      st.msg = h('div', { class: 'mm-msg' });
+      st.runner = h('div', { class: 'sr-run' });
+      st.reveal = h('div', { class: 'sr-reveal' });
+      st.track = h('div', { class: 'sr-track' }, st.runner, st.reveal);
+      st.choices = h('div', { class: 'sr-choices' });
+      if (c.g.choices === 'off') st.choices.hidden = true;
+      st.btns = h('div', { class: 'wc-btns' });
+      const wrap = h('div', { class: 'wc-wrap' + (T ? ' in-tm' : '') }, st.msg, st.track, st.choices, st.btns);
+      c.stage.append(T ? h('div', { class: 'tm-wrap' }, T.el, wrap) : wrap);
+      c.onResize(layout); layout();
+    },
+    start() { next(); },
+    destroy() { if (st && st.raf) cancelAnimationFrame(st.raf); c = null; st = null; T = null; }
   };
 })());
 
