@@ -2955,11 +2955,21 @@ const Speech = {
     if (!this.ok || O.speak === 'off' || !text) return;
     try {
       if (text === text.toUpperCase()) text = text.toLowerCase();   // stop "CAT" being spelt out
-      speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text); u.lang = O.speak; u.rate = 0.85;
       const v = this.voice(O.speak); if (v) u.voice = v;
-      speechSynthesis.speak(u);
+      this.speak(u);
     } catch (e) { /* ignore */ }
+  },
+  /** Speak an utterance safely on the iPad. iPad Safari can go silent for good if speak() comes
+      straight after cancel() while it is still talking, or if the utterance is thrown away too early.
+      So keep a reference to it, and if something is still talking, stop it and speak a moment later. */
+  speak(u) {
+    const ss = speechSynthesis; this.keep = u;
+    try { ss.resume(); } catch (e) { /* ignore */ }
+    if (ss.speaking || ss.pending) {
+      ss.cancel();
+      setTimeout(() => { try { ss.resume(); ss.speak(u); } catch (e) { /* ignore */ } }, 160);
+    } else ss.speak(u);
   },
   stop() { try { if (this.ok) speechSynthesis.cancel(); } catch (e) { /* ignore */ } }
 };
@@ -4657,11 +4667,10 @@ function robotSay(c, text, mouthEl) {
   if (!Speech.ok) return;
   try {
     const lang = O.speak === 'off' ? 'en-GB' : O.speak;
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = 0.95; u.pitch = 1.7; u.volume = 1;
+    const u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = 0.95; u.pitch = 1.6; u.volume = 1;
     const v = Speech.voice(lang); if (v) u.voice = v;
     if (mouthEl) u.onend = () => { clearTimeout(mouthEl._t); mouthEl.classList.remove('talk'); };
-    speechSynthesis.speak(u);
+    Speech.speak(u);
   } catch (e) { /* ignore */ }
 }
 /** A scene button that acts on a real tap (click), so the iPad allows speech. */
@@ -5056,8 +5065,8 @@ Games.register((() => {
       if (st.ab) st.ab.remove();
       const line = yes ? 'Yes, I will!' : "No, I won't!";
       st.ab = bubble(line, 'ww-ans ' + (yes ? 'yes' : 'no')); gSay(c, line);
-      K.point(1); c.sfx(yes === !!q[2] ? 'correct' : 'pop');
-      K.banner(yes === !!q[2] ? (yes ? '👍 Good idea!' : '🙂 OK!') : (yes ? '🤪 That\'s silly! ' + w.icon : '😄 Ha ha! Good thinking!'));
+      K.point(1); c.sfx('place');
+      K.banner(K.who() + text);
       c.later(() => { if (st) K.ctrl(gsBtn(st.asked < (+c.g.will || 0) ? 'Next question ▶' : (st.round >= st.total ? 'Finish ▶' : 'Next weather ▶'), 'go big', () => st.asked < (+c.g.will || 0) ? willYou() : round())); }, 700);
     };
     st.done = false;
@@ -5257,15 +5266,23 @@ Games.register((() => {
     ctx.globalCompositeOperation = 'multiply'; ctx.drawImage(st.line, 0, 0, W, H); ctx.globalCompositeOperation = 'source-over';
   }
   function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
-  /** Yellow glow over one object, on both pictures. */
+  /** The thing to colour: a yellow glow over it on picture A, and only a yellow outline round it
+      on picture B, so the children can still see its colour there. */
   function glow(id) {
-    [st.glowA, st.glowB].forEach(cv => {
-      const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, st.w, st.h);
-      if (!id) return;
-      const img = ctx.createImageData(st.w, st.h), d = img.data, ids = st.ids;
-      for (let i = 0, p = 0; i < ids.length; i++, p += 4) if (ids[i] === id) { d[p] = 255; d[p + 1] = 214; d[p + 2] = 0; d[p + 3] = 150; }
-      ctx.putImageData(img, 0, 0);
-    });
+    [st.glowA, st.glowB].forEach(cv => cv.getContext('2d').clearRect(0, 0, st.w, st.h));
+    if (!id) return;
+    const mask = rgb => {
+      const m = h('canvas'); m.width = st.w; m.height = st.h;
+      const mx = m.getContext('2d'), img = mx.createImageData(st.w, st.h), d = img.data, ids = st.ids;
+      for (let i = 0, p = 0; i < ids.length; i++, p += 4) if (ids[i] === id) { d[p] = rgb[0]; d[p + 1] = rgb[1]; d[p + 2] = rgb[2]; d[p + 3] = 255; }
+      mx.putImageData(img, 0, 0); return m;
+    };
+    const ga = st.glowA.getContext('2d'); ga.globalAlpha = 0.6; ga.drawImage(mask([255, 214, 0]), 0, 0); ga.globalAlpha = 1;
+    // picture B: a dark ring with a white ring inside it, round the outside of the thing (shows on any colour)
+    const gb = st.glowB.getContext('2d'), ring = (m, r) => { for (let k = 0; k < 24; k++) { const t = k / 24 * Math.PI * 2; gb.drawImage(m, Math.round(Math.cos(t) * r), Math.round(Math.sin(t) * r)); } };
+    const dark = mask([20, 30, 60]), white = mask([255, 255, 255]);
+    ring(dark, 14); ring(white, 8);
+    gb.globalCompositeOperation = 'destination-out'; gb.drawImage(white, 0, 0); gb.globalCompositeOperation = 'source-over';
   }
   function name(id) { return SC().objects[id - 1][1]; }
   function question(id) { return 'What color is ' + name(id) + '?'; }
@@ -7444,7 +7461,7 @@ function themeArt() { const p = $('#theme-pic'); if (p) p.replaceChildren(art(O.
    come back to it), it asks version.json for the newest build. If it is newer than this page,
    a bar offers "Update now", which loads the new version.
    WHEN PUBLISHING A CHANGE: set BUILD below and "build" in version.json to the same new value. */
-const BUILD = '2026-11-25f';
+const BUILD = '2026-11-25g';
 const Updater = {
   shown: false,
   check() {
