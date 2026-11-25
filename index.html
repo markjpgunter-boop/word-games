@@ -343,6 +343,44 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .sc-shop .awn{position:absolute;top:0;left:0;right:0;height:22%;background:repeating-linear-gradient(90deg,#fff 0 9%,transparent 9% 18%)}
 .sc-shop .sign{position:absolute;top:26%;left:50%;transform:translateX(-50%);font:900 calc(var(--u)*9)/1 var(--font-word);text-shadow:0 calc(var(--u)*.4) 0 rgba(0,0,0,.25)}
 .sc-shop .ex{position:absolute;bottom:6%;left:0;right:0;text-align:center;font:700 calc(var(--u)*2.2)/1.2 var(--font-word);opacity:.95}
+/* GrapeSEED grammar games: Silly robot, Birthday table */
+.rb-scene{background:linear-gradient(#dff1ff 0 70%,#9fc6e8 70% 74%,#7aa9d6 74%)}
+.rb-robot{z-index:4;animation:rbIdle 2.4s ease-in-out infinite;transform-origin:50% 100%}
+.rb-robot svg{width:100%;height:100%;display:block;overflow:visible}
+.rb-robot .rb-mouth{transform-box:fill-box;transform-origin:center}
+.rb-robot .rb-eyes{transform-box:fill-box;transform-origin:center;animation:rbBlink 4s infinite}
+.rb-robot .rb-arm{transform-box:fill-box;transform-origin:0% 50%;animation:rbPoint 1.6s ease-in-out infinite}
+.rb-robot.talk .rb-mouth{animation:rbTalk .16s ease-in-out infinite alternate}
+.rb-robot.talk .rb-light{animation:rbLight .3s steps(2) infinite}
+.rb-robot.oops{animation:rbOops .5s 2}
+.rb-robot.oops .rb-eyes circle{fill:#ff7a59}
+.rb-robot.happy{animation:scHop .45s 3}
+.rb-robot.think{animation:rbThink 1.4s ease-in-out infinite}
+@keyframes rbIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5%)}}
+@keyframes rbBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes rbPoint{0%,100%{transform:rotate(0)}50%{transform:rotate(-12deg)}}
+@keyframes rbTalk{from{transform:scaleY(1)}to{transform:scaleY(3.2)}}
+@keyframes rbLight{0%{fill:#ff5a5a}100%{fill:#fff36b}}
+@keyframes rbOops{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+@keyframes rbThink{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg)}}
+.rb-bub{left:31%;top:13%;max-width:37%}
+.rb-ask{right:2%;top:13%;max-width:27%;background:#fff8d6}
+.rb-ask::after{border-top-color:#fff8d6}
+.rb-card{animation:popin .35s}
+.rb-cover{z-index:3;border-radius:calc(var(--u)*.9);display:flex;align-items:center;justify-content:center;
+  background:repeating-linear-gradient(45deg,#7b4fe0 0 calc(var(--u)*1.6),#9a74f0 calc(var(--u)*1.6) calc(var(--u)*3.2));
+  color:#fff;font:900 calc(var(--u)*14)/1 var(--font-word);text-shadow:0 calc(var(--u)*.5) 0 rgba(0,0,0,.25);
+  transition:clip-path .5s ease,opacity .5s,transform .5s;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+.rb-cover.peek1{clip-path:polygon(45% 0,100% 0,100% 100%,0 100%,0 45%,45% 45%)}
+.rb-cover.peek2{clip-path:polygon(55% 0,100% 0,100% 100%,55% 100%)}
+.rb-cover.off{opacity:0;transform:scale(1.3) rotate(8deg);pointer-events:none}
+.rb-opt{padding:calc(var(--u)*.5)}
+.rb-opt .pic{width:calc(var(--u)*7.2);height:calc(var(--u)*7.2);border-radius:calc(var(--u)*.7);overflow:hidden;display:block}
+.bd-scene{background:linear-gradient(#fde7f0 0 70%,#ff8fb3 70% 72.5%,#ff6f98 72.5%)}
+.bd-scene::before{content:'';position:absolute;left:0;right:0;top:72.5%;bottom:0;
+  background:radial-gradient(circle,#fff 0 22%,transparent 24%) 0 0/calc(var(--u)*3.2) calc(var(--u)*3.2);opacity:.55}
+.bd-bunting{left:0;right:0;top:0;height:10%;pointer-events:none;background-size:auto 100%;background-repeat:repeat-x;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 50'%3E%3Cpath d='M0 4 Q75 14 150 4' stroke='%23555' stroke-width='2' fill='none'/%3E%3Cpath d='M4 5 L24 6 L14 44Z' fill='%23ff5c8a'/%3E%3Cpath d='M54 8 L74 9 L64 47Z' fill='%23ffcf3a'/%3E%3Cpath d='M104 7 L124 6 L114 45Z' fill='%234fb0ff'/%3E%3C/svg%3E")}
 .sc-shop .door{position:absolute;bottom:0;left:35%;right:35%;height:30%;background:rgba(0,0,0,.18);border-radius:calc(var(--u)*.8) calc(var(--u)*.8) 0 0}
 .sc-shop.ok{outline:calc(var(--u)*.7) solid #ffd400}
 .sc-row{left:0;right:0;display:flex;justify-content:center;z-index:6;pointer-events:none}
@@ -2824,6 +2862,7 @@ const Sfx = {
         case 'open': T(392, 0, .1, 'triangle', .18); T(523, .09, .1, 'triangle', .18); T(784, .18, .24, 'triangle', .18); break;
         case 'life': T(880, 0, .08, 'sine', .16); T(1175, .07, .14, 'sine', .16); break;
         case 'pull': T(150, 0, .2, 'sawtooth', .1, 260); break;
+        case 'robot': T(880, 0, .07, 'square', .07); T(620, .09, .07, 'square', .07); T(1040, .18, .1, 'square', .07); break;
       }
     } catch (e) { /* ignore audio errors */ }
   }
@@ -3198,6 +3237,7 @@ function seg(label, choices, value, onpick) {
 }
 /* Games are shown easiest first, in three groups. A game not listed here goes in the last group. */
 const HUB_GROUPS = [
+  ['★ GrapeSEED grammar', 'Say the sentence! Each unit\'s game unlocks at that unit and stays for later units.', ['robot', 'bday']],
   ['★ Youngest (4–6)', 'Look, listen, shout it out.', ['flash', 'speed', 'peek', 'mystery', 'shadow', 'missing', 'hide', 'listen', 'pairs', 'boxes', 'dip', 'wheel']],
   ['★★ Next step', 'Sort, order, remember and choose.', ['sort', 'odd', 'memory', 'imagequiz', 'balloon', 'tug']],
   ['★★ Phonics', 'Listen to the sounds and sort the words.', ['chsh']],
@@ -3219,7 +3259,7 @@ const Hub = {
     if (set.temp) artLabel($('#hub-edit'), 'save', 'Save as set'); else artLabel($('#hub-edit'), 'edit', 'Edit set');
     const games = $('#hub-games'); games.innerHTML = '';
     const placed = new Set(HUB_GROUPS.flatMap(g => g[2]));
-    const forSet = g => !g.onlyFor || g.onlyFor.test(set.title || '');   // some games belong to one book unit only
+    const forSet = g => gameForSet(g, set);   // some games belong to one book unit, or to GrapeSEED from a unit on
     const groups = HUB_GROUPS.map(([t, sub, ids]) => [t, sub, ids.map(id => Games.get(id)).filter(g => g && forSet(g))]);
     groups[groups.length - 1][2].push(...Games.list.filter(g => !placed.has(g.id) && forSet(g)));
     groups.forEach(([t, sub, list]) => {
@@ -3361,8 +3401,8 @@ const Runner = (() => {
       const old = $('#gsw-menu'); if (old) return old.remove();
       const menu = h('div', { id: 'gsw-menu', class: 'gsw-menu', onpointerdown: e => { if (e.target === menu) menu.remove(); } }, h('div', { class: 'gsw-box' },
         h('div', { class: 'gsw-h' }, h('b', null, 'Switch game'), h('small', null, 'same words'), h('button', { class: 'btn sm', onclick: () => menu.remove() }, '✕')),
-        HUB_GROUPS.map(([t, , ids]) => h('div', { class: 'gsw-sec' }, h('div', { class: 'gsw-t' }, t),
-          h('div', { class: 'gsw-list' }, ids.map(id => Games.get(id)).filter(Boolean).map(g => h('button', { class: 'gsw-g' + (g === game ? ' on' : ''), title: g.name, 'aria-label': g.name,
+        HUB_GROUPS.filter(([, , ids]) => ids.some(id => { const g = Games.get(id); return g && (!g.gsFrom || gameForSet(g, set)); })).map(([t, , ids]) => h('div', { class: 'gsw-sec' }, h('div', { class: 'gsw-t' }, t),
+          h('div', { class: 'gsw-list' }, ids.map(id => Games.get(id)).filter(g => g && (!g.gsFrom || gameForSet(g, set))).map(g => h('button', { class: 'gsw-g' + (g === game ? ' on' : ''), title: g.name, 'aria-label': g.name,
             onclick: () => { menu.remove(); if (g !== game) start(g.id, set); } }, art(g.id, 'gsw-i', g.icon), g.name)))))));
       $('#scr-game').append(menu);
     } }, art('switch', 'gb-i', '🎮')));
@@ -4479,6 +4519,342 @@ Games.register((() => {
       }
       return { sheet, key, instruction: 'Draw a line from each word to its picture.' };
     }
+  };
+})());
+
+/* ===================== 12b5. GRAPESEED GRAMMAR GAMES =====================
+   Grammar games for GrapeSEED word sets (titles "U3 · …", "U7 · …").
+   A game with gsFrom: n shows for a GrapeSEED set from Unit n onwards (for Today's lesson:
+   the highest unit ticked), so each unit's game stays available in later units.
+   Silly Robot (Unit 3): "This is a …" / "Is this a …?" → "Yes, it is!" / "No, it isn't!"
+   Birthday table (Unit 7): "May I have …, please?" → "Yes, you may have …" */
+function gsUnitOf(s) { const m = /^U(\d+) · /.exec((s && s.title) || ''); return m ? +m[1] : 0; }
+function gsUnit(set) {
+  if (!set) return 0;
+  if (set.temp) { try { return Math.max(0, ...Lesson.order().map(gsUnitOf)); } catch (e) { return 0; } }
+  return gsUnitOf(set);
+}
+/** Is this game shown for this set? (onlyFor = one book unit; gsFrom = GrapeSEED Unit n and later) */
+const gameForSet = (g, set) => (!g.onlyFor || g.onlyFor.test((set && set.title) || '')) && (!g.gsFrom || gsUnit(set) >= g.gsFrom);
+/** All GrapeSEED items (with pictures) from Unit 1 up to unit u, one per word. */
+function gsItemsUpTo(u) {
+  const out = [], seen = new Set();
+  (APP.sets || []).forEach(s => { const n = gsUnitOf(s); if (!n || n > u) return; validItems(s).forEach(it => { const k = gWords(it); if (hasPic(it) && !seen.has(k)) { seen.add(k); out.push(it); } }); });
+  return out;
+}
+/* Words that are not "things" for "This is a …" (colours, numbers, weather, times, actions). */
+const GS_NOT_THING = new Set(['red', 'blue', 'yellow', 'green', 'pink', 'purple', 'brown', 'orange', 'white', 'black', 'gray', 'grey',
+  'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve',
+  'sunny', 'cloudy', 'rainy', 'snowy', 'windy', 'hot', 'warm', 'cool', 'cold', 'wet', 'dry', 'sick', 'well', 'big', 'small', 'happy', 'sad',
+  'morning', 'noon', 'evening', 'night', 'weather', 'weekend',
+  'shiver', 'blow', 'sneeze', 'cough', 'bend', 'bounce', 'throw', 'climb', 'wave', 'jump', 'paint', 'swim', 'run', 'walk', 'hop', 'fly', 'dance', 'cry', 'yawn', 'kick', 'hit', 'fix', 'talk', 'smell', 'spill', 'pinch', 'scratch', 'hiccup', 'fight', 'hurt', 'reach', 'spin', 'shake', 'laugh',
+  'left', 'right', 'inside', 'outside', 'up', 'down', 'yes', 'no', 'hello', 'goodbye', 'please', 'thank you']);
+const GS_VERB_START = /^(clap|stomp|touch|pat|rub|stand|sit|turn|spin|swim|walk|eat|get|sing|play|read|go|mark|give|put|shake|make|take|ride|wear|look|have|jump|run)\b/;
+const GS_UNCOUNT = new Set(['hair', 'trash', 'breakfast', 'lunch', 'dinner', 'water', 'sand', 'snow', 'rain', 'paper', 'play dough', 'milk', 'juice', 'ice cream', 'popcorn', 'rice', 'soup', 'bread', 'cheese', 'jam', 'butter', 'candy', 'meat', 'spaghetti', 'salad', 'noodles']);
+const GS_THE = new Set(['moon', 'sun', 'sky', 'ground']);
+const GS_COUNT = new Set(['lamb', 'cake', 'chicken', 'turkey']);   // countable things here (a lamb is an animal)
+/** 'c' = a/an thing, 'u' = no article ("This is milk"), 't' = the ("This is the moon"); null = not usable. */
+function gsKind(it) {
+  const w = gWords(it);
+  if (!w || /[.?!,]/.test(w) || w.split(' ').length > 3 || GS_NOT_THING.has(w) || GS_VERB_START.test(w)) return null;
+  if (GS_THE.has(w)) return 't';
+  if (GS_UNCOUNT.has(w)) return 'u';
+  if (GS_COUNT.has(w)) return 'c';
+  const k = gKind(it);
+  if (k === 'p' || (k === 'c' && gEndS(w))) return null;   // plurals ("balloons") need "These are …"
+  return k === 'u' ? 'u' : 'c';
+}
+/** "a pencil", "an eraser", "milk", "the moon" */
+function gsThing(it) {
+  const w = gWords(it), k = gsKind(it);
+  return k === 't' ? 'the ' + w : k === 'u' ? w : gAn(w) + ' ' + w;
+}
+const gsCap = t => t.charAt(0).toUpperCase() + t.slice(1);
+/** The robot voice: the iPad voice, higher and a little faster, after a beep-boop. */
+function robotSay(c, text, mouthEl) {
+  Sfx.play('robot');
+  if (mouthEl) { mouthEl.classList.add('talk'); clearTimeout(mouthEl._t); mouthEl._t = setTimeout(() => mouthEl.classList.remove('talk'), 600 + text.length * 75); }
+  if (!c.canSpeak) return;
+  c.later(() => {
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.lang = O.speak; u.rate = 0.95; u.pitch = 1.7;
+      const v = Speech.voice(O.speak); if (v) u.voice = v;
+      if (mouthEl) u.onend = () => { clearTimeout(mouthEl._t); mouthEl.classList.remove('talk'); };
+      speechSynthesis.speak(u);
+    } catch (e) { /* ignore */ }
+  }, 380);
+}
+const ROBOT_SVG = '<svg viewBox="0 0 200 270" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+  '<line x1="100" y1="34" x2="100" y2="12" stroke="#5b6b82" stroke-width="6"/><circle class="rb-light" cx="100" cy="12" r="11" fill="#ff5a5a"/>' +
+  '<rect x="18" y="62" width="18" height="40" rx="8" fill="#8aa0bd"/><rect x="164" y="62" width="18" height="40" rx="8" fill="#8aa0bd"/>' +
+  '<rect x="34" y="32" width="132" height="104" rx="26" fill="#cfdcec" stroke="#5b6b82" stroke-width="6"/>' +
+  '<rect x="50" y="50" width="100" height="66" rx="16" fill="#1d2b44"/>' +
+  '<g class="rb-eyes"><circle cx="78" cy="78" r="12" fill="#5ff0ff"/><circle cx="122" cy="78" r="12" fill="#5ff0ff"/></g>' +
+  '<rect class="rb-mouth" x="78" y="100" width="44" height="8" rx="4" fill="#5ff0ff"/>' +
+  '<rect x="88" y="136" width="24" height="12" fill="#8aa0bd"/>' +
+  '<rect x="44" y="146" width="112" height="86" rx="18" fill="#cfdcec" stroke="#5b6b82" stroke-width="6"/>' +
+  '<circle cx="78" cy="180" r="10" fill="#ffcf3a"/><circle cx="100" cy="180" r="10" fill="#4fd07a"/><circle cx="122" cy="180" r="10" fill="#ff7a59"/>' +
+  '<rect x="70" y="202" width="60" height="12" rx="6" fill="#8aa0bd"/>' +
+  '<g class="rb-arm"><rect x="150" y="160" width="46" height="16" rx="8" fill="#8aa0bd" stroke="#5b6b82" stroke-width="4"/><circle cx="196" cy="168" r="11" fill="#cfdcec" stroke="#5b6b82" stroke-width="4"/></g>' +
+  '<rect x="10" y="160" width="40" height="16" rx="8" fill="#8aa0bd" stroke="#5b6b82" stroke-width="4"/>' +
+  '<rect x="60" y="232" width="26" height="30" rx="6" fill="#8aa0bd"/><rect x="114" y="232" width="26" height="30" rx="6" fill="#8aa0bd"/>' +
+  '<rect x="52" y="256" width="40" height="12" rx="6" fill="#5b6b82"/><rect x="108" y="256" width="40" height="12" rx="6" fill="#5b6b82"/></svg>';
+
+/* ===== SILLY ROBOT (Unit 3): the robot names the picture, sometimes wrongly ===== */
+Games.register((() => {
+  let c, K, st;
+  function robotIs(cls) { st.robot.classList.remove('oops', 'happy', 'think'); void st.robot.offsetWidth; if (cls) st.robot.classList.add(cls); }
+  function bubble(text, kind) {
+    if (st.bub) st.bub.remove();
+    st.bub = h('div', { class: 'sc-bubble rb-bub' + (kind ? ' ' + kind : '') }, text);
+    K.scene.append(st.bub);
+  }
+  function say(text, kind) { bubble(text, kind); robotSay(c, text, st.mouth); }
+  function decoys(it, n) {
+    const w = gWords(it), seen = new Set([w]), out = [];
+    for (const p of shuffle(st.pool.slice())) { const k = gWords(p); if (!seen.has(k)) { seen.add(k); out.push(p); } if (out.length >= n) break; }
+    return out;
+  }
+  function clear() {
+    ['card', 'cover', 'bub', 'qb'].forEach(k => { if (st[k]) { st[k].remove(); st[k] = null; } });
+  }
+  function showCard(it) {
+    st.card = K.card(it, 71, 78, 25); st.card.classList.add('rb-card'); K.scene.append(st.card);
+  }
+  function round() {
+    if (st.i >= st.list.length) return c.finish();
+    const it = st.list[st.i]; st.i++; c.progress(st.i, st.list.length);
+    clear(); robotIs(null);
+    if (K.T) K.T.setTurn(st.i === 1 ? 0 : (K.T.turn + 1) % K.T.n);
+    const mode = c.g.mode === 'mix' ? (st.i % 2 ? 'says' : 'asks') : c.g.mode;
+    if (mode === 'asks') asks(it); else says(it);
+  }
+  /* --- the robot says "This is a …" --- */
+  function says(it) {
+    const wrong = Math.random() < (c.g.silly === 'lots' ? 0.65 : 0.45);
+    const claim = wrong ? (decoys(it, 1)[0] || it) : it, isWrong = claim !== it;
+    st.q = { it, claim, isWrong, done: false };
+    showCard(it);
+    const line = 'This is ' + gsThing(claim) + '!';
+    K.banner(K.who() + 'Is the robot right? 🤖');
+    c.later(() => say(line), 500);
+    const yes = K.btn('✅ Yes, it is!', 'yes', b => answer(true, b, yes, no)), no = K.btn("❌ No, it isn't!", 'no', b => answer(false, b, yes, no));
+    K.ctrl(K.btn('🔊', 'hint', () => say(line)), yes, no);
+  }
+  function answer(saidYes, btn, yes, no) {
+    const q = st.q; if (q.done) return; q.done = true;
+    const right = saidYes === !q.isWrong, real = gsThing(q.it);
+    (saidYes ? no : yes).classList.add('dim');
+    if (right) { K.point(1); c.sfx('correct'); c.record(q.it, true, q.isWrong ? 'caught the robot' : ''); }
+    else { K.shake(btn); c.sfx('wrong'); (q.isWrong ? no : yes).classList.add('right'); c.record(q.it, false, q.isWrong ? 'the robot said ' + gsThing(q.claim) : 'it was right'); }
+    if (q.isWrong) {
+      robotIs('oops');
+      c.later(() => say(right ? 'Oops! Silly me! It\'s ' + real + '!' : 'Ha ha! No, it isn\'t! It\'s ' + real + '!', 'no'), 250);
+      K.banner(right ? '⭐ You caught the silly robot!' : 'The robot was wrong! It\'s ' + real + '.');
+    } else {
+      robotIs(right ? 'happy' : 'think');
+      c.later(() => say(right ? 'Yes, it is! It\'s ' + real + '!' : 'Yes, it is! It IS ' + real + '!', 'yes'), 250);
+      K.banner(right ? '⭐ Right! It\'s ' + real + '.' : 'The robot was right this time!');
+    }
+    st.card.classList.add('ok');
+    nextBtn();
+  }
+  /* --- the class asks "Is this a …?" --- */
+  function asks(it) {
+    const opts = shuffle([it, ...decoys(it, (+c.g.choices || 3) - 1)]);
+    st.q = { it, done: false, tries: 0, peek: 0 };
+    showCard(it);
+    st.cover = h('div', { class: 'rb-cover' }, h('span', null, '?'));
+    Object.assign(st.cover.style, { left: st.card.style.left, top: st.card.style.top, width: st.card.style.width, height: st.card.style.height });
+    K.scene.append(st.cover);
+    robotIs('think');
+    K.banner(K.who() + 'Ask the robot: “Is this …?” 🙋');
+    c.later(() => say('What is this? Guess!'), 400);
+    const peek = K.btn('👀 Peek', 'hint', () => {
+      if (st.q.done || st.q.peek >= 2) return; st.q.peek++; st.cover.className = 'rb-cover peek' + st.q.peek; c.sfx('tile');
+      if (st.q.peek >= 2) peek.classList.add('dim');
+    });
+    const btns = opts.map(o => {
+      const b = h('button', { class: 'sc-btn rb-opt', 'aria-label': gWords(o), onpointerdown: e => { e.preventDefault(); guess(o, b); } }, pic(o));
+      return b;
+    });
+    K.ctrl(peek, ...btns, K.btn('🏳️ Show', 'hint', () => reveal(false)));
+    st.q.btns = btns;
+  }
+  function guess(o, b) {
+    const q = st.q; if (q.done || b.classList.contains('dim')) return;
+    q.tries++;
+    const asked = 'Is this ' + gsThing(o) + '?';
+    if (st.qb) st.qb.remove();
+    st.qb = h('div', { class: 'sc-bubble r rb-ask' }, asked); K.scene.append(st.qb);
+    if (o === q.it) {
+      K.point(1); c.record(q.it, true, q.tries > 1 ? q.tries + ' guesses' : '');
+      reveal(true);
+    } else {
+      b.classList.add('dim'); K.shake(b); c.sfx('wrong'); robotIs('think');
+      c.later(() => say('No, it isn\'t!', 'no'), 150);
+      K.next();
+      K.banner(K.who() + 'Ask again! “Is this …?”');
+      if (q.btns.filter(x => !x.classList.contains('dim')).length === 1) c.later(() => { if (!q.done) K.banner(K.who() + 'One left! Ask the robot.'); }, 1200);
+    }
+  }
+  function reveal(won) {
+    const q = st.q; if (q.done) return; q.done = true;
+    if (!won) c.record(q.it, false, 'shown');
+    st.cover.classList.add('off');
+    q.btns.forEach(b => b.classList.add(b.getAttribute('aria-label') === gWords(q.it) ? 'right' : 'dim'));
+    robotIs('happy'); c.sfx('correct');
+    const real = gsThing(q.it);
+    c.later(() => say(won ? 'Yes, it is! It\'s ' + real + '!' : 'It\'s ' + real + '!', 'yes'), 200);
+    K.banner(won ? '⭐ ' + gsCap(real) + '!' + (K.T ? ' +1' : '') : gsCap(real) + '!');
+    st.card.classList.add('ok');
+    nextBtn();
+  }
+  function nextBtn() {
+    c.later(() => { if (st) K.ctrl(K.btn(st.i >= st.list.length ? 'Finish ▶' : 'Next ▶', 'go big', () => round())); }, 900);
+  }
+  return {
+    id: 'robot', name: 'Silly robot', icon: '🤖', minItems: 3, noTimer: true, gsFrom: 3,
+    blurb: 'The robot says “This is a …!” but sometimes it\'s wrong! Shout “Yes, it is!” or “No, it isn\'t!” Or ask the robot: “Is this a …?”',
+    usable: hasPic,
+    options: [
+      { key: 'mode', label: 'Game', choices: [['says', 'Robot says “This is…”'], ['asks', 'Class asks “Is this…?”'], ['mix', 'Mix']], def: 'mix' },
+      { key: 'silly', label: 'How silly?', choices: [['some', 'Sometimes wrong'], ['lots', 'Often wrong']], def: 'some' },
+      { key: 'choices', label: 'Pictures to ask about', choices: [['3', '3'], ['4', '4']], def: '3' },
+      { key: 'teams', label: 'Play as', choices: [['off', 'Whole class'], ['2', '2 teams'], ['3', '3 teams'], ['4', '4 teams']], def: 'off' }
+    ],
+    init(ctx) {
+      c = ctx; K = gKit(c); K.scene.classList.add('rb-scene'); K.ctrlLeft = '32%';
+      st = { i: 0, pool: c.pool.filter(it => hasPic(it) && gsKind(it)) };
+      if (st.pool.length < 4) st.pool = st.pool.concat(gsItemsUpTo(Math.max(3, gsUnit(c.set))).filter(it => gsKind(it)));
+      // the set's own things first; a set with few things (e.g. Weather) uses things from the units so far
+      st.list = c.items.filter(it => gsKind(it));
+      if (st.list.length < 3) st.list = shuffle(st.pool.slice()).slice(0, O.count === 'all' ? 10 : +O.count);
+      st.robot = h('div', { class: 'rb-robot' }); st.robot.innerHTML = ROBOT_SVG;
+      K.at(st.robot, 4, 22, 30, 74); K.scene.append(st.robot);
+      st.mouth = st.robot;   // .talk on the robot moves the mouth and the light
+    },
+    start() { round(); },
+    destroy() { try { speechSynthesis.cancel(); } catch (e) { /* ignore */ } c = K = st = null; }
+  };
+})());
+
+/* ===== BIRTHDAY TABLE (Unit 7): "May I have …, please?" / "Yes, you may have …" ===== */
+const GS_GIFTS = new Set(['balloon', 'balloons', 'teddy bear', 'yo-yo', 'jump rope', 'puzzle', 'puppet', 'ball', 'truck', 'blocks', 'cake', 'candles', 'presents', 'present',
+  'ribbon', 'ice cream', 'cookies', 'cookie', 'milk', 'crayon', 'pencil', 'marker', 'eraser', 'paper', 'tape', 'book', 'bag', 'play dough', 'card', 'scissors', 'box',
+  'hat', 'hats', 'gloves', 'coat', 'jacket', 'socks', 'shoes', 'boots', 'sled', 'donut', 'pizza', 'popcorn', 'sandwich', 'hot dog', 'hamburger', 'juice', 'candy', 'sweets',
+  'pancake', 'jam', 'chips', 'egg', 'cheese', 'banana', 'apple', 'orange', 'watermelon', 'grapes', 'cherries', 'strawberries', 'pumpkin', 'airplane', 'boat', 'bus', 'train', 'fire truck', 'tricycle', 'whistle', 'letter', 'towel']);
+const GS_PARTY = new Set(['balloons', 'balloon', 'teddy bear', 'yo-yo', 'jump rope', 'puzzle', 'puppet', 'ball', 'truck', 'blocks', 'cake', 'candles', 'presents', 'ribbon', 'ice cream', 'cookies', 'milk', 'box']);
+Games.register((() => {
+  let c, K, st;
+  const TABLE_Y = 70;
+  /** "a yo-yo", "some balloons" (the picture shows several), "some ice cream" */
+  const thing = it => { const w = gWords(it), k = gKind(it); return k === 'u' || k === 'p' || gEndS(w) ? 'some ' + w : gAn(w) + ' ' + w; };
+  const ask = it => 'May I have ' + thing(it) + ', please?';
+  const yes = it => 'Yes, you may have ' + thing(it) + '.';
+  function layout() {
+    const n = st.stock.length, w = Math.min(10, 54 / n), gap = w * 0.28, total = n * w + (n - 1) * gap, x0 = 60 - total / 2;
+    st.stock.forEach((s, i) => {
+      const x = x0 + w / 2 + i * (w + gap);
+      if (!s.el) {
+        s.el = K.card(s.item, x, TABLE_Y + 2, w);
+        s.el.append(h('button', { 'aria-label': gWords(s.item), onpointerdown: e => { e.preventDefault(); pickFree(s); } }));
+        K.scene.append(s.el);
+      }
+    });
+  }
+  function setup() {
+    const seen = new Set(), pool = shuffle(st.pool.slice()).filter(it => { const k = gWords(it); if (seen.has(k)) return false; seen.add(k); return true; });
+    st.stock = pool.slice(0, Math.min(+c.g.gifts || 6, pool.length)).map(item => ({ item, el: null }));
+    layout();
+  }
+  function round() {
+    if (st.round >= st.total) return c.finish();
+    st.round++; c.progress(st.round, st.total);
+    ['kid', 'say', 'think', 'reply'].forEach(k => { if (st[k]) { st[k].remove(); st[k] = null; } });
+    if (!st.stock.length) { setup(); K.banner('🎁 More presents!'); c.sfx('open'); }
+    if (K.T) K.T.setTurn(st.askTeam == null ? 0 : (st.askTeam + 1) % K.T.n);
+    st.askTeam = K.T ? K.T.turn : -1; st.yesTeam = K.T ? (K.T.turn + 1) % K.T.n : -1;
+    st.kid = K.person(2, 21);
+    st.q = { s: null, phase: 'ask' };
+    if (c.g.choose === 'bubble') {
+      let s = gPick(st.stock); if (st.last === s && st.stock.length > 1) s = gPick(st.stock.filter(x => x !== s));
+      st.last = s; st.q.s = s;
+      st.think = h('div', { class: 'sc-bubble think' }, pic(s.item)); Object.assign(st.think.style, { left: '15%', top: '13%' }); K.scene.append(st.think);
+      askPhase();
+    } else {
+      K.banner(K.whoAt(st.askTeam) + 'Ask for something! “May I have …, please?” 🎈');
+      st.stock.forEach(s => s.el && s.el.classList.add('target'));
+      K.ctrl(K.btn('👆 Tap what they asked for', 'hint', () => { st.stock.forEach(s => s.el && K.shake(s.el)); }));
+    }
+  }
+  function pickFree(s) {
+    if (!st || c.g.choose === 'bubble' || st.q.phase !== 'ask' || st.q.s) return;
+    st.q.s = s; st.stock.forEach(x => x.el && x.el.classList.remove('target'));
+    s.el.classList.add('ok'); c.sfx('place');
+    showSay(ask(s.item), true);
+    K.pointTo(st.askTeam, 1); c.sfx('correct');
+    replyPhase();
+  }
+  function showSay(text, quiet) {
+    if (st.say) st.say.remove();
+    st.say = h('div', { class: 'sc-bubble' }, text); Object.assign(st.say.style, { left: '3%', top: '14%', maxWidth: '50%' });
+    if (st.think) st.think.style.visibility = 'hidden';
+    K.scene.append(st.say); if (!quiet) gSay(c, text);
+  }
+  function askPhase() {
+    const s = st.q.s;
+    K.banner(K.whoAt(st.askTeam) + 'Ask for it! 🗣️');
+    K.ctrl(c.canSpeak && K.btn('🔊', 'hint', () => gSay(c, ask(s.item))), K.btn('💬 Sentence', 'hint', () => showSay(ask(s.item), true)),
+      K.btn('👍 Good asking!', 'go big', () => { if (st.q.phase !== 'ask') return; K.pointTo(st.askTeam, 1); c.sfx('correct'); showSay(ask(s.item)); replyPhase(); }),
+      K.btn('🔁 Try again', 'hint', () => c.sfx('back')));
+  }
+  function replyPhase() {
+    const s = st.q.s; st.q.phase = 'reply';
+    if (K.T) K.T.setTurn(st.yesTeam);
+    K.banner(K.whoAt(st.yesTeam) + 'Say yes! “Yes, you may have …” 🎁');
+    const help = K.btn('💬 Sentence', 'hint', () => { if (st.reply) st.reply.remove(); st.reply = h('div', { class: 'sc-bubble r yes' }, yes(s.item)); Object.assign(st.reply.style, { right: '5%', top: '14%', maxWidth: '50%' }); K.scene.append(st.reply); });
+    K.ctrl(c.canSpeak && K.btn('🔊', 'hint', () => gSay(c, yes(s.item))), help,
+      K.btn('👍 Good answer!', 'go big', () => give()), K.btn('🔁 Try again', 'hint', () => c.sfx('back')));
+  }
+  function give() {
+    const s = st.q.s; if (st.q.phase !== 'reply') return; st.q.phase = 'done';
+    K.pointTo(st.yesTeam, 1); c.sfx('correct'); c.record(s.item, true, '');
+    if (st.say) st.say.remove();
+    if (st.reply) st.reply.remove();
+    st.reply = h('div', { class: 'sc-bubble r yes' }, yes(s.item)); Object.assign(st.reply.style, { right: '5%', top: '14%', maxWidth: '50%' }); K.scene.append(st.reply);
+    gSay(c, yes(s.item));
+    K.banner('🎉 Here you are!' + (K.T ? ' +1 each' : ''));
+    const el = s.el; el.style.zIndex = 9; el.classList.remove('ok');
+    c.later(() => { el.style.left = '8%'; el.style.top = '40%'; el.style.transform = 'scale(.7)'; if (st && st.kid) st.kid.classList.add('happy'); }, 350);
+    c.later(() => el.classList.add('gone'), 1400);
+    c.later(() => { if (!st) return; el.remove(); st.stock = st.stock.filter(x => x !== s); }, 1900);
+    c.later(() => { if (st) K.ctrl(K.btn(st.round >= st.total ? 'Finish ▶' : 'Next child ▶', 'go big', () => round())); }, 900);
+  }
+  return {
+    id: 'bday', name: 'Birthday table', icon: '🎂', minItems: 1, noTimer: true, gsFrom: 7,
+    blurb: 'Party time! One team asks: “May I have a yo-yo, please?” The next team says: “Yes, you may have a yo-yo.”',
+    usable: () => true,
+    options: [
+      TEAM_OPT,
+      { key: 'choose', label: 'What to ask for', choices: [['bubble', 'Picture in a bubble'], ['free', 'The children choose']], def: 'bubble' },
+      { key: 'gifts', label: 'Things on the table', choices: [['4', '4'], ['6', '6'], ['8', '8']], def: '6' },
+      { key: 'rounds', label: 'Children', choices: [['6', '6'], ['10', '10'], ['16', '16']], def: '10' }
+    ],
+    init(ctx) {
+      c = ctx; K = gKit(c); K.scene.classList.add('bd-scene'); K.bg('party'); K.ctrlLeft = '24%';
+      const gift = it => hasPic(it) && GS_GIFTS.has(gWords(it));
+      let pool = c.pool.filter(gift);
+      if (pool.length < 6) {   // top up: party things and toys first, then other things from the units so far
+        const more = shuffle(gsItemsUpTo(Math.max(7, gsUnit(c.set))).filter(gift)), party = it => GS_PARTY.has(gWords(it));
+        pool = pool.concat(more.filter(party)); if (pool.length < 6) pool = pool.concat(more.filter(it => !party(it)));
+      }
+      st = { round: 0, total: +c.g.rounds || 10, stock: [], pool };
+      K.scene.append(h('div', { class: 'bd-bunting' }));
+    },
+    start() { setup(); round(); },
+    destroy() { c = K = st = null; }
   };
 })());
 
@@ -6559,7 +6935,7 @@ function themeArt() { const p = $('#theme-pic'); if (p) p.replaceChildren(art(O.
    come back to it), it asks version.json for the newest build. If it is newer than this page,
    a bar offers "Update now", which loads the new version.
    WHEN PUBLISHING A CHANGE: set BUILD below and "build" in version.json to the same new value. */
-const BUILD = '2026-11-25b';
+const BUILD = '2026-11-25c';
 const Updater = {
   shown: false,
   check() {
