@@ -849,9 +849,9 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .sr-track.sr-xmas{background-size:cover;background-position:center 70%;font-size:calc(var(--su)*.3)}
 .sr-flake{position:absolute;top:-4%;border-radius:50%;background:#fff;opacity:.9;pointer-events:none;animation:srSnow 7s linear infinite}
 @keyframes srSnow{0%{transform:translate(0,0)}50%{transform:translate(1.5em,22em)}100%{transform:translate(-.5em,46em)}}
-.sr-ride{position:absolute;left:38%;top:0;width:49%;height:57.8%;background:#fff;border-radius:12%;box-shadow:0 0 0 3px #fff,0 4px 10px rgba(0,0,0,.35);overflow:hidden;display:flex}
+.sr-ride{position:absolute;left:38%;top:0;width:49%;height:57.8%;background:#fff;border-radius:12%;box-shadow:0 0 0 3px #fff;overflow:hidden;display:flex}
 .sr-ride .sr-pic{flex:1}
-.sr-carrier{position:absolute;left:0;bottom:0;width:100%;pointer-events:none;filter:drop-shadow(0 4px 4px rgba(0,0,0,.3))}
+.sr-carrier{position:absolute;left:0;bottom:0;width:100%;pointer-events:none}
 .sr-xmas .sr-run{z-index:2}
 .mp-card{position:relative;width:var(--cs);height:var(--cs);border:0;padding:0;background:transparent;-webkit-perspective:800px;perspective:800px;touch-action:manipulation}
 .mp-in{position:absolute;top:0;left:0;right:0;bottom:0;transition:transform .35s;-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
@@ -6501,14 +6501,14 @@ Games.register((() => {
     let y = span / 2;
     if (randomY && span > 10) { y = Math.random() * span; for (let k = 0; k < 8 && st.lastY != null && Math.abs(y - st.lastY) < span * 0.28; k++) y = Math.random() * span; }
     st.lastY = y;
-    st.runner.style.transform = 'translate(' + x0 + 'px,' + y + 'px)';
+    st.runner.style.transform = 'translate3d(' + Math.round(x0) + 'px,' + Math.round(y) + 'px,0)';
     st.runner.style.visibility = 'visible'; c.sfx('place');
     if (xmas()) { if (c.g.music !== 'off') XmasMusic.start(); XmasMusic.jingle(); }
     const t0 = performance.now();
     const step = now => {
       if (!st) return;
       const p = Math.min(1, (now - t0) / ms);
-      st.runner.style.transform = 'translate(' + (x0 + (x1 - x0) * p) + 'px,' + y + 'px)';
+      st.runner.style.transform = 'translate3d(' + Math.round(x0 + (x1 - x0) * p) + 'px,' + Math.round(y) + 'px,0)';   // whole pixels: sharper on the iPad
       if (p < 1) { st.raf = requestAnimationFrame(step); return; }
       st.raf = 0; st.runner.style.visibility = 'hidden';
       if (!st.revealed) st.msg.textContent = c.g.choices === 'off' ? 'What was it?' : 'Is it a … or a …? Ask!';
@@ -7574,7 +7574,7 @@ function themeArt() { const p = $('#theme-pic'); if (p) p.replaceChildren(art(O.
    come back to it), it asks version.json for the newest build. If it is newer than this page,
    a bar offers "Update now", which loads the new version.
    WHEN PUBLISHING A CHANGE: set BUILD below and "build" in version.json to the same new value. */
-const BUILD = '2026-11-25h';
+const BUILD = '2026-11-25i';
 const Updater = {
   shown: false,
   check() {
