@@ -6283,7 +6283,10 @@ Games.register((() => {
       const el = x.el, t = TREASURE.find(t => st.found[t.k] === x.id);
       el.className = 'th-cell'; el.innerHTML = '';
       if (t) { el.classList.add('found'); el.append(h('img', { src: TH_ART[t.k], alt: t.name, draggable: 'false' })); }
-      else if (st.dug[x.id]) { const k = clue(x.id); el.classList.add('dug', k); el.append(h('span', { class: 'th-lab' }, x.id), h('div', { class: 'th-clue' }, h('i', null, k === 'hot' ? '🔥' : k === 'warm' ? '☀️' : '❄️'), k === 'hot' ? 'Hot' : k === 'warm' ? 'Warm' : 'Cold')); }
+      else if (st.dug[x.id]) {   // no treasure left (game won): dug squares just show as dug
+        const k = clue(x.id); el.classList.add('dug'); if (k) el.classList.add(k);
+        el.append(h('span', { class: 'th-lab' }, x.id), k && h('div', { class: 'th-clue' }, h('i', null, k === 'hot' ? '🔥' : k === 'warm' ? '☀️' : '❄️'), k === 'hot' ? 'Hot' : k === 'warm' ? 'Warm' : 'Cold'));
+      }
       else el.append(h('span', { class: 'th-lab' }, x.id));
     });
     st.list.innerHTML = '';
@@ -6373,7 +6376,8 @@ Games.register((() => {
   }
   function win() {
     st.over = true; c.sfx('win');
-    const nextExtra = EXTRA[st.extras];
+    const room = st.cells.some(x => !st.dug[x.id] && !Object.values(st.hidden).includes(x.id));
+    const nextExtra = room ? EXTRA[st.extras] : null;   // only if there is still an undug square to hide it in
     msg('🏴‍☠️ You found all the treasure!', TH_ART.chest,
       [nextExtra && ['One more treasure! 🗝️', 'th-more', () => { snap(); st.extras++; hideTreasure(nextExtra); st.over = false; close(); paint(); toast('Find the ' + nextExtra.name + '!'); }],
         ['Finish', 'pri', () => c.finish()]].filter(Boolean),
@@ -7880,7 +7884,7 @@ function themeArt() { const p = $('#theme-pic'); if (p) p.replaceChildren(art(O.
    come back to it), it asks version.json for the newest build. If it is newer than this page,
    a bar offers "Update now", which loads the new version.
    WHEN PUBLISHING A CHANGE: set BUILD below and "build" in version.json to the same new value. */
-const BUILD = '2026-11-26a';
+const BUILD = '2026-11-26b';
 const Updater = {
   shown: false,
   check() {
