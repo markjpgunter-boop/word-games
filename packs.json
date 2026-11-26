@@ -24,6 +24,11 @@
    "file": "english-code-2.json",
    "name": "English Code 2",
    "version": "2026-11-20"
+  },
+  {
+   "file": "pea-topics.json",
+   "name": "PEA Topics",
+   "version": "2026-11-26"
   }
  ]
 }
