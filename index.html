@@ -3387,7 +3387,7 @@ const HUB_GROUPS = [
   ['★ GrapeSEED grammar', 'Say the sentence! Each unit\'s game unlocks at that unit and stays for later units.', ['robot', 'ant', 'colour', 'bday', 'weather']],
   ['★ Youngest (4–6)', 'Look, listen, shout it out.', ['flash', 'speed', 'peek', 'mystery', 'shadow', 'missing', 'hide', 'listen', 'pairs', 'boxes', 'dip', 'wheel']],
   ['★★ Next step', 'Sort, order, remember and choose.', ['sort', 'odd', 'memory', 'imagequiz', 'balloon', 'tug']],
-  ['★★ Phonics', 'Listen to the sounds and sort the words.', ['chsh']],
+  ['★★ Phonics', 'Listen to the sounds and sort the words.', ['chsh', 'thth']],
   ['★★★ Older (reading & quizzes)', 'Spelling, reading and team quizzes.', ['anagram', 'spell', 'gameshow', 'jeopardy', 'treasure']],
   ['★★★ Grammar', 'Build sentences, ask politely, this or that. Use a grammar set for Sentence builder (a sentence in each line).', ['sentence', 'cafe', 'thisthat']]
 ];
@@ -4546,6 +4546,84 @@ Games.register((() => {
       [['ch', 'chair 🪑', '#2b6fe8', 3], ['sh', 'ship 🚢', '#e8830f', 75]].forEach(([key, ex, col, x]) => {
         const el = h('button', { class: 'sc-shop', style: 'background:' + col, onpointerdown: e => { e.preventDefault(); choose(shop); } },
           h('span', { class: 'awn' }), h('span', { class: 'sign' }, key), h('span', { class: 'door' }));
+        const shop = { key, el, x: x + 11 };
+        K.at(el, x, 18, 22, 62); K.scene.append(el); st.shops.push(shop);
+      });
+    },
+    start() { round(); },
+    destroy() { c = K = st = null; }
+  };
+})());
+
+/* ===== TH OR TH? quiet th (thing) or buzzy th (this): listen, then send the word to the right shop =====
+   Works with any set that has words starting with th. Which th a word has can't be seen from the spelling,
+   so TH_VOICED lists the "this" words; every other th- word is a "thing" word. When the set comes from a
+   book unit ("… Unit 6 Phonics …"), the other th sets of that unit are added, so both shops get words. */
+const TH_VOICED = new Set(['this', 'that', 'these', 'those', 'they', 'them', 'their', 'theirs', 'there', 'then', 'than', 'the',
+  'though', 'thus', 'themselves', 'therefore', "they're", "there's", "that's", "they'll"]);
+Games.register((() => {
+  let c, K, st;
+  const thKind = it => TH_VOICED.has(gWords(it).toLowerCase()) ? 'this' : 'thing';
+  const isTh = it => /^th/i.test(gWords(it));
+  function poolFor() {
+    const out = [], seen = new Set(), add = it => { const k = gWords(it).toLowerCase(); if (isTh(it) && !seen.has(k)) { seen.add(k); out.push(it); } };
+    c.pool.forEach(add);
+    const m = /^(.*Unit\s*\d+)\b/i.exec((c.set && c.set.title) || '');
+    if (m) (APP.sets || []).forEach(s => { if (s !== c.set && s.title.startsWith(m[1]) && /phonics/i.test(s.title)) validItems(s).forEach(add); });
+    return out;
+  }
+  function round() {
+    if (st.round >= st.total) return c.finish();
+    st.round++; c.progress(st.round, st.total);
+    if (st.card) st.card.remove(); if (st.wrow) st.wrow.remove();
+    if (!st.order.length) st.order = shuffle(st.pool.slice());
+    const item = st.order.shift();
+    st.q = { item, done: false, tries: 0 };
+    K.next();
+    st.card = hasPic(item) ? K.card(item, 50, 64, 20) : K.at(h('div', { class: 'sc-card' }, h('div', { class: 'pic' }, h('span', { style: 'font-size:calc(var(--u)*10)' }, '🔊'))), 40, 64 - 20 * 16 / 9, 20);
+    st.card.append(h('button', { 'aria-label': 'Listen', onpointerdown: e => { e.preventDefault(); gSay(c, gWords(item)); } }));
+    K.scene.append(st.card);
+    const w = gWords(item);
+    st.word = h('div', { class: 'sc-word' + (c.g.word === 'show' ? '' : ' hid') }, w);
+    st.wrow = h('div', { class: 'sc-row', style: 'top:67%' }, st.word); K.scene.append(st.wrow);
+    K.banner(K.who() + 'Listen! <i>th</i> as in <i>thing</i> or <i>th</i> as in <i>this</i>? 👂');
+    K.ctrl(c.canSpeak && K.btn('🔊 Listen', 'hint big', () => gSay(c, w)));
+    gSay(c, w);
+  }
+  function choose(shop) {
+    const q = st.q; if (!q || q.done) return;
+    const kind = thKind(q.item);
+    if (shop.key !== kind) {
+      q.tries++; K.shake(shop.el); c.sfx('wrong'); gSay(c, gWords(q.item));
+      if (q.tries < 2) return;
+    }
+    q.done = true;
+    const right = !q.tries, goal = st.shops.find(s => s.key === kind);
+    if (right) { K.point(1); c.sfx('correct'); }
+    c.record(q.item, right, right ? '' : 'th as in ' + kind);
+    goal.el.classList.add('ok'); c.later(() => goal.el.classList.remove('ok'), 1200);
+    const w = gWords(q.item); st.word.innerHTML = '<b>' + K.esc(w.slice(0, 2)) + '</b>' + K.esc(w.slice(2)); st.word.classList.remove('hid');
+    gSay(c, w);
+    const el = st.card; el.style.zIndex = 9;
+    c.later(() => { el.style.left = (goal.x - 4) + '%'; el.style.top = '52%'; el.style.transform = 'scale(.4)'; el.classList.add('gone'); }, 700);
+    K.banner(right ? '⭐ Right!' + (K.T ? ' +1' : '') + ' <i>th</i> as in <i>' + kind + '</i>' : 'It is <i>th</i> as in <i>' + kind + '</i>');
+    c.later(() => K.ctrl(K.btn(st.round >= st.total ? 'Finish ▶' : 'Next ▶', 'go big', () => round())), 900);
+  }
+  return {
+    id: 'thth', name: 'th or th?', icon: '👅', minItems: 3, noTimer: true,
+    blurb: 'Listen to the word. Is it th as in thing (quiet, just air) or th as in this (buzzy)? Send it to the right shop.',
+    usable: it => isTh(it),
+    options: [TEAM_OPT, { key: 'word', label: 'Word', choices: [['hide', 'Hidden until answered'], ['show', 'Show it']], def: 'hide' },
+      { key: 'rounds', label: 'Rounds', choices: [['8', '8'], ['11', '11'], ['20', '20']], def: '11' }],
+    init(ctx) {
+      c = ctx; K = gKit(c);
+      K.scene.style.background = 'linear-gradient(#bfe3ff 0 55%,#9fd27a 55% 58%,#d9c3a0 58%)';
+      st = { round: 0, total: +c.g.rounds || 11, order: [], shops: [] };
+      st.pool = poolFor();
+      [['thing', '#2b6fe8', 3], ['this', '#e8830f', 75]].forEach(([key, col, x]) => {
+        const el = h('button', { class: 'sc-shop', style: 'background:' + col, onpointerdown: e => { e.preventDefault(); choose(shop); } },
+          h('span', { class: 'awn' }), h('span', { class: 'sign' }, 'th'),
+          h('span', { class: 'ex', style: 'top:50%;bottom:auto;font-size:calc(var(--u)*3.2)' }, 'as in ', h('b', null, key)), h('span', { class: 'door' }));
         const shop = { key, el, x: x + 11 };
         K.at(el, x, 18, 22, 62); K.scene.append(el); st.shops.push(shop);
       });
@@ -7916,7 +7994,7 @@ FitLabels.init();
    come back to it), it asks version.json for the newest build. If it is newer than this page,
    a bar offers "Update now", which loads the new version.
    WHEN PUBLISHING A CHANGE: set BUILD below and "build" in version.json to the same new value. */
-const BUILD = '2026-11-27a';
+const BUILD = '2026-11-27b';
 const Updater = {
   shown: false,
   check() {
