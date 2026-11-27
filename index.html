@@ -6049,12 +6049,12 @@ Games.register((() => {
 
 /* ---------- 12i. JEOPARDY BOARD ---------- */
 /* Categories × 100–500. Bigger numbers = harder question types:
-   100 choose from 3 · 200 choose from 4 · 300 unscramble · 400 say it · 500 spell it.
+   100 choose from 3 · 200 choose from 4 · 300 say it · 400 unscramble · 500 spell it.
    The teacher taps "Show the answer" and gives the points to a team (or nobody).
    Categories: the current set split into groups, or up to five chosen word sets. */
 Games.register((() => {
   let c = null, st = null, T = null;
-  const VALUES = [100, 200, 300, 400, 500], KINDS = ['choose3', 'choose4', 'unscramble', 'say', 'spell'];
+  const VALUES = [100, 200, 300, 400, 500], KINDS = ['choose3', 'choose4', 'say', 'unscramble', 'spell'];
   const NAMES = ['⭐ Stars', '🌙 Moon', '☀️ Sun', '🌈 Rainbow', '⚡ Flash'];
   const cfg = () => (O.game.jeopardy = O.game.jeopardy || {});
   const chosenSets = () => (cfg().sets || []).map(id => APP.sets.find(s => s.id === id)).filter(s => s && validItems(s).length >= 5).slice(0, 5);
@@ -7916,7 +7916,7 @@ FitLabels.init();
    come back to it), it asks version.json for the newest build. If it is newer than this page,
    a bar offers "Update now", which loads the new version.
    WHEN PUBLISHING A CHANGE: set BUILD below and "build" in version.json to the same new value. */
-const BUILD = '2026-11-27c';
+const BUILD = '2026-11-27e';
 const Updater = {
   shown: false,
   check() {
