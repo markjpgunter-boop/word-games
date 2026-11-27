@@ -864,6 +864,8 @@ img.gi.gn-i{width:1.8em;height:1.8em;vertical-align:middle;margin:-.4em 0 -.35em
 .wc-pic{position:absolute;top:5%;left:5%;right:5%;bottom:5%}
 .wc.lab .wc-pic{bottom:23%}
 .wc-lab{position:absolute;left:3%;right:3%;bottom:3%;height:18%;display:flex;align-items:center;justify-content:center;font:700 calc(var(--cs)*.12)/1 var(--font-word);white-space:nowrap;overflow:hidden}
+.wc-lab.long{white-space:normal;text-align:center;line-height:1.05;height:24%;overflow:hidden}
+.bp-balloon.long{white-space:normal;max-width:calc(var(--bh)*2.3);line-height:1.05;text-align:center}
 .wc.txt{display:flex;align-items:center;justify-content:center;padding:6%}
 .wc-word{font:700 calc(var(--cs)*.17)/1.1 var(--font-word);text-align:center;overflow-wrap:anywhere}
 .wc.fade{opacity:.35;transform:scale(.92)}
@@ -7879,12 +7881,42 @@ const ClassSets = {
 
 function themeArt() { const p = $('#theme-pic'); if (p) p.replaceChildren(art(O.theme || 'classroom', 'theme-i')); }
 
+/* ===================== LONG LABELS (sentences) =====================
+   Card labels and balloons were made for single words. When a set has sentences (a grammar
+   set), the text could be cut off. Any label of 3+ words may wrap onto 2 lines, and every
+   label shrinks its text until it fits. Runs whenever labels are added and when the screen
+   size changes, so no game needs to call it. */
+const FitLabels = {
+  SEL: '.wc-lab, .bp-balloon',
+  fit(el) {
+    if (!el.isConnected) return;
+    const txt = (el.textContent || '').trim();
+    el.classList.toggle('long', txt.split(/\s+/).length >= 3);
+    el.style.fontSize = '';
+    let fs = parseFloat(getComputedStyle(el).fontSize), n = 0;
+    const r = document.createRange(); r.selectNodeContents(el);
+    const over = () => { const t = r.getBoundingClientRect(), b = el.getBoundingClientRect(); return t.width > b.width + 1 || t.height > b.height + 1; };
+    while (over() && fs > 9 && n++ < 40) {
+      fs *= 0.92; el.style.fontSize = fs + 'px';
+    }
+  },
+  all() { document.querySelectorAll(this.SEL).forEach(e => this.fit(e)); },
+  init() {
+    let queued = null;
+    const later = () => { if (queued) return; queued = requestAnimationFrame(() => { queued = null; this.all(); }); };
+    new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && (n.matches(this.SEL) || n.querySelector(this.SEL))) return later(); })
+      .observe(document.body, { childList: true, subtree: true });
+    addEventListener('resize', () => setTimeout(() => this.all(), 60));
+  }
+};
+FitLabels.init();
+
 /* ===================== UPDATE CHECK =====================
    A Home Screen shortcut on the iPad has no refresh button. When the site is opened (or you
    come back to it), it asks version.json for the newest build. If it is newer than this page,
    a bar offers "Update now", which loads the new version.
    WHEN PUBLISHING A CHANGE: set BUILD below and "build" in version.json to the same new value. */
-const BUILD = '2026-11-26b';
+const BUILD = '2026-11-27a';
 const Updater = {
   shown: false,
   check() {
